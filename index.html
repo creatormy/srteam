@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Profil rasmi BangYan - Freelance Game Creator, Pengasas SRTEAM & Affiliate.">
+    <meta name="keywords" content="BangYan, Gamer, Freelance Creator, SRTEAM, Spectral Rangers, PUBG Mobile, Rust Mobile, Affiliate">
+    <title>BANGYAN | Freelance Game Creator</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'epic': ['Teko', 'sans-serif'], 
+                        'body': ['Rajdhani', 'sans-serif'] 
+                    },
+                    colors: {
+                        pubg: {
+                            black: '#050505',
+                            dark: '#111111',
+                            gray: '#222222',
+                            yellow: '#F2A900', 
+                            orange: '#E05A00',
+                            light: '#E2E8F0'
+                        },
+                        tiktok: { blue: '#69C9D0', pink: '#EE1D52' },
+                        yt: { red: '#FF0000' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Rajdhani', sans-serif; background-color: #050505; color: #E2E8F0; overflow-x: hidden; }
+        h1, h2, h3, h4, .font-epic { font-family: 'Teko', sans-serif; letter-spacing: 1px; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #F2A900; border-radius: 4px; }
+        
+        .page-enter { animation: fadeInPage 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-epic { transform: skewX(-10deg); transition: all 0.3s ease; }
+        .btn-epic > div { transform: skewX(10deg); } 
+        
+        .game-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.5s ease;
+            opacity: 0;
+        }
+        .game-dropdown.open { max-height: 800px; opacity: 1; padding-top: 1rem; }
+
+        .tiktok-embed-container {
+            position: relative; width: 100%; height: 580px; overflow: hidden; border-radius: 0.5rem; background: #050505; border: 2px solid #222222;
+        }
+        .tiktok-embed-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        .desktop-img-hover { transition: transform 0.7s ease, filter 0.5s ease; }
+        .group:hover .desktop-img-hover { transform: scale(1.05); }
+
+        /* Fix Chrome Autofill Merosakkan Warna Input */
+        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #111111 inset !important;
+            -webkit-text-fill-color: white !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .decoding-text::after { content: '|'; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    </style>
+</head>
+<body class="bg-pubg-black text-pubg-light bg-grid flex flex-col min-h-screen selection:bg-pubg-yellow selection:text-black">
+
+    <!-- PLATFORM MUZIK LATAR (BGM) -->
+    <!-- Sekatan CORS dibuang supaya Dropbox / Pautan Luar berfungsi sepenuhnya -->
+    <audio id="bgmAudio" loop></audio>
+    <iframe id="bgmYoutube" class="hidden" width="560" height="315" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen src=""></iframe>
+
+    <!-- HEADER & NAV -->
+    <header class="sticky top-0 z-40 bg-pubg-black/95 backdrop-blur-md border-b-2 border-pubg-yellow/50 shadow-[0_4px_20px_rgba(242,169,0,0.15)]">
+        <nav class="container mx-auto px-4 py-3 flex justify-between items-center relative">
+            <div class="flex items-center space-x-3 cursor-pointer group" onclick="navigateTo('home')" title="Kembali ke Beranda">
+                <div class="w-10 h-10 bg-pubg-yellow text-pubg-black flex items-center justify-center transform -skew-x-12 group-hover:scale-105 transition">
+                    <i class="fas fa-crosshairs text-xl transform skew-x-12"></i>
+                </div>
+                <h1 class="text-3xl lg:text-4xl font-bold font-epic text-white tracking-wider mt-1 select-none">
+                    BANG<span class="text-pubg-yellow">YAN</span>
+                </h1>
+            </div>
+            
+            <ul class="hidden md:flex space-x-4 lg:space-x-8 text-lg lg:text-xl font-bold font-epic tracking-wider uppercase mt-1">
+                <li class="lg:hidden"><button onclick="navigateTo('home')" class="nav-btn px-2 py-1 text-pubg-yellow border-b-2 border-pubg-yellow transition">Beranda</button></li>
+                <li><button onclick="navigateTo('profile')" class="nav-btn px-2 py-1 text-gray-400 hover:text-white transition">Profil</button></li>
+                <li><button onclick="navigateTo('games')" class="nav-btn px-2 py-1 text-gray-400 hover:text-white transition">Riwayat Game</button></li>
+                <li><button onclick="navigateTo('portfolio')" class="nav-btn px-2 py-1 text-gray-400 hover:text-white transition">Armory</button></li>
+                <li class="block lg:hidden"><button onclick="navigateTo('chat')" class="nav-btn px-2 py-1 text-gray-400 hover:text-white transition">Chat</button></li>
+            </ul>
+
+            <div class="flex items-center space-x-3">
+                <button id="musicToggle" class="flex items-center gap-2 px-3 py-1.5 lg:px-4 lg:py-2 bg-pubg-gray border border-pubg-yellow/30 hover:border-pubg-yellow text-pubg-yellow transition transform -skew-x-12 disabled:opacity-50">
+                    <div class="transform skew-x-12 flex items-center gap-2">
+                        <i id="musicIcon" class="fas fa-play text-sm"></i>
+                        <span id="musicText" class="text-xs lg:text-sm font-bold tracking-wider hidden sm:block">MAIN BGM</span>
+                    </div>
+                </button>
+                <button id="mobileMenuBtn" onclick="toggleMobileMenu()" class="md:hidden w-10 h-10 bg-pubg-gray flex items-center justify-center text-pubg-yellow focus:outline-none hover:bg-pubg-dark border border-pubg-yellow/30 transform -skew-x-12 cursor-pointer pointer-events-auto">
+                    <i class="fas fa-bars transform skew-x-12 pointer-events-none"></i>
+                </button>
+            </div>
+        </nav>
+        <div id="mobileMenu" class="hidden md:hidden absolute top-full left-0 w-full bg-pubg-dark border-b-2 border-pubg-yellow/50 z-50 shadow-2xl">
+            <ul class="flex flex-col text-center font-bold font-epic text-2xl uppercase py-4 space-y-2">
+                <li><button onclick="navigateTo('home'); toggleMobileMenu()" class="w-full py-3 hover:text-pubg-yellow transition bg-pubg-black/50">Beranda</button></li>
+                <li><button onclick="navigateTo('profile'); toggleMobileMenu()" class="w-full py-3 hover:text-pubg-yellow transition bg-pubg-black/50">Profil</button></li>
+                <li><button onclick="navigateTo('games'); toggleMobileMenu()" class="w-full py-3 hover:text-pubg-yellow transition bg-pubg-black/50">Riwayat Game</button></li>
+                <li><button onclick="navigateTo('portfolio'); toggleMobileMenu()" class="w-full py-3 hover:text-pubg-yellow transition bg-pubg-black/50">Armory</button></li>
+                <li><button onclick="navigateTo('chat'); toggleMobileMenu()" class="w-full py-4 bg-pubg-yellow text-pubg-black mt-2">Basecamp Chat</button></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="flex-grow container mx-auto px-4 lg:px-6 py-8 flex flex-col lg:flex-row gap-8 items-start relative z-10">
+        
+        <!-- CHATBOX (SIDEBAR KIRI UNTUK DESKTOP) -->
+        <aside id="page-chat" class="page-section hidden lg:flex flex-col w-full lg:w-[350px] xl:w-[400px] lg:sticky lg:top-[5.5rem] h-[calc(100vh-100px)] lg:h-[calc(100vh-7.5rem)] shrink-0 z-20 lg:order-first">
+            <div class="bg-pubg-dark border-2 border-pubg-gray overflow-hidden flex flex-col h-full shadow-[0_0_30px_rgba(0,0,0,0.8)] rounded-lg">
+                <div class="bg-pubg-darker px-5 py-4 border-b-4 border-pubg-gray flex justify-between items-center z-10 shadow-lg">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-pubg-yellow flex items-center justify-center transform -skew-x-12 border-2 border-pubg-orange shadow-lg shrink-0">
+                            <div class="text-pubg-black font-epic font-bold text-2xl transform skew-x-12">BY</div>
+                        </div>
+                        <div>
+                            <h3 class="font-bold font-epic text-2xl text-white uppercase tracking-wider flex items-center gap-2 leading-none mb-1">
+                                BASECAMP CHAT <i class="fas fa-signal text-pubg-yellow text-sm"></i>
+                            </h3>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse shadow-[0_0_10px_red]"></span>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest" id="authStatusText">Menyambung...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="chatMessages" class="flex-grow p-4 lg:p-6 overflow-y-auto chat-scroll flex flex-col space-y-4 bg-pubg-black relative">
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
+                        <i class="fas fa-crosshairs text-[10rem] text-white"></i>
+                    </div>
+                </div>
+
+                <form id="chatForm" class="bg-pubg-darker p-4 lg:p-5 border-t-4 border-pubg-gray flex flex-col gap-3 z-10 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
+                    <div class="w-full">
+                        <label class="text-[10px] text-pubg-yellow font-bold uppercase tracking-widest mb-1 block">ID Pemain</label>
+                        <input type="text" id="guestName" placeholder="Nama..." class="w-full bg-pubg-black border-2 border-gray-600 text-white px-3 py-2.5 text-base font-body outline-none focus:border-pubg-yellow transition rounded-sm shadow-inner pointer-events-auto select-auto cursor-text" required maxlength="15">
+                    </div>
+                    <div class="w-full">
+                        <label class="text-[10px] text-pubg-yellow font-bold uppercase tracking-widest mb-1 block">Mesej Transmisi</label>
+                        <input type="text" id="chatInput" placeholder="Taip mesej..." class="w-full bg-pubg-black border-2 border-gray-600 text-white px-3 py-2.5 text-base font-body outline-none focus:border-pubg-yellow transition rounded-sm shadow-inner pointer-events-auto select-auto cursor-text" required autocomplete="off">
+                    </div>
+                    <button type="submit" id="sendBtn" class="w-full btn-epic bg-pubg-yellow hover:bg-pubg-orange text-pubg-black px-6 py-2.5 mt-1 disabled:opacity-50 shadow-lg">
+                        <div class="font-epic font-bold text-xl uppercase tracking-wider">Hantar</div>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- KANDUNGAN DINAMIK UTAMA -->
+        <main class="w-full lg:flex-1 relative min-h-[75vh] min-w-0">
+
+            <!-- 1. HALAMAN BERANDA -->
+            <section id="page-home" class="page-section flex flex-col xl:flex-row items-center justify-between pt-6 xl:pt-16 relative">
+                
+                <div class="xl:w-1/2 space-y-6 xl:space-y-8 text-center xl:text-left z-10 mt-12 xl:mt-0">
+                    <div class="flex flex-wrap justify-center xl:justify-start gap-3 mb-2">
+                        <div class="inline-block px-4 py-1.5 bg-pubg-gray border border-pubg-yellow text-pubg-yellow font-bold uppercase tracking-widest text-sm transform -skew-x-12 shadow-[0_0_10px_rgba(242,169,0,0.2)]">
+                            <div class="transform skew-x-12"><i class="fas fa-satellite-dish mr-2 animate-pulse"></i> Status: Freelance Creator</div>
+                        </div>
+                        <div class="inline-block px-4 py-1.5 bg-gray-800 border border-blue-500 text-blue-400 font-bold uppercase tracking-widest text-sm transform -skew-x-12 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
+                            <div class="transform skew-x-12"><i class="fas fa-shield-alt mr-2"></i> LEADER: SRTEAM</div>
+                        </div>
+                    </div>
+                    
+                    <h2 class="text-6xl md:text-8xl xl:text-[7rem] font-epic font-bold text-white uppercase leading-[0.9] drop-shadow-2xl">
+                        SURVIVAL <br/>
+                        <span class="text-pubg-yellow">MODE: ON</span>
+                    </h2>
+                    
+                    <!-- DINAMIK: Teks Intro -->
+                    <div class="text-xl text-gray-300 max-w-lg mx-auto xl:mx-0 leading-relaxed font-semibold border-l-4 border-pubg-yellow pl-5 bg-pubg-black/50 py-3" id="display-intro-text">
+                        <i class="fas fa-spinner api-spin text-pubg-yellow"></i> Mengakses Intel...
+                    </div>
+                    
+                    <!-- Butang Tindakan Utama -->
+                    <div class="flex flex-col sm:flex-row justify-center xl:justify-start gap-4 pt-4 flex-wrap">
+                        <button onclick="navigateTo('games')" class="btn-epic bg-pubg-yellow hover:bg-pubg-orange text-pubg-black px-10 py-4 text-2xl lg:text-3xl font-epic font-bold uppercase shadow-[0_0_20px_rgba(242,169,0,0.5)]">
+                            <div><i class="fas fa-crosshairs"></i> Lihat Misi (Game)</div>
+                        </button>
+                        <button onclick="navigateTo('portfolio')" class="btn-epic bg-pubg-gray border border-gray-500 hover:border-pubg-yellow text-white px-10 py-4 text-2xl lg:text-3xl font-epic font-bold uppercase">
+                            <div><i class="fab fa-tiktok text-tiktok-blue"></i> Rakaman Aksi</div>
+                        </button>
+                        <button onclick="navigateTo('chat')" class="btn-epic bg-gray-800 border border-blue-500 hover:border-blue-400 text-white px-10 py-4 text-2xl lg:text-3xl font-epic font-bold uppercase shadow-[0_0_15px_rgba(59,130,246,0.3)] lg:hidden">
+                            <div><i class="fas fa-bolt text-pubg-yellow"></i> Basecamp Chat</div>
+                        </button>
+                    </div>
+
+                    <!-- IKON MEDIA SOSIAL -->
+                    <div class="flex flex-wrap justify-center xl:justify-start gap-2 sm:gap-3 pt-5 pb-2">
+                        <a href="https://tiktok.com/@bangyanasli" target="_blank" title="TikTok" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-pubg-darker border-2 border-gray-700 hover:border-tiktok-pink text-gray-400 hover:text-tiktok-pink flex items-center justify-center text-lg sm:text-xl transition-all duration-300 hover:scale-110 shadow-lg">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="https://youtube.com/@bangyanasli" target="_blank" title="YouTube" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-pubg-darker border-2 border-gray-700 hover:border-yt-red text-gray-400 hover:text-yt-red flex items-center justify-center text-lg sm:text-xl transition-all duration-300 hover:scale-110 shadow-lg">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="https://instagram.com/bangyanasli" target="_blank" title="Instagram" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-pubg-darker border-2 border-gray-700 hover:border-pink-500 text-gray-400 hover:text-pink-500 flex items-center justify-center text-lg sm:text-xl transition-all duration-300 hover:scale-110 shadow-lg">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://twitter.com/bangyanasli" target="_blank" title="Twitter / X" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-pubg-darker border-2 border-gray-700 hover:border-blue-400 text-gray-400 hover:text-blue-400 flex items-center justify-center text-lg sm:text-xl transition-all duration-300 hover:scale-110 shadow-lg">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://facebook.com/bangyanasli" target="_blank" title="Facebook" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-pubg-darker border-2 border-gray-700 hover:border-blue-600 text-gray-400 hover:text-blue-600 flex items-center justify-center text-lg sm:text-xl transition-all duration-300 hover:scale-110 shadow-lg">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://discord.gg/bangyanasli" target="_blank" title="Discord" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-pubg-darker border-2 border-gray-700 hover:border-indigo-500 text-gray-400 hover:text-indigo-500 flex items-center justify-center text-lg sm:text-xl transition-all duration-300 hover:scale-110 shadow-lg">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="mailto:cs.bangyan@gmail.com" title="Email" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-pubg-darker border-2 border-gray-700 hover:border-pubg-yellow text-gray-400 hover:text-pubg-yellow flex items-center justify-center text-lg sm:text-xl transition-all duration-300 hover:scale-110 shadow-lg">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+
+                    <div class="pt-4 xl:pt-6 flex flex-wrap justify-center xl:justify-start gap-3">
+                        <div class="bg-pubg-dark border-2 border-gray-700 hover:border-yt-red transition p-3 flex items-center gap-3 rounded-sm min-w-[140px] flex-1 sm:flex-none">
+                            <i class="fab fa-youtube text-3xl text-yt-red"></i>
+                            <div class="text-left">
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Subscribers</p>
+                                <p class="text-xl font-epic font-bold text-white" id="display-stat-ytsubs">...</p>
+                            </div>
+                        </div>
+                        <div class="bg-pubg-dark border-2 border-gray-700 hover:border-yt-red transition p-3 flex items-center gap-3 rounded-sm min-w-[140px] flex-1 sm:flex-none">
+                            <i class="fas fa-eye text-3xl text-yt-red"></i>
+                            <div class="text-left">
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Total Views</p>
+                                <p class="text-xl font-epic font-bold text-white" id="display-stat-ytviews">...</p>
+                            </div>
+                        </div>
+                        <div class="bg-pubg-dark border-2 border-gray-700 hover:border-tiktok-blue transition p-3 flex items-center gap-3 rounded-sm min-w-[140px] flex-1 sm:flex-none">
+                            <i class="fas fa-users text-3xl text-tiktok-blue"></i>
+                            <div class="text-left">
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">TikTok Foll</p>
+                                <p class="text-xl font-epic font-bold text-white" id="display-stat-ttfoll">...</p>
+                            </div>
+                        </div>
+                        <div class="bg-pubg-dark border-2 border-gray-700 hover:border-tiktok-pink transition p-3 flex items-center gap-3 rounded-sm min-w-[140px] flex-1 sm:flex-none">
+                            <i class="fas fa-heart text-3xl text-tiktok-pink"></i>
+                            <div class="text-left">
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Total Likes</p>
+                                <p class="text-xl font-epic font-bold text-white" id="display-stat-ttlikes">...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="xl:w-1/2 mt-16 xl:mt-0 flex justify-center relative">
+                    <div class="absolute inset-0 bg-pubg-yellow rounded-full blur-[100px] opacity-20 transform scale-75"></div>
+                    <div class="relative w-[300px] h-[300px] sm:w-[350px] sm:h-[350px] xl:w-[420px] xl:h-[420px]">
+                        <div class="absolute inset-0 border-4 xl:border-8 border-pubg-yellow opacity-50 transform rotate-45 scale-105"></div>
+                        <div class="absolute inset-0 border-4 xl:border-8 border-pubg-gray transform -rotate-12 scale-105"></div>
+                        <div class="w-full h-full overflow-hidden border-4 xl:border-8 border-pubg-black relative z-10 bg-pubg-darker shadow-2xl">
+                            <img id="hero-profile-img" src="" alt="Profil BangYan" class="w-full h-full object-cover filter hover:saturate-150 transition duration-700 transform hover:scale-105 opacity-0">
+                        </div>
+                        <div class="absolute -bottom-6 -right-6 xl:-bottom-8 xl:-right-8 bg-pubg-yellow text-pubg-black px-6 py-2 xl:px-8 xl:py-3 font-epic text-2xl xl:text-4xl font-bold uppercase z-20 shadow-2xl transform -skew-x-12 border-2 border-pubg-dark">
+                            <div class="transform skew-x-12">ID: BANGYAN</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. HALAMAN PROFIL -->
+            <section id="page-profile" class="page-section hidden pt-10">
+                <div class="text-center mb-12">
+                    <h3 class="text-6xl lg:text-7xl font-epic font-bold text-pubg-yellow uppercase tracking-wider">Laporan Intelijen: BangYan</h3>
+                    <p class="text-gray-400 font-bold uppercase tracking-widest text-base lg:text-lg mt-2">Klasifikasi: Dibenarkan</p>
+                </div>
+                
+                <div class="bg-pubg-dark border-2 border-pubg-gray relative overflow-hidden p-8 md:p-12 shadow-2xl">
+                    <div class="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-pubg-yellow"></div>
+                    <div class="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-pubg-yellow"></div>
+                    <div class="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-pubg-yellow"></div>
+                    <div class="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-pubg-yellow"></div>
+                    
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10" id="display-profile-texts">
+                        <div class="space-y-6 text-gray-300 text-lg leading-relaxed">
+                            <p class="border-l-4 border-pubg-yellow pl-5" id="display-prof-1"><i class="fas fa-spinner api-spin"></i></p>
+                            <p class="bg-pubg-black/60 p-5 border border-red-900/60 text-gray-300 shadow-inner" id="display-prof-2"><i class="fas fa-spinner api-spin"></i></p>
+                            <p id="display-prof-3"><i class="fas fa-spinner api-spin"></i></p>
+                        </div>
+                        <div class="space-y-6 text-gray-300 text-lg leading-relaxed">
+                            <p id="display-prof-4"><i class="fas fa-spinner api-spin"></i></p>
+                            <p id="display-prof-5"><i class="fas fa-spinner api-spin"></i></p>
+                            <p id="display-prof-6"><i class="fas fa-spinner api-spin"></i></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. HALAMAN RIWAYAT GAME -->
+            <section id="page-games" class="page-section hidden pt-10">
+                <div class="mb-12 text-center">
+                    <h3 class="text-6xl lg:text-7xl font-epic font-bold text-white uppercase tracking-wider drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">Arsip Misi & Perjalanan</h3>
+                    <p class="text-pubg-yellow mt-3 font-bold uppercase tracking-widest text-base lg:text-lg">Klik "Buka Intel" untuk membaca sejarah penuh</p>
+                </div>
+                <div id="games-container" class="w-full mx-auto flex flex-col gap-8">
+                    <div class="text-center text-pubg-yellow text-2xl font-epic animate-pulse"><i class="fas fa-satellite-dish"></i> Menghubungi Pangkalan Data...</div>
+                </div>
+            </section>
+
+            <!-- 4. HALAMAN PORTOFOLIO -->
+            <section id="page-portfolio" class="page-section hidden pt-10">
+                <div class="text-center mb-12">
+                    <h3 class="text-6xl lg:text-7xl font-epic font-bold text-pubg-yellow uppercase tracking-wider drop-shadow-[0_0_15px_rgba(242,169,0,0.5)]">Armory & Rakaman</h3>
+                    <p class="text-gray-400 mt-3 uppercase font-bold tracking-widest text-base lg:text-lg">Mainkan terus rakaman visual dari lapangan.</p>
+                </div>
+                <div id="armory-container" class="grid grid-cols-1 xl:grid-cols-3 gap-8 max-w-[1400px] mx-auto">
+                    <div class="text-center text-pubg-yellow text-2xl font-epic animate-pulse col-span-full"><i class="fas fa-satellite-dish"></i> Menghubungi Pangkalan Data...</div>
+                </div>
+            </section>
+            
+        </main>
+    </div>
+
+    <button id="adminFloatBtn" onclick="document.getElementById('adminPanelModal').classList.remove('hidden')" class="hidden fixed bottom-6 right-6 z-50 btn-epic bg-red-600 hover:bg-red-500 text-white px-6 py-3 font-bold text-lg font-epic uppercase tracking-wider shadow-[0_0_20px_rgba(220,38,38,0.6)]">
+        <div><i class="fas fa-cog mr-2"></i> Admin Panel</div>
+    </button>
+
+    <footer class="bg-pubg-darker border-t-2 border-pubg-gray py-6 text-center z-10 relative shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
+        <div class="container mx-auto px-4 relative">
+            <h2 class="text-3xl font-epic font-bold text-white tracking-widest uppercase mb-3 drop-shadow-md">BANG<span class="text-pubg-yellow">YAN</span></h2>
+            
+            <div class="flex flex-wrap justify-center items-center gap-4 text-gray-500 mb-4 text-lg">
+                <a href="https://tiktok.com/@bangyanasli" class="hover:text-tiktok-pink transition" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                <a href="https://youtube.com/@bangyanasli" class="hover:text-yt-red transition" title="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="https://instagram.com/bangyanasli" class="hover:text-pink-500 transition" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://twitter.com/bangyanasli" class="hover:text-blue-400 transition" title="Twitter / X"><i class="fab fa-twitter"></i></a>
+                <a href="https://facebook.com/bangyanasli" class="hover:text-blue-600 transition" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://discord.gg/bangyanasli" class="hover:text-indigo-500 transition" title="Discord"><i class="fab fa-discord"></i></a>
+                <a href="mailto:cs.bangyan@gmail.com" class="hover:text-pubg-yellow transition" title="Email"><i class="fas fa-envelope"></i></a>
+                <span class="text-gray-700 hidden sm:inline">|</span>
+                <span class="text-blue-500 font-bold uppercase tracking-widest text-sm mt-0.5"><i class="fas fa-shield-alt mr-1"></i> SRTEAM</span>
+            </div>
+
+            <p class="text-gray-600 text-[10px] font-bold uppercase tracking-widest">&copy; 2026 BangYan. Sistem Dibina dengan HTML5 & Firebase.</p>
+            
+            <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="absolute bottom-0 right-4 text-gray-800 hover:text-pubg-yellow transition cursor-pointer" title="Admin Access">
+                <i class="fas fa-lock text-sm"></i>
+            </button>
+        </div>
+    </footer>
+
+    <!-- MODAL LOG MASUK ADMIN -->
+    <div id="loginModal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 pointer-events-auto">
+        <div class="bg-pubg-darker border-2 border-pubg-yellow shadow-[0_0_40px_rgba(242,169,0,0.3)] w-full max-w-md relative p-8">
+            <button onclick="document.getElementById('loginModal').classList.add('hidden')" class="absolute top-3 right-4 text-gray-500 hover:text-white text-xl">&times;</button>
+            <h3 class="text-3xl font-epic font-bold text-pubg-yellow uppercase text-center mb-6 border-b border-gray-700 pb-4">Akses Keselamatan</h3>
+            <form id="adminLoginForm" class="space-y-4">
+                <div>
+                    <label class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1 block">ID / Email</label>
+                    <input type="email" id="loginEmail" class="w-full bg-pubg-black border border-gray-600 text-white px-4 py-2 font-body outline-none focus:border-pubg-yellow pointer-events-auto select-auto cursor-text" required>
+                </div>
+                <div>
+                    <label class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1 block">Kata Laluan</label>
+                    <input type="password" id="loginPass" class="w-full bg-pubg-black border border-gray-600 text-white px-4 py-2 font-body outline-none focus:border-pubg-yellow pointer-events-auto select-auto cursor-text" required>
+                </div>
+                <div id="loginLoading" class="hidden text-pubg-yellow text-xs font-bold text-center decoding-text uppercase tracking-widest my-2">Mengesahkan Akses...</div>
+                <p id="loginError" class="text-red-500 text-xs font-bold hidden text-center">Kredensial tidak sah!</p>
+                <button type="submit" id="btnLoginSubmit" class="w-full bg-pubg-yellow hover:bg-pubg-orange text-black font-bold font-epic text-xl py-2 mt-4 uppercase tracking-wider transition shadow-lg pointer-events-auto">Sahkan Identiti</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- WADAH HTML ADMIN PANEL (DIJANA OLEH JAVASCRIPT SECARA RAHSIA) -->
+    <div id="adminPanelContainer"></div>
+
+    <!-- UI SCRIPTS -->
+    <script>
+        window.navigateTo = function(pageId) {
+            const isDesktop = window.innerWidth >= 1024;
+            document.querySelectorAll('.page-section').forEach(el => {
+                if (el.id === 'page-chat' && isDesktop) { el.classList.remove('hidden'); el.classList.add('lg:flex'); } 
+                else { el.classList.add('hidden'); el.classList.remove('page-enter'); }
+            });
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+                if (!(targetPage.id === 'page-chat' && isDesktop)) { void targetPage.offsetWidth; targetPage.classList.add('page-enter'); }
+            }
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if(btn.getAttribute('onclick').includes(pageId)) btn.className = "nav-btn px-2 py-1 text-pubg-yellow border-b-2 border-pubg-yellow transition";
+                else btn.className = "nav-btn px-2 py-1 text-gray-400 hover:text-white transition";
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('resize', () => {
+            const isDesktop = window.innerWidth >= 1024;
+            const chatSection = document.getElementById('page-chat');
+            if (isDesktop) { if (chatSection) { chatSection.classList.remove('hidden'); chatSection.classList.add('lg:flex'); } } 
+            else { const chatBtnActive = document.querySelector('.nav-btn[onclick*="chat"].text-pubg-yellow'); if (!chatBtnActive && chatSection) chatSection.classList.add('hidden'); }
+        });
+
+        window.toggleMobileMenu = function() { 
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenu) mobileMenu.classList.toggle('hidden'); 
+        }
+
+        window.toggleGameInfo = function(id) {
+            const el = document.getElementById(id);
+            if (el) { if (el.classList.contains('open')) { el.classList.remove('open'); } else { el.classList.add('open'); } }
+        }
+
+        window.switchAdminTab = function(tabId, btnElement) {
+            document.querySelectorAll('.admin-tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+            const selectedTab = document.getElementById(tabId);
+            if(selectedTab) {
+                selectedTab.classList.remove('hidden');
+                selectedTab.classList.add('block');
+            }
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-pubg-yellow', 'text-black', 'font-bold');
+                btn.classList.add('text-gray-400');
+            });
+            if(btnElement) {
+                btnElement.classList.add('bg-pubg-yellow', 'text-black', 'font-bold');
+                btnElement.classList.remove('text-gray-400');
+            }
+        }
+
+        window.testAudioPlayer = function() {
+            const inputEl = document.getElementById('ad-bgm-audio');
+            let rawAudioUrl = inputEl.value.trim();
+            if(!rawAudioUrl) {
+                alert("Sila masukkan pautan Audio MP3/Dropbox dahulu.");
+                return;
+            }
+
+            let cleanAudioUrl = rawAudioUrl;
+            
+            // SMART EXTRACTOR DROPBOX
+            if (rawAudioUrl.includes('dropbox.com')) {
+                cleanAudioUrl = rawAudioUrl.replace('dl=0', 'raw=1').replace('?dl=0', '?raw=1');
+                inputEl.value = cleanAudioUrl;
+            } else if (rawAudioUrl.includes('drive.google.com') || rawAudioUrl.includes('docs.google.com')) {
+                alert("AMARAN KESELAMATAN BROWSER:\nLaman web mungkin tidak dapat memainkan sesetengah fail MP3 dari Google Drive. Jika audio gagal dimainkan, sila tukar kepada pautan DROPBOX atau YOUTUBE untuk BGM anda.");
+            }
+
+            const player = document.getElementById('audio-test-player');
+            player.src = cleanAudioUrl;
+            player.classList.remove('hidden');
+            player.play().catch(e => {
+                console.error("Audio Test Error: ", e);
+                alert("Gagal memainkan audio! Sila pastikan pautan adalah fail MP3 yang menyokong penstriman terus (Direct Stream).");
+            });
+        }
+
+        window.testYoutubeEmbed = function() {
+            const inputEl = document.getElementById('ad-bgm-yt');
+            let ytRaw = inputEl.value.trim();
+            if(!ytRaw) {
+                alert("Sila masukkan Kod Iframe penuh atau pautan YouTube dahulu.");
+                return;
+            }
+            
+            let finalUrl = ytRaw;
+            const srcMatch = ytRaw.match(/src="([^"]+)"/);
+            if (srcMatch && srcMatch[1]) {
+                finalUrl = srcMatch[1];
+                inputEl.value = finalUrl; 
+            } else if (!finalUrl.includes('embed/')) {
+                const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+                const match = finalUrl.match(ytRegex);
+                if(match && match[1]) {
+                    finalUrl = `https://www.youtube.com/embed/${match[1]}`;
+                    inputEl.value = finalUrl;
+                }
+            }
+
+            const container = document.getElementById('yt-test-container');
+            const iframe = document.getElementById('yt-test-iframe');
+            if(finalUrl) {
+                let testUrl = finalUrl;
+                if (!testUrl.includes('autoplay=')) {
+                    testUrl += testUrl.includes('?') ? '&autoplay=1' : '?autoplay=1';
+                }
+                container.classList.remove('hidden');
+                iframe.src = testUrl;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.navigateTo('home');
+            const bgmAudio = document.getElementById('bgmAudio');
+            const bgmYt = document.getElementById('bgmYoutube');
+            const musicToggleBtn = document.getElementById('musicToggle');
+            
+            if (bgmAudio) bgmAudio.volume = 0.4;
+            let isMusicPlaying = false;
+            
+            if (musicToggleBtn) {
+                musicToggleBtn.addEventListener('click', () => {
+                    const musicIcon = document.getElementById('musicIcon');
+                    const musicText = document.getElementById('musicText');
+                    
+                    if (isMusicPlaying) {
+                        // PAUSE MUSIC
+                        if(window.bgmType === 'audio') { 
+                            if(bgmAudio) bgmAudio.pause(); 
+                        } else { 
+                            if (bgmYt && bgmYt.contentWindow) { bgmYt.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); }
+                        }
+                        
+                        musicIcon.className = "fas fa-play text-sm"; musicText.innerText = "MAIN BGM";
+                        musicToggleBtn.classList.remove('bg-pubg-yellow/10', 'border-pubg-yellow'); musicToggleBtn.classList.replace('text-white', 'text-pubg-yellow');
+                        isMusicPlaying = false;
+                    } else {
+                        // PLAY MUSIC
+                        if(window.bgmType === 'audio') { 
+                            if (bgmAudio && bgmAudio.src && bgmAudio.src !== window.location.href) {
+                                bgmAudio.play().then(() => {
+                                    musicIcon.className = "fas fa-pause text-sm"; musicText.innerText = "JEDA BGM";
+                                    musicToggleBtn.classList.add('bg-pubg-yellow/10', 'border-pubg-yellow'); musicToggleBtn.classList.replace('text-pubg-yellow', 'text-white');
+                                    isMusicPlaying = true;
+                                }).catch(e => { 
+                                    console.error("Audio block:", e); 
+                                    alert("Peringatan: Polisi pelayar web (Browser CORS) menyekat audio ini daripada dimainkan (biasanya terjadi jika ia dari Google Drive). Anda disarankan menukar BGM kepada YouTube atau pautan Dropbox.");
+                                }); 
+                            } else {
+                                alert("Sila tetapkan pautan audio di Admin Panel terlebih dahulu.");
+                            }
+                        } else { 
+                            if (bgmYt && bgmYt.src && bgmYt.src !== window.location.href) {
+                                bgmYt.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); 
+                                musicIcon.className = "fas fa-pause text-sm"; musicText.innerText = "JEDA BGM";
+                                musicToggleBtn.classList.add('bg-pubg-yellow/10', 'border-pubg-yellow'); musicToggleBtn.classList.replace('text-pubg-yellow', 'text-white');
+                                isMusicPlaying = true;
+                            } else {
+                                alert("Sila tetapkan pautan YouTube di Admin Panel terlebih dahulu.");
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- FIREBASE & CMS ENGINE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { projectId: "demo-project" };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'demo-creator-profile';
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let currentUser = null;
+        let isSuperAdmin = false;
+        window.currentGlobalData = null;
+        window.bgmType = 'audio';
+
+        const DEFAULT_CONTENT = {
+            hero: { profileImg: "https://i.imgur.com/odvfubA.png" },
+            bgm: { type: "audio", audioUrl: "https://cdn.pixabay.com/download/audio/2022/10/18/audio_31c2730e64.mp3?filename=epic-trailer-music-122971.mp3", ytId: "" },
+            stats: { ytSubs: "938", ytViews: "164K", ttFoll: "6.986", ttLikes: "50K" },
+            profile: {
+                intro: "\"Dari programmer cheat ke *player* bersih. Bergerak solo bebas dari politik korporat.\"<br><span class=\"text-gray-400 text-lg lg:text-xl block mt-2\">Saya BangYan. Pengasas <strong>SRTEAM</strong>, Freelance Game Creator & Affiliate. Menunggu pendaratan untuk game epik seterusnya!</span>",
+                p1: "Mula memegang *controller* sejak era klasik <strong>Tetris</strong> dan <strong>Mario Bros</strong>. Pada tahun 2018, saya mula merajai arena <strong>PUBG Mobile</strong> secara aktif.",
+                p2: "<i class=\"fas fa-exclamation-triangle text-red-500 mr-2 text-2xl align-middle\"></i> <strong class=\"text-white text-xl font-epic tracking-wider\">REKOD LALU:</strong> Pernah memasuki fasa gelap sebagai <em>programmer cheat</em>. Ia adalah sejarah hitam yang telah saya tinggalkan sepenuhnya untuk menjadi *player* yang bersih.",
+                p3: "Berhijrah ke <strong>PUBG: New State Mobile</strong> pada 2021 dan sempat bertarung di pelbagai turnamen. Pada tahun 2021, saya menubuhkan clan peribadi, <strong class=\"text-blue-400\">SRTEAM (SPECTRAL RANGERS)</strong>.",
+                p4: "Saya pernah mencipta nama sebagai *Content Creator* untuk <strong>Honor of Kings (HOK)</strong> pada awal rilisannya, namun terpaksa berhenti pada 2024 kerana sistem komuniti mereka yang terlalu <strong class=\"text-pubg-yellow\">'pilih kasih'</strong>.",
+                p5: "Begitu juga di <strong>Delta Force Mobile</strong>. Saya bermula sebagai *Content Creator* merangkap Admin Komuniti semasa pelancaran global. Namun menjelang hujung 2025, saya meletakkan jawatan. Pengurusan Admin Garena sangat teruk dan berat sebelah.",
+                p6: "<strong class=\"text-pubg-yellow text-2xl font-epic tracking-wider\">KINI (2026):</strong> Saya bergerak solo sebagai <strong>Freelance Game Creator</strong>. Saya kembali ke PUBG Mobile, terus menjaga keluarga <em>SRTEAM</em>, dan merancakkan ruang sebagai Affiliate di TikTok/Shopee."
+            },
+            games: [
+                { id: "pubgm", title: "PUBG Mobile", year: "2018 - 2026 (Comeback)", desc: "Tempat jatuh lagikan dikenang. Mula bermain secara hardcore pada 2018. Saya kembali bermain *pure* dan bersih untuk *have fun* bersama komuniti.", img: "https://tse1.mm.bing.net/th?q=PUBG+Mobile+game+wallpaper+HD&w=800&h=800&c=7" },
+                { id: "ns", title: "PUBG: New State", year: "Berhenti: 2023", desc: "Zaman kegemilangan kompetitif saya. Pernah aktif menjadi Content Creator untuk game ini dan beraksi di turnamen berprestij anjuran Sultanriq.", img: "https://tse1.mm.bing.net/th?q=PUBG+New+State+Mobile+game+wallpaper+HD&w=800&h=800&c=7" },
+                { id: "hok", title: "Honor of Kings", year: "Berhenti: 2024", desc: "Saya mula menjejaki dunia MOBA ini semenjak tarikh rilis global pertamanya. Namun begitu, terpaksa meletakkan titik noktah kerana sistem pengurusan komuniti yang wujud unsur terlalu pilih kasih.", img: "https://tse1.mm.bing.net/th?q=Honor+of+Kings+global+game+wallpaper+HD&w=800&h=800&c=7" },
+                { id: "delta", title: "Delta Force Mobile", year: "Berhenti Rasmi: 2025", desc: "Menyertai sebagai Content Creator dan juga Admin Komuniti sewaktu pelancaran globalnya. Meletak jawatan kerana pengurusan admin Garena teramatlah buruk dan banyak janji kosong.", img: "https://tse1.mm.bing.net/th?q=Delta+Force+Hawk+Ops+game+wallpaper+HD&w=800&h=800&c=7" },
+                { id: "apex", title: "Apex Legends Mobile", year: "Kenangan Kompetitif", desc: "Game FPS dengan pergerakan paling laju yang pernah saya mainkan! Sempat terjun ke arena kompetitif dan menyertai turnamen Apex Mobile.", img: "https://tse1.mm.bing.net/th?q=Apex+Legends+Mobile+game+wallpaper+HD&w=800&h=800&c=7" },
+                { id: "sausage", title: "Sausage Man", year: "Santai & Klasik", desc: "Battle Royale yang sangat unik dan melucukan. Di sebalik watak sosej yang nampak comel, pertempurannya menuntut *skill* yang bukan calang-calang.", img: "https://tse1.mm.bing.net/th?q=Sausage+Man+game+wallpaper+HD&w=800&h=800&c=7" },
+                { id: "blood", title: "Blood Strike", year: "Aksi Fast-Paced", desc: "Sebuah game FPS alternatif bergaya pantas seakan-akan Warzone. Banyak menghabiskan masa di arena ini untuk merasai suasana pertempuran jarak dekat yang sengit.", img: "https://tse1.mm.bing.net/th?q=Blood+Strike+Mobile+game+wallpaper+HD&w=800&h=800&c=7" },
+                { id: "rust", title: "RUST MOBILE", year: "SASARAN UTAMA (MENUNGGU)", desc: "Menunggu dengan penuh sabar pelancaran game *hardcore survival* ini. Bersedia untuk menjarah (*loot*), bina *base*, dan rancang *raid* gila-gila bersama skuad SRTEAM!", img: "https://tse1.mm.bing.net/th?q=Rust+Console+Mobile+game+wallpaper+HD&w=1600&h=800&c=7" }
+            ],
+            armory: [
+                { id: "v1", tag: "Karya Terbaru", title: "Video TikTok Terkini", url: "7617091853246041365", color: "tiktok-pink" },
+                { id: "v2", tag: "Misi: Taktikal", title: "Gameplay Delta Force", url: "7506925712666807560", color: "blue-600" },
+                { id: "v3", tag: "Supply Drop", title: "Racun Affiliate", url: "7554205318562024722", color: "shopee-orange" }
+            ]
+        };
+
+        const DEFAULT_ADMIN = { email: "mr.bangyan92@gmail.com", pass: "abgyan92" };
+
+        const initSystem = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) { await signInWithCustomToken(auth, __initial_auth_token); } 
+                else { await signInAnonymously(auth); }
+            } catch (error) { console.error("Auth Error"); }
+        };
+        initSystem();
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                const authStatusText = document.getElementById('authStatusText');
+                if(authStatusText) {
+                    authStatusText.textContent = "ONLINE / SECURE";
+                    authStatusText.classList.add("text-pubg-yellow");
+                    authStatusText.previousElementSibling.className = "w-2 h-2 rounded-full bg-pubg-yellow animate-pulse shadow-[0_0_10px_#F2A900]";
+                }
+                const guestNameInput = document.getElementById('guestName');
+                if(guestNameInput) {
+                    guestNameInput.value = "Player_" + Math.floor(Math.random() * 900 + 100);
+                }
+                
+                loadMessages();
+                await initializeDatabase(); 
+            } else { currentUser = null; }
+        });
+
+        async function initializeDatabase() {
+            if (!currentUser) return;
+            try {
+                const authRef = doc(db, 'artifacts', appId, 'public', 'data', 'admin_config', 'main_config');
+                const authSnap = await getDoc(authRef);
+                if (!authSnap.exists()) await setDoc(authRef, DEFAULT_ADMIN);
+
+                const contentRef = doc(db, 'artifacts', appId, 'public', 'data', 'website_content', 'main_content');
+                const contentSnap = await getDoc(contentRef);
+                if (!contentSnap.exists()) await setDoc(contentRef, DEFAULT_CONTENT);
+
+                onSnapshot(contentRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        window.currentGlobalData = docSnap.data();
+                        renderPublicData(window.currentGlobalData);
+                        if(isSuperAdmin) fillAdminForm(window.currentGlobalData);
+                    }
+                }, (error) => console.error("Ralat bacaan langsung:", error));
+            } catch (err) {
+                console.warn("Menggunakan data lalai.");
+                window.currentGlobalData = DEFAULT_CONTENT;
+                renderPublicData(DEFAULT_CONTENT);
+            }
+        }
+
+        function renderPublicData(data) {
+            const heroImg = document.getElementById('hero-profile-img');
+            if(heroImg && data.hero) { heroImg.src = data.hero.profileImg; heroImg.classList.remove('opacity-0'); }
+            
+            // Logik Pemain BGM yang dibaiki
+            if(data.bgm) {
+                window.bgmType = data.bgm.type || 'audio';
+                const bgmAudio = document.getElementById('bgmAudio');
+                const bgmYt = document.getElementById('bgmYoutube');
+                if (window.bgmType === 'audio') {
+                    if(bgmAudio && bgmAudio.src !== data.bgm.audioUrl) {
+                        bgmAudio.src = data.bgm.audioUrl || '';
+                        bgmAudio.load(); 
+                    }
+                    if(bgmYt) bgmYt.src = '';
+                } else {
+                    if(bgmAudio) bgmAudio.src = '';
+                    if(bgmYt && data.bgm.ytId) {
+                        let finalSrc = data.bgm.ytId;
+                        if (!finalSrc.includes('enablejsapi=1')) {
+                            finalSrc += finalSrc.includes('?') ? '&enablejsapi=1&autoplay=0&loop=1' : '?enablejsapi=1&autoplay=0&loop=1';
+                        }
+                        bgmYt.src = finalSrc;
+                    }
+                }
+            }
+
+            if(data.stats) {
+                const e1 = document.getElementById('display-stat-ytsubs'); if(e1) e1.innerText = data.stats.ytSubs;
+                const e2 = document.getElementById('display-stat-ytviews'); if(e2) e2.innerText = data.stats.ytViews;
+                const e3 = document.getElementById('display-stat-ttfoll'); if(e3) e3.innerText = data.stats.ttFoll;
+                const e4 = document.getElementById('display-stat-ttlikes'); if(e4) e4.innerText = data.stats.ttLikes;
+            }
+            
+            if(data.profile) {
+                const p0 = document.getElementById('display-intro-text'); if(p0) p0.innerHTML = data.profile.intro;
+                const p1 = document.getElementById('display-prof-1'); if(p1) p1.innerHTML = data.profile.p1;
+                const p2 = document.getElementById('display-prof-2'); if(p2) p2.innerHTML = data.profile.p2;
+                const p3 = document.getElementById('display-prof-3'); if(p3) p3.innerHTML = data.profile.p3;
+                const p4 = document.getElementById('display-prof-4'); if(p4) p4.innerHTML = data.profile.p4;
+                const p5 = document.getElementById('display-prof-5'); if(p5) p5.innerHTML = data.profile.p5;
+                const p6 = document.getElementById('display-prof-6'); if(p6) p6.innerHTML = data.profile.p6;
+            }
+
+            const gamesContainer = document.getElementById('games-container');
+            if(gamesContainer && data.games) {
+                let gamesHTML = '';
+                data.games.forEach((game, idx) => {
+                    const isReverse = idx % 2 !== 0 ? 'lg:flex-row-reverse' : 'lg:flex-row';
+                    const borderSide = idx % 2 !== 0 ? 'lg:border-l' : 'lg:border-r';
+                    const isAnticipation = idx === data.games.length - 1; 
+                    
+                    if(isAnticipation) {
+                        gamesHTML += `
+                        <div class="relative overflow-hidden border-2 border-tiktok-pink shadow-[0_0_25px_rgba(238,29,82,0.4)] bg-pubg-black mt-10 group rounded-xl">
+                            <div class="absolute inset-0 opacity-30 group-hover:opacity-50 transition duration-700">
+                                <img src="${game.img}" alt="Wallpaper" class="w-full h-full object-cover desktop-img-hover">
+                            </div>
+                            <div class="relative z-10 p-6 md:p-10 flex flex-col xl:flex-row gap-8 items-center bg-gradient-to-r from-pubg-black via-pubg-black/85 to-transparent">
+                                <div class="flex-grow xl:w-1/2">
+                                    <div class="inline-block px-4 py-1.5 bg-tiktok-pink text-white text-xs lg:text-sm font-bold uppercase tracking-widest mb-4 shadow-lg rounded-sm">
+                                        <i class="fas fa-fire mr-1"></i> ${game.year}
+                                    </div>
+                                    <h4 class="text-5xl md:text-6xl font-epic font-bold text-white uppercase mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">${game.title}</h4>
+                                    <p class="text-gray-300 mt-2 text-xl drop-shadow-lg font-semibold leading-relaxed border-l-4 border-tiktok-pink pl-4 bg-black/40 py-2">${game.desc}</p>
+                                </div>
+                            </div>
+                        </div>`;
+                    } else {
+                        gamesHTML += `
+                        <div class="relative overflow-hidden border border-pubg-gray bg-pubg-black group flex flex-col ${isReverse} rounded-lg shadow-xl">
+                            <div class="w-full lg:w-2/5 h-56 lg:h-auto relative overflow-hidden flex-shrink-0 border-b lg:border-b-0 ${borderSide} border-pubg-gray">
+                                <img src="${game.img}" alt="Wallpaper" class="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 desktop-img-hover">
+                                <div class="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-pubg-black/80 to-transparent"></div>
+                            </div>
+                            <div class="w-full lg:w-3/5 p-6 md:p-8 flex flex-col bg-pubg-darker relative z-10 justify-center">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                                    <h4 class="text-4xl font-epic font-bold text-white uppercase">${game.title}</h4>
+                                    <span class="self-start sm:self-auto bg-gray-800 text-gray-300 text-xs px-3 py-1 font-bold uppercase tracking-widest border border-gray-600">${game.year}</span>
+                                </div>
+                                <div id="gi-${idx}" class="game-dropdown text-gray-300 text-base lg:text-lg leading-relaxed"><p>${game.desc}</p></div>
+                                <button onclick="toggleGameInfo('gi-${idx}')" class="mt-6 self-start flex items-center gap-2 text-pubg-yellow font-bold hover:text-white transition uppercase tracking-widest text-sm border-b border-pubg-yellow/50 pb-1 group-hover:border-white">
+                                    <i class="fas fa-folder-open text-lg"></i> Buka / Tutup Intel
+                                </button>
+                            </div>
+                        </div>`;
+                    }
+                });
+                gamesContainer.innerHTML = gamesHTML;
+            }
+
+            const armoryContainer = document.getElementById('armory-container');
+            if(armoryContainer && data.armory) {
+                let armoryHTML = '';
+                data.armory.forEach((vid, idx) => {
+                    const hColor = vid.color === 'tiktok-pink' ? 'tiktok-blue' : (vid.color === 'blue-600' ? 'blue-500' : 'shopee-orange');
+                    const bColor = vid.color === 'tiktok-pink' ? 'tiktok-pink' : 'pubg-gray';
+                    armoryHTML += `
+                    <div class="bg-pubg-dark border-2 border-${bColor} p-4 relative group hover:border-${hColor} transition duration-500 hover:-translate-y-2 shadow-xl">
+                        <div class="absolute -top-4 left-6 bg-${vid.color} text-white font-epic text-2xl px-4 uppercase font-bold transform -skew-x-12 shadow-lg"><div class="transform skew-x-12">${vid.tag}</div></div>
+                        <div class="mt-6 mb-4 text-center">
+                            <h5 class="font-bold text-white text-xl uppercase font-epic tracking-wide">${vid.title}</h5>
+                        </div>
+                        <div class="tiktok-embed-container h-[500px] border-2 border-gray-700 group-hover:border-${hColor} transition duration-500 rounded-lg">
+                            <iframe src="https://www.tiktok.com/embed/v2/${vid.url}" allow="encrypted-media" allowfullscreen></iframe>
+                        </div>
+                    </div>`;
+                });
+                armoryContainer.innerHTML = armoryHTML;
+            }
+        }
+
+        const adminChunks = [
+            '<div id="adminPanelModal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 pointer-events-auto">',
+            '<div class="bg-pubg-darker border-2 border-red-600 shadow-[0_0_50px_rgba(220,38,38,0.4)] w-full max-w-6xl h-[90vh] flex flex-col md:flex-row relative rounded-xl overflow-hidden pointer-events-auto z-50">',
+            '<div class="w-full md:w-64 bg-black/90 border-r-2 border-gray-800 flex flex-col shrink-0 z-10">',
+            '<div class="p-5 border-b border-gray-800 flex justify-between items-center"><h3 class="text-2xl font-epic font-bold text-red-500 uppercase"><i class="fas fa-shield-alt"></i> CMS Panel</h3><button onclick="closeAdminPanel()" class="text-gray-500 hover:text-white md:hidden text-2xl">&times;</button></div>',
+            '<div class="flex-grow flex flex-col p-4 space-y-2 overflow-y-auto">',
+            '<button class="admin-tab-btn bg-pubg-yellow text-black font-bold py-3 px-4 text-left uppercase tracking-wider text-sm rounded pointer-events-auto cursor-pointer" onclick="switchAdminTab(\'tab-beranda\', this)">Beranda & Stats</button>',
+            '<button class="admin-tab-btn text-gray-400 hover:bg-gray-800 py-3 px-4 text-left uppercase tracking-wider text-sm rounded pointer-events-auto cursor-pointer" onclick="switchAdminTab(\'tab-profil\', this)">Profil Intel</button>',
+            '<button class="admin-tab-btn text-gray-400 hover:bg-gray-800 py-3 px-4 text-left uppercase tracking-wider text-sm rounded pointer-events-auto cursor-pointer" onclick="switchAdminTab(\'tab-games\', this)">Riwayat Game</button>',
+            '<button class="admin-tab-btn text-gray-400 hover:bg-gray-800 py-3 px-4 text-left uppercase tracking-wider text-sm rounded pointer-events-auto cursor-pointer" onclick="switchAdminTab(\'tab-armory\', this)">Armory Video</button>',
+            '<button class="admin-tab-btn text-gray-400 hover:bg-gray-800 py-3 px-4 text-left uppercase tracking-wider text-sm rounded pointer-events-auto cursor-pointer" onclick="switchAdminTab(\'tab-sys\', this)">Tetapan Sistem</button>',
+            '</div>',
+            '<div class="p-4 border-t border-gray-800"><button onclick="saveAdminData()" id="btnSaveAdmin" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 uppercase tracking-wider rounded shadow-lg transition pointer-events-auto cursor-pointer">Simpan</button><button onclick="closeAdminPanel()" class="w-full text-gray-500 hover:text-white mt-3 text-xs uppercase pointer-events-auto cursor-pointer">Tutup Panel</button></div>',
+            '</div>',
+            '<div class="flex-grow bg-pubg-dark overflow-y-auto relative p-6 md:p-10 pointer-events-auto z-50">',
+            '<div id="tab-beranda" class="admin-tab-content block"><h4 class="text-3xl font-epic font-bold text-white mb-6 border-b border-gray-700 pb-2">Beranda & Statistik</h4><div class="space-y-4">',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">URL Gambar Profil</label><input type="text" id="ad-heroimg" class="w-full bg-black border border-gray-600 text-white p-3 mt-1 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></div>',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">Teks Intro</label><textarea id="ad-intro" class="w-full bg-black border border-gray-600 text-white p-3 mt-1 h-24 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></textarea></div>',
+            '<div class="grid grid-cols-2 gap-4 mt-6"><div><label class="text-xs text-gray-400 uppercase font-bold">YT Subs</label><input type="text" id="ad-ytsubs" class="w-full bg-black border border-gray-600 text-white p-2 mt-1 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></div>',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">YT Views</label><input type="text" id="ad-ytviews" class="w-full bg-black border border-gray-600 text-white p-2 mt-1 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></div>',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">TT Followers</label><input type="text" id="ad-ttfoll" class="w-full bg-black border border-gray-600 text-white p-2 mt-1 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></div>',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">TT Likes</label><input type="text" id="ad-ttlikes" class="w-full bg-black border border-gray-600 text-white p-2 mt-1 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></div></div></div></div>',
+            '<div id="tab-profil" class="admin-tab-content hidden"><h4 class="text-3xl font-epic font-bold text-white mb-6 border-b border-gray-700 pb-2">Profil Intel</h4><div class="space-y-4">',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">Perenggan 1</label><textarea id="ad-p1" class="w-full bg-black border border-gray-600 text-white p-3 mt-1 h-20 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></textarea></div>',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">Perenggan 2 (Merah)</label><textarea id="ad-p2" class="w-full bg-black border border-gray-600 text-white p-3 mt-1 h-24 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></textarea></div>',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">Perenggan 3</label><textarea id="ad-p3" class="w-full bg-black border border-gray-600 text-white p-3 mt-1 h-24 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></textarea></div>',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">Perenggan 4</label><textarea id="ad-p4" class="w-full bg-black border border-gray-600 text-white p-3 mt-1 h-20 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></textarea></div>',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">Perenggan 5</label><textarea id="ad-p5" class="w-full bg-black border border-gray-600 text-white p-3 mt-1 h-24 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></textarea></div>',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">Perenggan 6 (Kini)</label><textarea id="ad-p6" class="w-full bg-black border border-gray-600 text-white p-3 mt-1 h-24 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></textarea></div></div></div>',
+            '<div id="tab-games" class="admin-tab-content hidden"><h4 class="text-3xl font-epic font-bold text-white mb-6 border-b border-gray-700 pb-2">Riwayat Game</h4><div id="admin-games-list" class="space-y-6"></div></div>',
+            '<div id="tab-armory" class="admin-tab-content hidden"><h4 class="text-3xl font-epic font-bold text-white mb-6 border-b border-gray-700 pb-2">Armory Video</h4><div id="admin-armory-list" class="space-y-6"></div></div>',
+            '<div id="tab-sys" class="admin-tab-content hidden"><h4 class="text-3xl font-epic font-bold text-white mb-6 border-b border-gray-700 pb-2">Tetapan Sistem</h4><div class="space-y-6">',
+            '<div class="bg-black p-4 border border-gray-700"><h5 class="text-pubg-yellow font-bold uppercase mb-3"><i class="fas fa-music"></i> Muzik Latar (BGM)</h5><div class="space-y-4">',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">Jenis BGM</label><select id="ad-bgm-type" class="w-full bg-pubg-darker border border-gray-600 text-white p-2 mt-1 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-pointer"><option value="audio">Pautan Langsung / Dropbox (MP3)</option><option value="youtube">YouTube (Kod Iframe Penuh)</option></select></div>',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">URL Audio MP3 / Dropbox</label><div class="flex gap-2"><input type="text" id="ad-bgm-audio" class="w-full bg-pubg-darker border border-gray-600 text-white p-3 mt-1 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"><button type="button" onclick="testAudioPlayer()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 mt-1 font-bold uppercase text-xs whitespace-nowrap rounded-sm transition pointer-events-auto cursor-pointer"><i class="fas fa-play"></i> Uji Audio</button></div><audio id="audio-test-player" controls class="hidden w-full mt-3 h-10 rounded"></audio></div>',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">Kod Iframe / Pautan YouTube</label><div class="flex gap-2"><input type="text" id="ad-bgm-yt" placeholder=\'<iframe src="...">\' class="w-full bg-pubg-darker border border-gray-600 text-white p-3 mt-1 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"><button type="button" onclick="testYoutubeEmbed()" class="bg-yt-red hover:bg-red-600 text-white px-4 py-2 mt-1 font-bold uppercase text-xs whitespace-nowrap rounded-sm transition pointer-events-auto cursor-pointer"><i class="fas fa-play"></i> Test Embed</button></div>',
+            '<div id="yt-test-container" class="hidden mt-3 border border-gray-600 bg-black h-40 md:h-56 w-full max-w-md relative"><iframe id="yt-test-iframe" width="100%" height="100%" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div></div></div>',
+            '<div class="bg-black p-4 border border-red-900"><h5 class="text-red-500 font-bold uppercase mb-3"><i class="fas fa-lock"></i> Kredensial Log Masuk</h5><div class="grid grid-cols-1 md:grid-cols-2 gap-4">',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">Email Admin</label><input type="email" id="ad-email" class="w-full bg-pubg-darker border border-gray-600 text-white p-2 mt-1 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></div>',
+            '<div><label class="text-xs text-gray-400 uppercase font-bold">Kata Laluan</label><input type="text" id="ad-pass" class="w-full bg-pubg-darker border border-gray-600 text-white p-2 mt-1 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text" autocomplete="off"></div></div></div></div></div>',
+            '</div></div></div>'
+        ];
+
+        function injectAdminModal() {
+            const container = document.getElementById('adminPanelContainer');
+            if(container && container.innerHTML === "") {
+                container.innerHTML = adminChunks.join('');
+            }
+        }
+
+        function safeSetVal(id, val) {
+            const el = document.getElementById(id);
+            if(el) el.value = val || '';
+        }
+
+        function fillAdminForm(data) {
+            if(!document.getElementById('adminPanelModal')) return; 
+            
+            if(data.stats) {
+                safeSetVal('ad-ytsubs', data.stats.ytSubs);
+                safeSetVal('ad-ytviews', data.stats.ytViews);
+                safeSetVal('ad-ttfoll', data.stats.ttFoll);
+                safeSetVal('ad-ttlikes', data.stats.ttLikes);
+            }
+            if(data.hero) safeSetVal('ad-heroimg', data.hero.profileImg);
+            
+            if(data.bgm) {
+                safeSetVal('ad-bgm-type', data.bgm.type || 'audio');
+                safeSetVal('ad-bgm-audio', data.bgm.audioUrl || '');
+                safeSetVal('ad-bgm-yt', data.bgm.ytId || '');
+            }
+
+            if(data.profile) {
+                safeSetVal('ad-intro', data.profile.intro);
+                safeSetVal('ad-p1', data.profile.p1);
+                safeSetVal('ad-p2', data.profile.p2);
+                safeSetVal('ad-p3', data.profile.p3);
+                safeSetVal('ad-p4', data.profile.p4);
+                safeSetVal('ad-p5', data.profile.p5);
+                safeSetVal('ad-p6', data.profile.p6);
+            }
+
+            const gamesList = document.getElementById('admin-games-list');
+            if(gamesList && data.games) {
+                gamesList.innerHTML = ''; 
+                data.games.forEach((g, i) => {
+                    const block = document.createElement('div');
+                    block.className = 'p-4 border border-gray-700 bg-black/50';
+                    block.innerHTML = `
+                        <h5 class="text-pubg-yellow font-bold uppercase mb-2 border-b border-gray-800 pb-1">Slot Game ${i+1}</h5>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                            <div><label class="text-[10px] text-gray-400 uppercase">Tajuk</label><input type="text" id="ag-title-${i}" class="w-full bg-pubg-dark border border-gray-600 text-white p-2 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text"></div>
+                            <div><label class="text-[10px] text-gray-400 uppercase">Badge/Tahun</label><input type="text" id="ag-year-${i}" class="w-full bg-pubg-dark border border-gray-600 text-white p-2 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text"></div>
+                            <div class="col-span-1 md:col-span-2"><label class="text-[10px] text-gray-400 uppercase">URL Gambar</label><input type="text" id="ag-img-${i}" class="w-full bg-pubg-dark border border-gray-600 text-white p-2 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text"></div>
+                            <div class="col-span-1 md:col-span-2"><label class="text-[10px] text-gray-400 uppercase">Deskripsi</label><textarea id="ag-desc-${i}" class="w-full bg-pubg-dark border border-gray-600 text-white p-2 h-16 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text"></textarea></div>
+                        </div>
+                    `;
+                    gamesList.appendChild(block);
+                    safeSetVal(`ag-title-${i}`, g.title);
+                    safeSetVal(`ag-year-${i}`, g.year);
+                    safeSetVal(`ag-img-${i}`, g.img);
+                    safeSetVal(`ag-desc-${i}`, g.desc);
+                });
+            }
+
+            const armoryList = document.getElementById('admin-armory-list');
+            if(armoryList && data.armory) {
+                armoryList.innerHTML = '';
+                data.armory.forEach((v, i) => {
+                    const block = document.createElement('div');
+                    block.className = 'p-4 border border-gray-700 bg-black/50';
+                    block.innerHTML = `
+                        <h5 class="text-tiktok-blue font-bold uppercase mb-2 border-b border-gray-800 pb-1">Video Slot ${i+1}</h5>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div><label class="text-[10px] text-gray-400 uppercase">Tag</label><input type="text" id="aa-tag-${i}" class="w-full bg-pubg-dark border border-gray-600 text-white p-2 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text"></div>
+                            <div><label class="text-[10px] text-gray-400 uppercase">Tajuk Video</label><input type="text" id="aa-title-${i}" class="w-full bg-pubg-dark border border-gray-600 text-white p-2 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text"></div>
+                            <div><label class="text-[10px] text-gray-400 uppercase">ID Video TikTok</label><input type="text" id="aa-url-${i}" class="w-full bg-pubg-dark border border-gray-600 text-white p-2 focus:border-pubg-yellow outline-none relative z-50 pointer-events-auto select-auto cursor-text"></div>
+                            <input type="hidden" id="aa-color-${i}">
+                        </div>
+                    `;
+                    armoryList.appendChild(block);
+                    safeSetVal(`aa-tag-${i}`, v.tag);
+                    safeSetVal(`aa-title-${i}`, v.title);
+                    safeSetVal(`aa-url-${i}`, v.url);
+                    safeSetVal(`aa-color-${i}`, v.color);
+                });
+            }
+        }
+
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            const errorText = document.getElementById('loginError');
+            const btn = document.getElementById('btnLoginSubmit');
+            const loading = document.getElementById('loginLoading');
+
+            btn.classList.add('hidden');
+            loading.classList.remove('hidden');
+            errorText.classList.add('hidden');
+
+            let isValid = false;
+            let dbEmail = null;
+            let dbPass = null;
+
+            try {
+                if (currentUser) {
+                    const authRef = doc(db, 'artifacts', appId, 'public', 'data', 'admin_config', 'main_config');
+                    const authSnap = await getDoc(authRef);
+                    if (authSnap.exists()) {
+                        dbEmail = authSnap.data().email;
+                        dbPass = authSnap.data().pass;
+                    }
+                }
+            } catch(dbErr) {}
+
+            try {
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                if (dbEmail && dbPass && dbEmail === email && dbPass === pass) {
+                    isValid = true;
+                } else if (email === "mr.bangyan92@gmail.com" && pass === "abgyan92") {
+                    isValid = true;
+                }
+
+                if (isValid) {
+                    isSuperAdmin = true;
+                    injectAdminModal(); 
+                    
+                    document.getElementById('loginModal').classList.add('hidden');
+                    document.getElementById('adminFloatBtn').classList.remove('hidden'); 
+                    
+                    safeSetVal('ad-email', email);
+                    safeSetVal('ad-pass', pass);
+                    
+                    if(window.currentGlobalData) {
+                        fillAdminForm(window.currentGlobalData);
+                    }
+                } else {
+                    errorText.textContent = "Kredensial tidak sah!";
+                    errorText.classList.remove('hidden');
+                    btn.classList.remove('hidden');
+                }
+                loading.classList.add('hidden');
+                
+            } catch(err) { 
+                console.error("Ralat Log Masuk:", err);
+                errorText.textContent = "Ralat sistem log masuk!";
+                errorText.classList.remove('hidden');
+                btn.classList.remove('hidden');
+                loading.classList.add('hidden');
+            }
+        });
+
+        window.saveAdminData = async () => {
+            if(!isSuperAdmin || !currentUser) return;
+            
+            const btn = document.getElementById('btnSaveAdmin');
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...`;
+            
+            try {
+                let newGames = [];
+                for(let i=0; i<8; i++) {
+                    if(document.getElementById(`ag-title-${i}`)) {
+                        newGames.push({
+                            id: `g${i}`,
+                            title: document.getElementById(`ag-title-${i}`).value,
+                            year: document.getElementById(`ag-year-${i}`).value,
+                            img: document.getElementById(`ag-img-${i}`).value,
+                            desc: document.getElementById(`ag-desc-${i}`).value
+                        });
+                    }
+                }
+
+                let newArmory = [];
+                for(let i=0; i<3; i++) {
+                    if(document.getElementById(`aa-title-${i}`)) {
+                        let rawUrl = document.getElementById(`aa-url-${i}`).value.trim();
+                        let cleanUrl = rawUrl;
+                        
+                        const ttMatch = rawUrl.match(/video\/(\d+)/);
+                        if (ttMatch && ttMatch[1]) {
+                            cleanUrl = ttMatch[1];
+                        } else {
+                            const numMatch = rawUrl.match(/\d{15,25}/); 
+                            if (numMatch && numMatch[0]) cleanUrl = numMatch[0];
+                        }
+
+                        document.getElementById(`aa-url-${i}`).value = cleanUrl;
+
+                        newArmory.push({
+                            id: `v${i}`,
+                            tag: document.getElementById(`aa-tag-${i}`).value,
+                            title: document.getElementById(`aa-title-${i}`).value,
+                            url: cleanUrl,
+                            color: document.getElementById(`aa-color-${i}`).value
+                        });
+                    }
+                }
+
+                let rawAudioUrl = document.getElementById('ad-bgm-audio').value.trim();
+                let cleanAudioUrl = rawAudioUrl;
+                if (rawAudioUrl.includes('dropbox.com')) {
+                    cleanAudioUrl = rawAudioUrl.replace('dl=0', 'raw=1').replace('?dl=0', '?raw=1');
+                    document.getElementById('ad-bgm-audio').value = cleanAudioUrl;
+                }
+
+                let ytRaw = document.getElementById('ad-bgm-yt').value.trim();
+                let ytClean = ytRaw;
+                const ytSrcMatch = ytRaw.match(/src="([^"]+)"/);
+                if (ytSrcMatch && ytSrcMatch[1]) {
+                    ytClean = ytSrcMatch[1];
+                } else if (!ytClean.includes('embed/')) {
+                    const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+                    const ytMatch = ytClean.match(ytRegex);
+                    if(ytMatch && ytMatch[1]) {
+                        ytClean = `https://www.youtube.com/embed/${ytMatch[1]}`;
+                    }
+                }
+                document.getElementById('ad-bgm-yt').value = ytClean;
+
+                const contentRef = doc(db, 'artifacts', appId, 'public', 'data', 'website_content', 'main_content');
+                await updateDoc(contentRef, {
+                    hero: { profileImg: document.getElementById('ad-heroimg').value },
+                    bgm: { 
+                        type: document.getElementById('ad-bgm-type').value,
+                        audioUrl: cleanAudioUrl,
+                        ytId: ytClean
+                    },
+                    stats: {
+                        ytSubs: document.getElementById('ad-ytsubs').value,
+                        ytViews: document.getElementById('ad-ytviews').value,
+                        ttFoll: document.getElementById('ad-ttfoll').value,
+                        ttLikes: document.getElementById('ad-ttlikes').value
+                    },
+                    profile: {
+                        intro: document.getElementById('ad-intro').value,
+                        p1: document.getElementById('ad-p1').value,
+                        p2: document.getElementById('ad-p2').value,
+                        p3: document.getElementById('ad-p3').value,
+                        p4: document.getElementById('ad-p4').value,
+                        p5: document.getElementById('ad-p5').value,
+                        p6: document.getElementById('ad-p6').value
+                    },
+                    games: newGames,
+                    armory: newArmory
+                });
+
+                const newEmail = document.getElementById('ad-email').value;
+                const newPass = document.getElementById('ad-pass').value;
+                if(newEmail && newPass) {
+                    const authRef = doc(db, 'artifacts', appId, 'public', 'data', 'admin_config', 'main_config');
+                    await updateDoc(authRef, { email: newEmail, pass: newPass });
+                }
+
+                alert("Pangkalan Data berjaya dikemas kini!");
+                document.getElementById('adminPanelModal').classList.add('hidden');
+            } catch(err) { 
+                console.error(err); 
+                alert("Ralat semasa menyimpan pangkalan data."); 
+            } finally {
+                btn.innerHTML = `Simpan`;
+            }
+        };
+
+        function listenToLiveStatus() {
+            const statusRef = collection(db, 'artifacts', appId, 'public', 'data', 'stream_status');
+            onSnapshot(statusRef, (snapshot) => {
+                let isLive = false;
+                snapshot.forEach((doc) => {
+                    if (doc.id === 'main_status') { isLive = doc.data().isLive; }
+                });
+                window.currentLiveStatus = isLive;
+                
+                const liveBadge = document.getElementById('liveBadgeContainer');
+                if (liveBadge) {
+                    if(isLive) liveBadge.classList.remove('hidden');
+                    else liveBadge.classList.add('hidden');
+                }
+            });
+        }
+
+        window.toggleLiveStatus = async () => {
+            if (!currentUser) return;
+            const newStatus = !window.currentLiveStatus;
+            try {
+                const statusDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'stream_status', 'main_status');
+                await setDoc(statusDocRef, { isLive: newStatus, updatedAt: serverTimestamp() });
+            } catch (error) {}
+        };
+
+        const chatForm = document.getElementById('chatForm');
+        const chatInput = document.getElementById('chatInput');
+        const guestName = document.getElementById('guestName');
+        const chatMessages = document.getElementById('chatMessages');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function loadMessages() {
+            if (!currentUser) return;
+            const chatRef = collection(db, 'artifacts', appId, 'public', 'data', 'guestbook_chats');
+            onSnapshot(chatRef, (snapshot) => {
+                let messages = [];
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    messages.push({ id: doc.id, ...data, time: data.createdAt ? data.createdAt.toMillis() : Date.now() });
+                });
+                messages.sort((a, b) => a.time - b.time);
+                renderMessages(messages);
+            });
+        }
+
+        function renderMessages(messages) {
+            if (!chatMessages) return;
+            chatMessages.innerHTML = '<div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5"><i class="fas fa-crosshairs text-[10rem] text-white"></i></div>';
+            if (messages.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = "text-center text-gray-500 text-sm mt-10 z-10 font-bold uppercase tracking-widest";
+                emptyMsg.textContent = "Menunggu transmisi pertama...";
+                chatMessages.appendChild(emptyMsg);
+                return;
+            }
+            messages.forEach(msg => {
+                const isMe = msg.uid === currentUser.uid;
+                const div = document.createElement('div');
+                div.className = `flex flex-col max-w-[90%] ${isMe ? 'self-end items-end' : 'self-start'} z-10 page-enter`;
+                div.innerHTML = `
+                    <span class="text-[10px] ${isMe ? 'text-pubg-yellow' : 'text-gray-400'} mb-1 px-1 font-bold uppercase tracking-widest">${escapeHTML(msg.name)}</span>
+                    <div class="${isMe ? 'bg-pubg-yellow text-pubg-black' : 'bg-gray-800 text-white border border-gray-600'} px-4 py-2 text-sm break-words leading-relaxed shadow-md rounded-sm">
+                        ${escapeHTML(msg.text)}
+                    </div>
+                    <span class="text-[9px] text-gray-600 mt-1 uppercase tracking-widest font-bold">${new Date(msg.time).toLocaleTimeString('ms-MY', {hour: '2-digit', minute:'2-digit'})}</span>
+                `;
+                chatMessages.appendChild(div);
+            });
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        if (chatForm) {
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!currentUser) return;
+                const text = chatInput.value.trim();
+                const name = guestName.value.trim() || 'Player';
+                if (!text) return;
+                sendBtn.disabled = true;
+                chatInput.disabled = true;
+                try {
+                    const chatRef = collection(db, 'artifacts', appId, 'public', 'data', 'guestbook_chats');
+                    await addDoc(chatRef, { uid: currentUser.uid, name: name, text: text, createdAt: serverTimestamp() });
+                    chatInput.value = '';
+                } catch (error) { alert("Transmisi gagal."); } 
+                finally { sendBtn.disabled = false; chatInput.disabled = false; chatInput.focus(); }
+            });
+        }
+        function escapeHTML(str) { return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": 'Qk1', '"': '&quot;' }[tag])); }
+    </script>
+</body>
+                      </html>
