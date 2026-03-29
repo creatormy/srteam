@@ -1254,7 +1254,8 @@
                         throw new Error('No Firebase');
                     }
 
-                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_users'), {
+                    // Simpan data dan dapatkan ID pengguna baharu (newUserRef)
+                    const newUserRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_users'), {
                         email: emailOrPhone, 
                         phone: regPhoneValue,
                         password: password, 
@@ -1263,6 +1264,16 @@
                         createdAt: Date.now()
                     });
                     
+                    // Notifikasi Panggilan Sambutan ke Inbox Member Baharu
+                    window.sendNotification(newUserRef.id, "Selamat datang di SRTEAM Official Web! Pendaftaran anda sedang diproses oleh Command Center.", "welcome", "profile");
+
+                    // Notifikasi Automatik kepada semua Admin/Superadmin/Komander (DIPERKUAT)
+                    users.forEach(u => {
+                        if (u.role === 'admin' || u.role === 'superadmin' || u.role === 'komander') {
+                            window.sendNotification(u.id, `⚠️ PANGGILAN REKRUT: Seseorang dengan ID (${emailOrPhone}) baru sahaja mendaftar ke portal. Sila semak di Command Center!`, "admin_alert", "admin");
+                        }
+                    });
+
                     window.showAlert('Pendaftaran berjaya! Sila tunggu pengesahan Command Center sebelum log masuk.', 'success');
                     window.toggleAuthMode(true); 
                     document.getElementById('auth-form').reset();
@@ -1655,7 +1666,19 @@
         }
 
         window.updateTourStatus = async function(id, status) {
-            try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_tournaments', id), { status: status }); } catch(err) { }
+            try { 
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_tournaments', id), { status: status }); 
+                
+                // Hantar notifikasi kepada pemohon
+                const tour = tournaments.find(t => t.id === id);
+                if (tour && tour.userId) {
+                    if (status === 'approved') {
+                        window.sendNotification(tour.userId, `Permohonan Scrim & Tour anda telah DILULUSKAN oleh Command Center.`, "approved", "tournament");
+                    } else if (status === 'rejected') {
+                        window.sendNotification(tour.userId, `Permohonan Scrim & Tour anda telah DITOLAK.`, "rejected", "tournament");
+                    }
+                }
+            } catch(err) { }
         }
         window.deleteTour = async function(id) {
             if(confirm('Padam pendaftaran misi ini?')) {
@@ -1828,6 +1851,14 @@
                     status: 'pending',
                     timestamp: Date.now()
                 });
+
+                // Notifikasi kepada semua Admin/Superadmin/Komander
+                users.forEach(u => {
+                    if (u.role === 'admin' || u.role === 'superadmin' || u.role === 'komander') {
+                        window.sendNotification(u.id, `${ign} telah memohon untuk menyertai senarai roster Scrim & Tour. Sila sahkan.`, "admin_alert", "admin");
+                    }
+                });
+
                 window.showAlert('Berjaya bergabung! Sila tunggu pengesahan Command Center.', 'success');
             } catch (err) { 
                 window.showAlert('Gagal menghantar permohonan.', 'error'); 
@@ -2081,6 +2112,9 @@
                 if (n.type === 'mention') icon = 'fa-at text-blue-400';
                 if (n.type === 'role') icon = 'fa-shield-halved text-yellow-400';
                 if (n.type === 'welcome') icon = 'fa-handshake text-green-400';
+                if (n.type === 'rejected') icon = 'fa-circle-xmark text-red-500';
+                if (n.type === 'approved') icon = 'fa-circle-check text-green-500';
+                if (n.type === 'admin_alert') icon = 'fa-user-shield text-purple-400';
 
                 html += `
                     <div class="p-3 rounded cursor-pointer hover:bg-tactical-panel transition mb-1 ${bgClass}" onclick="handleNotifClick('${n.id}', '${n.link || ''}')">
