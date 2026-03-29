@@ -536,6 +536,9 @@
                                         <tr class="bg-tactical-dark border-y border-tactical-border text-tactical-text">
                                             <th class="p-3">TARIKH DAFTAR</th>
                                             <th class="p-3">ID / NICKNAME</th>
+                                            <th class="p-3">NO. WA</th>
+                                            <th class="p-3">PERANAN</th>
+                                            <th class="p-3">STATUS</th>
                                             <th class="p-3 text-right">TINDAKAN</th>
                                         </tr>
                                     </thead>
@@ -1482,12 +1485,11 @@
 
                 if (user.status === 'pending') pendingUserCount++;
                 if (user.status === 'approved') activeUserCount++;
-
-                const statusColor = user.status === 'pending' ? 'text-yellow-500' : (user.status === 'banned' ? 'text-red-600' : 'text-green-500');
                 
-                let roleBadge = 'MEMBER';
-                if (user.role === 'admin') roleBadge = '<span class="text-blue-400 font-bold"><i class="fa-solid fa-shield"></i> ADMIN</span>';
-                if (user.role === 'komander') roleBadge = '<span class="text-yellow-500 font-bold"><i class="fa-solid fa-star"></i> KOMANDER</span>';
+                let roleBadge = '';
+                if (user.role === 'admin') roleBadge = '<span class="bg-blue-900/30 text-blue-400 border border-blue-700/50 px-1.5 py-0.5 rounded text-[8px] tracking-widest"><i class="fa-solid fa-shield"></i> ADMIN</span>';
+                if (user.role === 'komander') roleBadge = '<span class="bg-yellow-900/30 text-yellow-500 border border-yellow-700/50 px-1.5 py-0.5 rounded text-[8px] tracking-widest"><i class="fa-solid fa-star"></i> KOMANDER</span>';
+                if (user.role === 'moderator') roleBadge = '<span class="bg-purple-900/30 text-purple-400 border border-purple-700/50 px-1.5 py-0.5 rounded text-[8px] tracking-widest"><i class="fa-solid fa-eye"></i> MODERATOR</span>';
 
                 let dateDisplay = '-';
                 if (user.createdAt) {
@@ -1499,68 +1501,76 @@
                     dateDisplay = `<span class="text-tactical-green font-bold">${dayName}</span><br>${dateStr}<br><span class="text-xs text-tactical-text mt-1 block"><i class="fa-regular fa-clock"></i> ${timeStr}</span>`;
                 }
 
-                const avatarImgList = user.photoURL ? `<img src="${user.photoURL}" class="w-6 h-6 rounded-full object-cover inline-block mr-2 border border-tactical-green/50 shrink-0 cursor-pointer hover:opacity-80 transition" onclick="navigateTo('profile', '${user.email}')" title="Lihat Profil">` : `<div onclick="navigateTo('profile', '${user.email}')" class="w-6 h-6 rounded-full bg-tactical-panel border border-tactical-border text-[8px] flex items-center justify-center mr-2 shrink-0 cursor-pointer hover:bg-tactical-green hover:text-black transition" title="Lihat Profil"><i class="fa-solid fa-user"></i></div>`;
+                const avatarImgList = user.photoURL ? `<img src="${user.photoURL}" class="w-8 h-8 rounded-full object-cover inline-block border border-tactical-green/50 shrink-0 cursor-pointer hover:opacity-80 transition" onclick="navigateTo('profile', '${user.email}')" title="Lihat Profil">` : `<div onclick="navigateTo('profile', '${user.email}')" class="w-8 h-8 rounded-full bg-tactical-panel border border-tactical-border text-xs flex items-center justify-center shrink-0 cursor-pointer hover:bg-tactical-green hover:text-black transition" title="Lihat Profil"><i class="fa-solid fa-user"></i></div>`;
                 const verifiedIconList = getVerifiedBadge(user);
 
-                // PENAMBAHBAIKAN: Menukar butang teks kepada butang Ikon kemas dengan Tooltip (hover text)
+                // Susun Atur Tindakan Ikon Padat
                 let actionButtons = '<div class="flex flex-wrap justify-end gap-1.5">';
                 
                 if (user.status === 'pending') {
-                    actionButtons += `<button onclick="updateUserStatus('${user.id}', 'approved')" class="bg-green-800 hover:bg-green-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Luluskan Pendaftaran"><i class="fa-solid fa-check"></i></button>`;
-                    actionButtons += `<button onclick="deleteUser('${user.id}')" class="bg-red-800 hover:bg-red-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Tolak Pendaftaran"><i class="fa-solid fa-xmark"></i></button>`;
+                    actionButtons += `<button onclick="updateUserStatus('${user.id}', 'approved')" class="bg-green-800 hover:bg-green-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Luluskan Pendaftaran"><i class="fa-solid fa-check"></i></button>`;
+                    actionButtons += `<button onclick="deleteUser('${user.id}')" class="bg-red-800 hover:bg-red-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Tolak Pendaftaran"><i class="fa-solid fa-xmark"></i></button>`;
                 } else {
                     if (isSuperAdmin || currentUser.role === 'komander') {
                         if (user.role === 'user') {
-                            // UBAH: Ikon Blue Tick sebenar
+                            // Ikon Check Sah / Batal (Verify)
                             const verifyBtnIcon = user.verified ? '<i class="fa-solid fa-circle-xmark"></i>' : '<i class="fa-solid fa-circle-check"></i>';
                             const verifyBtnColor = user.verified ? 'bg-gray-700 hover:bg-gray-600 text-gray-400' : 'bg-blue-600 hover:bg-blue-500 text-white';
                             const verifyTitle = user.verified ? 'Buang Blue Tick' : 'Beri Blue Tick';
-                            actionButtons += `<button onclick="toggleVerifyStatus('${user.id}', ${!!user.verified})" class="${verifyBtnColor} w-7 h-7 rounded flex items-center justify-center transition shadow-md" title="${verifyTitle}">${verifyBtnIcon}</button>`;
+                            actionButtons += `<button onclick="toggleVerifyStatus('${user.id}', ${!!user.verified})" class="${verifyBtnColor} w-8 h-8 rounded flex items-center justify-center transition shadow-md" title="${verifyTitle}">${verifyBtnIcon}</button>`;
                         }
                     }
 
                     if (isSuperAdmin) {
+                        // Ikon Jadikan Admin: fa-user-shield
                         if (user.role === 'user') {
-                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Admin"><i class="fa-solid fa-user-shield"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Komander"><i class="fa-solid fa-star"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'moderator')" class="bg-purple-800 hover:bg-purple-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Moderator"><i class="fa-solid fa-user-gear"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Admin"><i class="fa-solid fa-user-shield"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Komander"><i class="fa-solid fa-star"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'moderator')" class="bg-purple-800 hover:bg-purple-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Moderator"><i class="fa-solid fa-user-gear"></i></button>`;
                         } else if (user.role === 'admin') {
-                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Komander"><i class="fa-solid fa-star"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Komander"><i class="fa-solid fa-star"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
                         } else if (user.role === 'komander') {
-                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Admin"><i class="fa-solid fa-user-shield"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Admin"><i class="fa-solid fa-user-shield"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
                         } else if (user.role === 'moderator') {
-                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Admin"><i class="fa-solid fa-user-shield"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Komander"><i class="fa-solid fa-star"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Admin"><i class="fa-solid fa-user-shield"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Komander"><i class="fa-solid fa-star"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
                         }
                         
                         if (user.status !== 'banned') {
-                            actionButtons += `<button onclick="updateUserStatus('${user.id}', 'banned')" class="bg-red-900 hover:bg-red-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Ban Akaun"><i class="fa-solid fa-ban"></i></button>`;
+                            actionButtons += `<button onclick="updateUserStatus('${user.id}', 'banned')" class="bg-red-900 hover:bg-red-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Ban Akaun"><i class="fa-solid fa-ban"></i></button>`;
                         } else {
-                            actionButtons += `<button onclick="updateUserStatus('${user.id}', 'approved')" class="bg-green-700 hover:bg-green-500 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Unban Akaun"><i class="fa-solid fa-unlock"></i></button>`;
+                            actionButtons += `<button onclick="updateUserStatus('${user.id}', 'approved')" class="bg-green-700 hover:bg-green-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Unban Akaun"><i class="fa-solid fa-unlock"></i></button>`;
                         }
-                        actionButtons += `<button onclick="openEditAdminModal('${user.id}')" class="bg-yellow-800 hover:bg-yellow-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Ubahsuai Profil"><i class="fa-solid fa-pen"></i></button>`;
+                        actionButtons += `<button onclick="openEditAdminModal('${user.id}')" class="bg-yellow-800 hover:bg-yellow-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Ubahsuai Profil"><i class="fa-solid fa-pen"></i></button>`;
                     } else if (user.role !== 'superadmin' && user.role !== 'komander') {
-                        actionButtons += `<span class="w-7 h-7 flex items-center justify-center text-tactical-text" title="Akaun Sah"><i class="fa-solid fa-check text-green-500"></i></span>`;
+                        actionButtons += `<span class="w-8 h-8 flex items-center justify-center text-tactical-text" title="Akaun Sah"><i class="fa-solid fa-check text-green-500"></i></span>`;
                     }
                 }
                 
                 actionButtons += '</div>';
 
-                // Rekod Data Member tanpa lajur WA, Status & Peranan
+                // Data disusun menjadi 3 Lajur Kompak
                 userHtml += `
                     <tr class="border-b border-tactical-border/50 hover:bg-tactical-panel/50">
-                        <td class="p-3 text-xs font-mono leading-tight whitespace-nowrap">${dateDisplay}</td>
-                        <td class="p-3 text-white flex items-center py-5 min-w-[200px]">
-                            ${avatarImgList}
-                            <a onclick="navigateTo('profile', '${user.email}')" class="cursor-pointer hover:text-tactical-green hover:underline transition flex items-center gap-1">
-                                ${user.nickname || user.email}
-                            </a>
-                            ${verifiedIconList}
+                        <td class="p-3 text-[10px] sm:text-xs font-mono leading-tight whitespace-nowrap align-middle">${dateDisplay}</td>
+                        <td class="p-3 text-white flex items-center py-4 min-w-[150px]">
+                            <div class="flex items-center gap-3">
+                                ${avatarImgList}
+                                <div class="flex flex-col">
+                                    <span class="flex items-center gap-1">
+                                        <a onclick="navigateTo('profile', '${user.email}')" class="cursor-pointer hover:text-tactical-green hover:underline transition font-bold text-xs sm:text-sm">
+                                            ${user.nickname || user.email}
+                                        </a>
+                                        ${verifiedIconList}
+                                    </span>
+                                    ${roleBadge ? `<div class="mt-1">${roleBadge}</div>` : `<div class="mt-1"><span class="text-[8px] text-gray-500 font-mono"><i class="fa-solid fa-user"></i> MEMBER</span></div>`}
+                                </div>
+                            </div>
                         </td>
-                        <td class="p-3 text-right min-w-[150px]">${actionButtons}</td>
+                        <td class="p-3 text-right align-middle min-w-[130px]">${actionButtons}</td>
                     </tr>
                 `;
             });
