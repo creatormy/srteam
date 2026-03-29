@@ -673,6 +673,7 @@
         let users = [];
         let tournaments = [];
         let announcements = []; 
+        let chatsData = []; // Tambahan: Simpan data chat di memori untuk auto-update
         
         const defaultClanInfo = {
             identity: {
@@ -785,10 +786,6 @@
                     users.push({ id: doc.id, ...doc.data() });
                 });
 
-                if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'superadmin' || currentUser.role === 'komander')) {
-                    window.renderAdminPanel();
-                }
-
                 if (currentUser) {
                     const myData = users.find(u => u.email === currentUser.email);
                     if (myData) {
@@ -808,20 +805,31 @@
                         window.updateNavigation();
                     }
                 }
+                
+                // AUTO-UPDATE MENYELURUH: 
+                // Segarkan semula semua senarai sekiranya ada perubahan profil/pangkat ahli
+                if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'superadmin' || currentUser.role === 'komander')) {
+                    window.renderAdminPanel();
+                }
+                window.renderApprovedTournaments();
+                if (typeof renderChats === 'function' && chatsData.length > 0) {
+                    renderChats(chatsData);
+                }
+
                 // Refresh data/paparan pada URL semasa bila database update
                 window.handleRoute(); 
             });
 
             const chatRef = collection(db, 'artifacts', appId, 'public', 'data', 'srteam_chats');
             onSnapshot(chatRef, (snapshot) => {
-                const chats = [];
-                snapshot.forEach(doc => chats.push({ id: doc.id, ...doc.data() }));
-                chats.sort((a, b) => {
+                chatsData = []; // Kemas kini pembolehubah global
+                snapshot.forEach(doc => chatsData.push({ id: doc.id, ...doc.data() }));
+                chatsData.sort((a, b) => {
                     const timeA = a.timestamp ? (typeof a.timestamp.toMillis === 'function' ? a.timestamp.toMillis() : a.timestamp) : Date.now();
                     const timeB = b.timestamp ? (typeof b.timestamp.toMillis === 'function' ? b.timestamp.toMillis() : b.timestamp) : Date.now();
                     return timeA - timeB;
                 });
-                renderChats(chats);
+                renderChats(chatsData);
             });
 
             const tourRef = collection(db, 'artifacts', appId, 'public', 'data', 'srteam_tournaments');
@@ -1534,8 +1542,8 @@
                 const timeDate = new Date(tour.timestamp).toLocaleString('ms-MY', { dateStyle: 'short', timeStyle: 'short' });
                 const sColor = tour.status === 'pending' ? 'text-yellow-500' : (tour.status === 'approved' ? 'text-green-500' : 'text-red-500');
                 
-                // TAMBAHAN: Auto update nama dan tick di Admin Panel -> Scrim & Tour
-                const tourUser = users.find(u => u.email === tour.pemohon);
+                // TAMBAHAN: Cari pengguna melalui Unik ID (Lebih kebal) atau fallback ke emel
+                const tourUser = users.find(u => (tour.userId && u.id === tour.userId) || u.email === tour.pemohon);
                 const dynamicName = tourUser ? (tourUser.nickname || tourUser.email.split('@')[0]).toUpperCase() : tour.ign;
                 const verifiedIcon = getVerifiedBadge(tourUser);
                 const roleBadge = window.getSmallRoleBadge(tourUser);
@@ -1658,11 +1666,12 @@
 
             approvedTours.forEach(tour => {
                 const timeDate = new Date(tour.timestamp).toLocaleDateString('ms-MY');
-                const tourUser = users.find(u => u.email === tour.pemohon);
+                // TAMBAHAN: Cari pengguna melalui Unik ID (Lebih kebal) atau fallback ke emel
+                const tourUser = users.find(u => (tour.userId && u.id === tour.userId) || u.email === tour.pemohon);
                 
                 // Avatar, Nama Dinamik, Blue Tick dan Pangkat untuk Roster Tournament
                 const dynamicName = tourUser ? (tourUser.nickname || tourUser.email.split('@')[0]).toUpperCase() : tour.ign;
-                const avatarImg = (tourUser && tourUser.photoURL) ? `<img src="${tourUser.photoURL}" class="w-6 h-6 rounded-full object-cover inline-block mr-2 border border-tactical-green/50 shrink-0">` : `<div class="w-6 h-6 rounded-full bg-tactical-panel border border-tactical-border text-[8px] inline-flex items-center justify-center mr-2 shrink-0"><i class="fa-solid fa-user-astronaut"></i></div>`;
+                const avatarImg = (tourUser && tourUser.photoURL) ? `<img src="${tourUser.photoURL}" class="w-6 h-6 rounded-full object-cover inline-block mr-2 border border-tactical-green/50 shrink-0 cursor-pointer hover:opacity-80 transition" onclick="navigateTo('profile', '${tourUser.email}')">` : `<div onclick="${tourUser ? `MapsTo('profile', '${tourUser.email}')` : ''}" class="w-6 h-6 rounded-full bg-tactical-panel border border-tactical-border text-[8px] inline-flex items-center justify-center mr-2 shrink-0 ${tourUser ? 'cursor-pointer hover:bg-tactical-green hover:text-black transition' : ''}"><i class="fa-solid fa-user-astronaut"></i></div>`;
                 const verifiedIcon = getVerifiedBadge(tourUser);
                 const roleBadge = window.getSmallRoleBadge(tourUser);
 
@@ -1782,6 +1791,7 @@
                     ign: document.getElementById('tour-ign').value.trim(),
                     whatsapp: document.getElementById('tour-wa').value.trim(),
                     pemohon: currentUser.email,
+                    userId: currentUser.id, // TAMBAHAN KESELAMATAN: Ikat pendaftaran dengan ID Mutlak
                     status: 'pending',
                     timestamp: Date.now()
                 });
@@ -1824,17 +1834,22 @@
                 const timeStr = dateObj.toLocaleTimeString('ms-MY', { hour12: false, hour: '2-digit', minute: '2-digit' });
                 const displayTime = chatDate === today ? timeStr : `${chatDate} ${timeStr}`;
 
-                // Logik Dinamik Auto-Update Nama Sender
+                // Logik Dinamik Auto-Update Nama Sender (Lebih Kebal dengan ID Mutlak)
                 let chatUser = null;
-                if (chat.senderEmail) {
+                if (chat.senderId) {
+                    chatUser = users.find(u => u.id === chat.senderId);
+                } else if (chat.senderEmail) {
                     chatUser = users.find(u => u.email === chat.senderEmail);
                 } else {
                     chatUser = users.find(u => (u.nickname || u.email.split('@')[0]).toUpperCase() === chat.sender);
                 }
 
                 const currentName = chatUser ? (chatUser.nickname || chatUser.email.split('@')[0]).toUpperCase() : chat.sender;
-                const myNick = currentUser ? (currentUser.nickname || currentUser.email.split('@')[0]).toUpperCase() : '';
-                const isMe = (currentName === myNick) || (chat.senderEmail && currentUser && chat.senderEmail === currentUser.email);
+                
+                // Pengecaman "Saya" yang lebih tepat
+                const isMe = chatUser && currentUser ? (chatUser.id === currentUser.id) : 
+                            ((chat.senderEmail && currentUser && chat.senderEmail === currentUser.email) || 
+                            (chat.sender === (currentUser?.nickname || currentUser?.email.split('@')[0])?.toUpperCase()));
                 
                 const avatarImg = (chatUser && chatUser.photoURL) 
                     ? `<img src="${chatUser.photoURL}" class="w-5 h-5 rounded-full object-cover inline-block border border-tactical-border/50 shrink-0 cursor-pointer hover:opacity-80 transition" onclick="navigateTo('profile', '${chatUser.email}')" title="Lihat Profil">` 
@@ -1916,8 +1931,9 @@
 
             try {
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_chats'), {
-                    sender: senderName, // Fallback legacy
-                    senderEmail: currentUser.email, // Rekod pengenalan emel yang baharu
+                    sender: senderName, 
+                    senderEmail: currentUser.email, 
+                    senderId: currentUser.id, // TAMBAHAN KESELAMATAN: Ikat mesej dengan ID Mutlak
                     message: message,
                     timestamp: serverTimestamp()
                 });
