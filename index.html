@@ -1730,6 +1730,111 @@
             setTimeout(forceScroll, 500);
         }
 
+        // --- FUNGSI AUDIO (TTS) ---
+        function base64ToUint8Array(base64) {
+            const binaryString = window.atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes;
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        function createWavBlob(pcmData, sampleRate) {
+            const buffer = new ArrayBuffer(44 + pcmData.length);
+            const view = new DataView(buffer);
+
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcmData.length, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcmData.length, true);
+
+            const pcmArray = new Uint8Array(buffer, 44);
+            pcmArray.set(pcmData);
+
+            return new Blob([view], { type: 'audio/wav' });
+        }
+
+        window.playLastAITTS = async function() {
+            const chatContainer = document.getElementById('chat-messages');
+            if (!chatContainer) return;
+            
+            // Cari elemen mesej AI (ia menggunakan class text-blue-50)
+            const aiMessages = chatContainer.querySelectorAll('.text-blue-50');
+            if (aiMessages.length === 0) {
+                window.showAlert('Bro, belum ada mesej dari AI untuk dibaca.', 'warning');
+                return;
+            }
+            
+            const lastAIMsgText = aiMessages[aiMessages.length - 1].textContent.trim();
+            const btnStatus = document.getElementById('tts-status');
+            const originalText = btnStatus.textContent;
+            btnStatus.textContent = "Menjana Audio...";
+
+            try {
+                const apiKey = "AIzaSyAJGgkTTOsGpRHaGEWx3_g8tX70s5a3nPw"; 
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+                
+                const payload = {
+                    contents: [{ parts: [{ text: lastAIMsgText }] }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Zephyr" } } }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error('Gagal menjana audio');
+                
+                const result = await response.json();
+                const inlineData = result.candidates?.[0]?.content?.parts?.[0]?.inlineData;
+                
+                if (inlineData && inlineData.data) {
+                    const pcmData = base64ToUint8Array(inlineData.data);
+                    let sampleRate = 24000;
+                    if (inlineData.mimeType) {
+                        const match = inlineData.mimeType.match(/rate=(\d+)/);
+                        if (match) sampleRate = parseInt(match[1], 10);
+                    }
+                    
+                    const wavBlob = createWavBlob(pcmData, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    const audio = new Audio(audioUrl);
+                    
+                    btnStatus.textContent = "Sedang Bercakap...";
+                    audio.onended = () => { btnStatus.textContent = originalText; };
+                    await audio.play();
+                } else {
+                    throw new Error('Tiada data audio');
+                }
+            } catch (err) {
+                console.error(err);
+                window.showAlert('Gagal memproses audio TTS.', 'error');
+                btnStatus.textContent = originalText;
+            }
+        };
+
         window.sendChat = async function(e) {
             e.preventDefault();
             const input = document.getElementById('chat-input');
@@ -1750,7 +1855,7 @@
                 // Logik integrasi AI Chat
                 if (message.toLowerCase().includes('@ai')) {
                     const userQuery = message.replace(/@ai/gi, '').trim() || "Sila berikan status sistem semasa.";
-                    const apiKey = ""; // API Key disuntik oleh persekitaran eksekusi
+                    const apiKey = "AIzaSyAJGgkTTOsGpRHaGEWx3_g8tX70s5a3nPw"; 
                     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
                     const payload = {
