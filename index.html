@@ -125,10 +125,31 @@
             <div class="flex items-center cursor-pointer flex-shrink-0" onclick="navigateTo('home')" title="Halaman Utama">
                 <img src="https://www.dropbox.com/scl/fi/j8jj1avnr3u6rmeamc5qv/sr-transparant.png?rlkey=djgp0h6yta69ywk8uokpyw1ea&st=67hdsl29&raw=1" alt="Logo SRTEAM" class="h-10 lg:h-12 w-auto drop-shadow-[0_0_10px_rgba(74,222,128,0.6)] hover:scale-105 transition-transform duration-300">
             </div>
-            <!-- Bahagian Menu -->
-            <nav class="flex flex-row flex-nowrap items-center justify-end gap-3 lg:gap-6 overflow-x-auto no-scrollbar" id="main-nav">
-                <!-- Akan diisi oleh JavaScript -->
-            </nav>
+            <!-- Bahagian Menu & Notifikasi -->
+            <div class="flex flex-row items-center justify-end gap-2 lg:gap-4 flex-grow overflow-hidden">
+                <nav class="flex flex-row flex-nowrap items-center justify-end gap-3 lg:gap-6 overflow-x-auto no-scrollbar" id="main-nav">
+                    <!-- Akan diisi oleh JavaScript -->
+                </nav>
+                
+                <!-- Ikon Notifikasi -->
+                <div id="notif-container" class="relative hidden cursor-pointer flex-shrink-0" onclick="toggleNotifications()">
+                    <div class="w-8 h-8 rounded-full bg-tactical-panel border border-tactical-border flex items-center justify-center hover:text-tactical-green hover:border-tactical-green transition">
+                        <i class="fa-solid fa-bell text-sm text-tactical-text" id="notif-bell-icon"></i>
+                    </div>
+                    <span id="notif-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden border border-tactical-dark shadow-md">0</span>
+                    
+                    <!-- Panel Notifikasi Dropdown -->
+                    <div id="notif-panel" class="hidden absolute top-10 right-0 w-72 sm:w-80 bg-tactical-panel border border-tactical-border rounded shadow-2xl z-50 max-h-[80vh] flex flex-col cursor-default" onclick="event.stopPropagation()">
+                        <div class="p-3 border-b border-tactical-border flex justify-between items-center bg-tactical-dark rounded-t">
+                            <h4 class="text-white font-bold text-sm tracking-widest"><i class="fa-solid fa-bell text-tactical-green mr-2"></i> NOTIFIKASI</h4>
+                            <button onclick="markAllNotifRead()" class="text-[10px] text-tactical-text hover:text-white transition bg-tactical-panel px-2 py-1 rounded border border-tactical-border hover:border-tactical-green">Tandai Dibaca</button>
+                        </div>
+                        <div id="notif-list" class="flex-grow overflow-y-auto p-2 space-y-1 bg-[#0b100c]">
+                            <!-- Akan diisi oleh JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -660,6 +681,8 @@
         let tournaments = [];
         let announcements = []; 
         let chatsData = []; 
+        let notifications = []; // Tambahan Notifikasi
+        let notifUnsubscribe = null; // Tambahan Notifikasi
         
         const defaultClanInfo = {
             identity: {
@@ -797,6 +820,17 @@
                     renderChats(chatsData);
                 }
                 window.handleRoute(); 
+
+                // MULTIPLEXER NOTIFIKASI (Dengar notifikasi peribadi pengguna)
+                if (currentUser && currentUser.status === 'approved' && !notifUnsubscribe) {
+                    const notifRef = collection(db, 'artifacts', appId, 'users', currentUser.id, 'notifications');
+                    notifUnsubscribe = onSnapshot(notifRef, (snap) => {
+                        notifications = [];
+                        snap.forEach(doc => notifications.push({ id: doc.id, ...doc.data() }));
+                        notifications.sort((a, b) => b.timestamp - a.timestamp);
+                        window.renderNotifications();
+                    });
+                }
             });
 
             const chatRef = collection(db, 'artifacts', appId, 'public', 'data', 'srteam_chats');
@@ -1241,6 +1275,13 @@
         }
 
         window.handleLogout = function() {
+            if (notifUnsubscribe) {
+                notifUnsubscribe();
+                notifUnsubscribe = null;
+            }
+            notifications = [];
+            window.renderNotifications();
+
             currentUser = null;
             localStorage.removeItem('srteam_session');
             sessionStorage.removeItem('srteam_session');
@@ -1546,7 +1587,12 @@
         }
 
         window.updateUserStatus = async function(id, status) {
-            try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_users', id), { status: status }); } catch (err) { }
+            try { 
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_users', id), { status: status }); 
+                if (status === 'approved') {
+                    window.sendNotification(id, "Selamat datang di SRTEAM Official Web! Permohonan pendaftaran anda telah diluluskan.", "welcome", "profile");
+                }
+            } catch (err) { }
         }
 
         window.toggleVerifyStatus = async function(id, currentStatus) {
@@ -1563,7 +1609,11 @@
         }
 
         window.setRole = async function(id, role) {
-            try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_users', id), { role: role }); } catch (err) { }
+            try { 
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_users', id), { role: role }); 
+                let roleName = role === 'admin' ? 'ADMIN' : (role === 'komander' ? 'KOMANDER' : 'MEMBER BIASA');
+                window.sendNotification(id, `Tahniah! Pangkat anda telah dinaik taraf kepada ${roleName}.`, "role", "profile");
+            } catch (err) { }
         }
         
         window.openEditAdminModal = function(id) {
@@ -1918,6 +1968,15 @@
                 });
                 input.value = '';
                 
+                // HANTAR NOTIFIKASI JIKA ADA MENTION (@Nickname)
+                users.forEach(u => {
+                    if (u.id === currentUser.id) return;
+                    const uNick = (u.nickname || u.email.split('@')[0]).toUpperCase();
+                    if (message.toUpperCase().includes(`@${uNick}`)) {
+                        window.sendNotification(u.id, `${senderName} telah mention anda di Basecamp Chat.`, "mention", "chat");
+                    }
+                });
+                
             } catch (err) { window.showAlert("Mesej gagal dihantar.", "error"); }
         }
 
@@ -1967,6 +2026,114 @@
                 setTimeout(() => { alertBox.classList.add('hidden'); }, 300);
             }
         }
+
+        // --- SISTEM NOTIFIKASI GLOBAL ---
+        window.sendNotification = async function(userId, message, type, link) {
+            if (!userId) return;
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'users', userId, 'notifications'), {
+                    message: message,
+                    type: type, 
+                    link: link, 
+                    read: false,
+                    timestamp: Date.now()
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        window.renderNotifications = function() {
+            const notifContainer = document.getElementById('notif-container');
+            const notifBadge = document.getElementById('notif-badge');
+            const notifList = document.getElementById('notif-list');
+            const notifBellIcon = document.getElementById('notif-bell-icon');
+            
+            if (!currentUser || currentUser.status !== 'approved') {
+                if (notifContainer) notifContainer.classList.add('hidden');
+                return;
+            }
+            if (notifContainer) notifContainer.classList.remove('hidden');
+
+            const unreadCount = notifications.filter(n => !n.read).length;
+            if (unreadCount > 0) {
+                notifBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                notifBadge.classList.remove('hidden');
+                if(notifBellIcon) {
+                    notifBellIcon.classList.add('text-tactical-green');
+                    notifBellIcon.classList.add('animate-pulse');
+                }
+            } else {
+                notifBadge.classList.add('hidden');
+                if(notifBellIcon) {
+                    notifBellIcon.classList.remove('text-tactical-green');
+                    notifBellIcon.classList.remove('animate-pulse');
+                }
+            }
+
+            let html = '';
+            notifications.forEach(n => {
+                const bgClass = n.read ? 'bg-tactical-dark/50 opacity-60' : 'bg-tactical-greenDark/20 border-l-2 border-tactical-green';
+                const timeDate = new Date(n.timestamp).toLocaleString('ms-MY', { dateStyle: 'short', timeStyle: 'short' });
+                let icon = 'fa-bell text-gray-400';
+                if (n.type === 'mention') icon = 'fa-at text-blue-400';
+                if (n.type === 'role') icon = 'fa-shield-halved text-yellow-400';
+                if (n.type === 'welcome') icon = 'fa-handshake text-green-400';
+
+                html += `
+                    <div class="p-3 rounded cursor-pointer hover:bg-tactical-panel transition mb-1 ${bgClass}" onclick="handleNotifClick('${n.id}', '${n.link || ''}')">
+                        <div class="flex items-start gap-3">
+                            <div class="mt-0.5"><i class="fa-solid ${icon}"></i></div>
+                            <div class="flex-grow">
+                                <p class="text-xs text-white leading-tight mb-1">${n.message}</p>
+                                <span class="text-[9px] text-tactical-text font-mono">${timeDate}</span>
+                            </div>
+                            ${!n.read ? `<div class="w-2 h-2 rounded-full bg-red-500 shrink-0 mt-1"></div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (html === '') {
+                html = '<div class="text-center p-4 text-tactical-text text-xs font-mono">Tiada notifikasi setakat ini.</div>';
+            }
+            if (notifList) notifList.innerHTML = html;
+        }
+
+        window.toggleNotifications = function() {
+            const panel = document.getElementById('notif-panel');
+            if (panel) panel.classList.toggle('hidden');
+        }
+
+        window.handleNotifClick = async function(id, link) {
+            const n = notifications.find(x => x.id === id);
+            if (n && !n.read) {
+                try {
+                    await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.id, 'notifications', id), { read: true });
+                } catch(e) {}
+            }
+            if (link) {
+                window.navigateTo(link);
+                const panel = document.getElementById('notif-panel');
+                if(panel) panel.classList.add('hidden');
+            }
+        }
+
+        window.markAllNotifRead = async function() {
+            const unreads = notifications.filter(n => !n.read);
+            unreads.forEach(async (n) => {
+                try {
+                    await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.id, 'notifications', n.id), { read: true });
+                } catch(e) {}
+            });
+        }
+
+        // Tutup panel notifikasi apabila klik di luar kawasan
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('notif-container');
+            const panel = document.getElementById('notif-panel');
+            if (container && !container.contains(e.target) && panel && !panel.classList.contains('hidden')) {
+                panel.classList.add('hidden');
+            }
+        });
 
         window.onload = init;
     </script>
