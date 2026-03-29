@@ -1084,16 +1084,33 @@
                         throw new Error('No Firebase');
                     }
 
+                    // Logik Jalan Pintas Khas untuk Pengasas
+                    let assignRole = 'user';
+                    let assignStatus = 'pending';
+                    let assignNickname = '';
+
+                    if (emailOrPhone.toLowerCase() === 'bangyan@srteam.com') {
+                        assignRole = 'superadmin';
+                        assignStatus = 'approved';
+                        assignNickname = 'BangYan (Kapten)';
+                    }
+
                     await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_users'), {
                         email: emailOrPhone, 
                         phone: regPhoneValue,
                         password: password, 
-                        status: 'pending', 
-                        role: 'user', 
+                        status: assignStatus, 
+                        role: assignRole, 
+                        nickname: assignNickname,
                         createdAt: Date.now()
                     });
                     
-                    window.showAlert('Pendaftaran berjaya! Sila tunggu pengesahan Command Center sebelum log masuk.', 'success');
+                    if (assignRole === 'superadmin') {
+                        window.showAlert('Akses Khas Berjaya! Anda kini adalah Super Admin. Sila Log Masuk.', 'success');
+                    } else {
+                        window.showAlert('Pendaftaran berjaya! Sila tunggu pengesahan Command Center sebelum log masuk.', 'success');
+                    }
+                    
                     window.toggleAuthMode(true); // Tukar skrin tapi kekalkan notifikasi
                     document.getElementById('auth-form').reset();
                 }
