@@ -499,12 +499,12 @@
         </section>
 
         <!-- 7. ADMIN PANEL (KHAS) -->
-        <section id="view-admin" class="view-section hidden">
+        <section id="view-admin" class="view-section hidden w-full overflow-hidden box-border">
             <h2 class="text-3xl font-bold text-white mb-6 border-b border-red-800 pb-2 uppercase"><i class="fa-solid fa-user-shield text-red-500 mr-2"></i> COMMAND CENTER</h2>
             
-            <div class="grid lg:grid-cols-4 gap-6">
+            <div class="flex flex-col lg:grid lg:grid-cols-4 gap-6 w-full min-w-0">
                 <!-- Statistik Admin -->
-                <div class="lg:col-span-1 space-y-4">
+                <div class="lg:col-span-1 space-y-4 w-full min-w-0">
                     <div class="panel-tactical p-4 rounded border-l-red-500">
                         <h4 class="text-tactical-text text-xs font-mono mb-1">REKRUT BARU (PENDING)</h4>
                         <div class="text-3xl font-bold text-yellow-500" id="stat-pending">0</div>
@@ -520,23 +520,24 @@
                 </div>
 
                 <!-- Senarai Pengesahan -->
-                <div class="lg:col-span-3">
-                    <div class="flex border-b border-tactical-border mb-6">
-                        <button onclick="switchAdminTab('tab-members')" id="btn-tab-members" class="admin-tab-btn px-6 py-3 font-bold text-tactical-green border-b-2 border-tactical-green bg-tactical-panel transition uppercase tracking-wider text-sm">Data Member</button>
-                        <button onclick="switchAdminTab('tab-tours')" id="btn-tab-tours" class="admin-tab-btn px-6 py-3 font-bold text-tactical-text hover:text-white transition uppercase tracking-wider text-sm">Scrim & Tour</button>
+                <div class="lg:col-span-3 w-full min-w-0 overflow-hidden">
+                    <div class="flex flex-wrap border-b border-tactical-border mb-6 gap-2 pb-2">
+                        <button onclick="switchAdminTab('tab-members')" id="btn-tab-members" class="admin-tab-btn px-4 py-2 md:px-6 md:py-3 font-bold text-tactical-green border-b-2 border-tactical-green bg-tactical-panel transition uppercase tracking-wider text-xs md:text-sm whitespace-nowrap">Data Member</button>
+                        <button onclick="switchAdminTab('tab-tours')" id="btn-tab-tours" class="admin-tab-btn px-4 py-2 md:px-6 md:py-3 font-bold text-tactical-text hover:text-white transition uppercase tracking-wider text-xs md:text-sm whitespace-nowrap">Scrim & Tour</button>
                     </div>
 
                     <!-- Tab Content: Data Member -->
-                    <div id="tab-members" class="admin-tab-content block">
-                        <div class="panel-tactical p-6 rounded">
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-users text-tactical-green mr-2"></i> Pangkalan Data Member</h3>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left font-mono text-sm border-collapse min-w-[700px]">
+                    <div id="tab-members" class="admin-tab-content block w-full min-w-0">
+                        <div class="panel-tactical p-3 md:p-6 rounded w-full overflow-hidden box-border">
+                            <h3 class="text-lg md:text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-users text-tactical-green mr-2"></i> Pangkalan Data Member</h3>
+                            <div class="w-full overflow-x-auto pb-4">
+                                <table class="w-full text-left font-mono text-sm border-collapse min-w-max">
                                     <thead>
                                         <tr class="bg-tactical-dark border-y border-tactical-border text-tactical-text">
-                                            <th class="p-3">TARIKH DAFTAR</th>
-                                            <th class="p-3">ID / NICKNAME</th>
-                                            <th class="p-3 text-right">TINDAKAN</th>
+                                            <th class="p-3 whitespace-nowrap">TARIKH DAFTAR</th>
+                                            <th class="p-3 w-full">ID / NICKNAME</th>
+                                            <!-- Lajur NO. WA, PERANAN, STATUS telah dipadam sepenuhnya di sini -->
+                                            <th class="p-3 text-right whitespace-nowrap">TINDAKAN</th>
                                         </tr>
                                     </thead>
                                     <tbody id="admin-user-list">
@@ -548,38 +549,38 @@
                     </div>
 
                     <!-- Tab Content: Scrim & Tour -->
-                    <div id="tab-tours" class="admin-tab-content hidden">
-                        <div class="panel-tactical p-6 rounded mb-6 border-l-4 border-l-yellow-500">
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-bullhorn text-yellow-500 mr-2"></i> Urus Maklumat Misi (Max 3)</h3>
-                            <form onsubmit="submitAnnouncement(event)" class="mb-4">
-                                <div class="grid md:grid-cols-2 gap-4 mb-4">
-                                    <div>
+                    <div id="tab-tours" class="admin-tab-content hidden w-full min-w-0">
+                        <div class="panel-tactical p-3 md:p-6 rounded mb-6 border-l-4 border-l-yellow-500 w-full overflow-hidden box-border">
+                            <h3 class="text-lg md:text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-bullhorn text-yellow-500 mr-2"></i> Urus Maklumat Misi</h3>
+                            <form onsubmit="submitAnnouncement(event)" class="mb-4 w-full">
+                                <div class="flex flex-col md:flex-row gap-4 mb-4 w-full">
+                                    <div class="flex-grow w-full min-w-0">
                                         <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">TAJUK ACARA</label>
-                                        <input type="text" id="announce-title" class="input-tactical w-full p-2 rounded" required placeholder="Cth: Scrim Kumpulan A">
+                                        <input type="text" id="announce-title" class="input-tactical w-full p-3 rounded box-border text-sm" required placeholder="Cth: Scrim Kumpulan A">
                                     </div>
-                                    <div>
+                                    <div class="w-full md:w-1/3 shrink-0 min-w-0">
                                         <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">TARIKH & MASA</label>
-                                        <input type="datetime-local" id="announce-datetime" class="input-tactical w-full p-2 rounded" required>
+                                        <input type="datetime-local" id="announce-datetime" class="input-tactical w-full p-3 rounded box-border text-sm" required>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn-tactical py-2 px-4 rounded text-sm"><i class="fa-solid fa-plus mr-2"></i> TAMBAH MAKLUMAT</button>
+                                <button type="submit" class="btn-tactical py-3 px-4 rounded text-sm w-full md:w-auto"><i class="fa-solid fa-plus mr-2"></i> TAMBAH MAKLUMAT</button>
                             </form>
-                            <div id="admin-announcements-list" class="space-y-3">
+                            <div id="admin-announcements-list" class="space-y-3 w-full overflow-hidden">
                                 <!-- Akan diisi oleh JavaScript -->
                             </div>
                         </div>
 
-                        <div class="panel-tactical p-6 rounded">
-                            <h3 class="text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-trophy text-tactical-green mr-2"></i> Pengesahan Scrim & Tour</h3>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left font-mono text-sm border-collapse min-w-[600px]">
+                        <div class="panel-tactical p-3 md:p-6 rounded w-full overflow-hidden box-border">
+                            <h3 class="text-lg md:text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-trophy text-tactical-green mr-2"></i> Pengesahan Scrim & Tour</h3>
+                            <div class="w-full overflow-x-auto pb-4">
+                                <table class="w-full text-left font-mono text-sm border-collapse min-w-max">
                                     <thead>
                                         <tr class="bg-tactical-dark border-y border-tactical-border text-tactical-text">
-                                            <th class="p-3">MASA</th>
-                                            <th class="p-3">IGN PENGGUNA</th>
-                                            <th class="p-3">WHATSAPP</th>
-                                            <th class="p-3">STATUS</th>
-                                            <th class="p-3 text-right">TINDAKAN</th>
+                                            <th class="p-3 whitespace-nowrap">MASA</th>
+                                            <th class="p-3 w-full">IGN PENGGUNA</th>
+                                            <th class="p-3 whitespace-nowrap">WHATSAPP</th>
+                                            <th class="p-3 whitespace-nowrap">STATUS</th>
+                                            <th class="p-3 text-right whitespace-nowrap">TINDAKAN</th>
                                         </tr>
                                     </thead>
                                     <tbody id="admin-tour-list">
@@ -715,7 +716,7 @@
 
         function getVerifiedBadge(user) {
             if (!user) return '';
-            const isVerified = (user.role === 'superadmin' || user.role === 'admin' || user.role === 'komander' || user.verified);
+            const isVerified = (user.role === 'superadmin' || user.role === 'admin' || user.role === 'komander' || user.role === 'moderator' || user.verified);
             return isVerified ? `<i class="fa-solid fa-circle-check text-blue-500 ml-1 drop-shadow-[0_0_5px_rgba(59,130,246,0.6)]" title="Akaun Disahkan"></i>` : '';
         }
 
@@ -725,6 +726,8 @@
                 return `<span class="bg-yellow-900/30 text-yellow-500 border border-yellow-700/50 px-1.5 py-0.5 rounded text-[8px] ml-1 tracking-widest"><i class="fa-solid fa-star"></i> KAPTEN</span>`;
             } else if (user.role === 'admin') {
                 return `<span class="bg-blue-900/30 text-blue-400 border border-blue-700/50 px-1.5 py-0.5 rounded text-[8px] ml-1 tracking-widest"><i class="fa-solid fa-shield"></i> ADMIN</span>`;
+            } else if (user.role === 'moderator') {
+                return `<span class="bg-purple-900/30 text-purple-400 border border-purple-700/50 px-1.5 py-0.5 rounded text-[8px] ml-1 tracking-widest"><i class="fa-solid fa-eye"></i> MODERATOR</span>`;
             }
             return '';
         }
@@ -744,9 +747,22 @@
 
             if (reqAuth && (!currentUser || currentUser.status !== 'approved')) {
                 window.navigateTo('login', null, false);
-            } else {
-                window.navigateTo(vId, target, false);
+                return;
             }
+
+            // SISTEM PENGESANAN PENCEROBOH (ANTI-BYPASS ADMIN)
+            if (vId === 'admin') {
+                const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.role === 'superadmin' || currentUser.role === 'komander');
+                if (!isAdmin) {
+                    window.showAlert('AMARAN KESELAMATAN: Akses terlarang dikesan! Anda tidak mempunyai kuasa untuk memasuki Command Center. Mengalihkan dalam 5 saat...', 'error');
+                    setTimeout(() => {
+                        window.navigateTo('home');
+                    }, 5000);
+                    return;
+                }
+            }
+
+            window.navigateTo(vId, target, false);
         };
 
         window.addEventListener('hashchange', window.handleRoute);
@@ -757,6 +773,19 @@
             { id: 'chat', label: 'BASECAMP', icon: 'fa-walkie-talkie', reqAuth: true },
             { id: 'tournament', label: 'SCRIM & TOUR', icon: 'fa-trophy', reqAuth: true }
         ];
+
+        window.initNotifListener = function() {
+            if (!currentUser || currentUser.status !== 'approved') return;
+            if (notifUnsubscribe) return; 
+            
+            const notifRef = collection(db, 'artifacts', appId, 'users', currentUser.id, 'notifications');
+            notifUnsubscribe = onSnapshot(notifRef, (snap) => {
+                notifications = [];
+                snap.forEach(doc => notifications.push({ id: doc.id, ...doc.data() }));
+                notifications.sort((a, b) => b.timestamp - a.timestamp);
+                window.renderNotifications();
+            });
+        };
 
         async function init() {
             document.getElementById('current-year').textContent = new Date().getFullYear();
@@ -822,16 +851,8 @@
                 }
                 window.handleRoute(); 
 
-                // MULTIPLEXER NOTIFIKASI (Dengar notifikasi peribadi pengguna)
-                if (currentUser && currentUser.status === 'approved' && !notifUnsubscribe) {
-                    const notifRef = collection(db, 'artifacts', appId, 'users', currentUser.id, 'notifications');
-                    notifUnsubscribe = onSnapshot(notifRef, (snap) => {
-                        notifications = [];
-                        snap.forEach(doc => notifications.push({ id: doc.id, ...doc.data() }));
-                        notifications.sort((a, b) => b.timestamp - a.timestamp);
-                        window.renderNotifications();
-                    });
-                }
+                // MULTIPLEXER NOTIFIKASI
+                window.initNotifListener();
             });
 
             const chatRef = collection(db, 'artifacts', appId, 'public', 'data', 'srteam_chats');
@@ -957,6 +978,18 @@
         }
 
         window.navigateTo = function(viewId, targetEmail = null, updateHash = true) {
+            // SISTEM PENGUNCI KESELAMATAN MUTLAK (ANTI-BYPASS)
+            if (viewId === 'admin') {
+                const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.role === 'superadmin' || currentUser.role === 'komander');
+                if (!isAdmin) {
+                    window.showAlert('⚠️ AMARAN KESELAMATAN: Akses ditolak! Menutup pangkalan...', 'error');
+                    viewId = 'home'; // Tendang keluar terus
+                    targetEmail = null;
+                    if (updateHash) window.history.pushState(null, '', '#home');
+                    else window.location.hash = 'home';
+                }
+            }
+
             if (updateHash) {
                 let hashStr = viewId;
                 if (targetEmail && viewId === 'profile') {
@@ -996,6 +1029,7 @@
                 let roleText = 'MEMBER';
                 if (displayUser.role === 'admin') roleText = 'ADMIN / PEGAWAI';
                 if (displayUser.role === 'komander') roleText = 'KAPTEN KLAN (KOMANDER)';
+                if (displayUser.role === 'moderator') roleText = 'PENGAWAS (MODERATOR)';
                 if (displayUser.role === 'superadmin') roleText = 'PENGASAS (SUPER ADMIN)';
                 
                 const profileRole = document.getElementById('profile-role');
@@ -1012,7 +1046,7 @@
                 }
 
                 const verifiedBadge = document.getElementById('profile-verified-badge');
-                const isVerifiedAuto = (displayUser.role === 'superadmin' || displayUser.role === 'admin' || displayUser.role === 'komander' || displayUser.verified);
+                const isVerifiedAuto = (displayUser.role === 'superadmin' || displayUser.role === 'admin' || displayUser.role === 'komander' || displayUser.role === 'moderator' || displayUser.verified);
                 if (isVerifiedAuto) {
                     verifiedBadge.classList.remove('hidden');
                     verifiedBadge.setAttribute('onclick', 'toggleVerifiedInfo()');
@@ -1178,8 +1212,8 @@
 
         window.toggleAuthMode = function(keepAlert = false) {
             isLoginMode = !isLoginMode;
-            document.getElementById('auth-title').textContent = isLoginMode ? 'PENGESAHAN IDENTITI' : 'PENDAFTARAN REKRUT';
-            document.getElementById('auth-subtitle').textContent = isLoginMode ? 'Sila log masuk untuk mengakses sistem' : 'Daftar butiran untuk kelulusan pentadbir';
+            document.getElementById('auth-title').textContent = isLoginMode ? 'PENGESAHAN IDENTITI' : 'PERMOHONAN MEMBER BARU';
+            document.getElementById('auth-subtitle').textContent = isLoginMode ? 'Sila log masuk untuk mengakses sistem' : 'Mohon pendaftaran untuk menjadi member rasmi';
             document.getElementById('auth-submit-btn').innerHTML = isLoginMode ? 'LOG MASUK' : 'MOHON PENDAFTARAN';
             
             const phoneGroup = document.getElementById('phone-group');
@@ -1232,6 +1266,7 @@
                             } else {
                                 sessionStorage.setItem('srteam_session', JSON.stringify(currentUser));
                             }
+                            window.initNotifListener(); 
                             window.updateNavigation();
                             window.navigateTo('home');
                             window.showAlert(`Selamat kembali ke pangkalan.`, 'success');
@@ -1251,7 +1286,6 @@
                         throw new Error('No Firebase');
                     }
 
-                    // Simpan data dan dapatkan ID pengguna baharu (newUserRef)
                     const newUserRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_users'), {
                         email: emailOrPhone, 
                         phone: regPhoneValue,
@@ -1261,15 +1295,13 @@
                         createdAt: Date.now()
                     });
                     
-                    // Notifikasi Panggilan Sambutan ke Inbox Member Baharu
-                    window.sendNotification(newUserRef.id, "Selamat datang di SRTEAM Official Web! Pendaftaran anda sedang diproses oleh Command Center.", "welcome", "profile");
+                    await window.sendNotification(newUserRef.id, "Selamat datang di SRTEAM Official Web! Pendaftaran anda sedang diproses oleh Command Center.", "welcome", "profile");
 
-                    // Notifikasi Automatik kepada semua Admin/Superadmin/Komander (DIPERKUAT)
-                    users.forEach(u => {
+                    for (const u of users) {
                         if (u.role === 'admin' || u.role === 'superadmin' || u.role === 'komander') {
-                            window.sendNotification(u.id, `⚠️ PANGGILAN REKRUT: Seseorang dengan ID (${emailOrPhone}) baru sahaja mendaftar ke portal. Sila semak di Command Center!`, "admin_alert", "admin");
+                            await window.sendNotification(u.id, `⚠️ PERMOHONAN MEMBER BARU: ID (${emailOrPhone}) telah menghantar permohonan pendaftaran masuk. Sila sahkan!`, "admin_alert", "admin");
                         }
-                    });
+                    }
 
                     window.showAlert('Pendaftaran berjaya! Sila tunggu pengesahan Command Center sebelum log masuk.', 'success');
                     window.toggleAuthMode(true); 
@@ -1501,16 +1533,14 @@
                 const avatarImgList = user.photoURL ? `<img src="${user.photoURL}" class="w-8 h-8 rounded-full object-cover inline-block border border-tactical-green/50 shrink-0 cursor-pointer hover:opacity-80 transition" onclick="navigateTo('profile', '${user.email}')" title="Lihat Profil">` : `<div onclick="navigateTo('profile', '${user.email}')" class="w-8 h-8 rounded-full bg-tactical-panel border border-tactical-border text-xs flex items-center justify-center shrink-0 cursor-pointer hover:bg-tactical-green hover:text-black transition" title="Lihat Profil"><i class="fa-solid fa-user"></i></div>`;
                 const verifiedIconList = getVerifiedBadge(user);
 
-                // Susun Atur Tindakan Ikon Padat
                 let actionButtons = '<div class="flex flex-wrap justify-end gap-1.5">';
                 
                 if (user.status === 'pending') {
-                    actionButtons += `<button onclick="updateUserStatus('${user.id}', 'approved')" class="bg-green-800 hover:bg-green-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Luluskan Pendaftaran"><i class="fa-solid fa-check"></i></button>`;
-                    actionButtons += `<button onclick="deleteUser('${user.id}')" class="bg-red-800 hover:bg-red-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Tolak Pendaftaran"><i class="fa-solid fa-xmark"></i></button>`;
+                    actionButtons += `<button onclick="updateUserStatus('${user.id}', 'approved')" class="bg-green-800 hover:bg-green-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Lulus"><i class="fa-solid fa-check"></i></button>`;
+                    actionButtons += `<button onclick="deleteUser('${user.id}')" class="bg-red-800 hover:bg-red-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Tolak"><i class="fa-solid fa-xmark"></i></button>`;
                 } else {
                     if (isSuperAdmin || currentUser.role === 'komander') {
                         if (user.role === 'user') {
-                            // Ikon Check Sah / Batal (Verify)
                             const verifyBtnIcon = user.verified ? '<i class="fa-solid fa-circle-xmark"></i>' : '<i class="fa-solid fa-circle-check"></i>';
                             const verifyBtnColor = user.verified ? 'bg-gray-700 hover:bg-gray-600 text-gray-400' : 'bg-blue-600 hover:bg-blue-500 text-white';
                             const verifyTitle = user.verified ? 'Buang Blue Tick' : 'Beri Blue Tick';
@@ -1519,37 +1549,35 @@
                     }
 
                     if (isSuperAdmin) {
-                        // Ikon Jadikan Admin: fa-user-shield
                         if (user.role === 'user') {
-                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Admin"><i class="fa-solid fa-user-shield"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Komander"><i class="fa-solid fa-star"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'moderator')" class="bg-purple-800 hover:bg-purple-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Moderator"><i class="fa-solid fa-user-gear"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Admin"><i class="fa-solid fa-user-shield"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Komander"><i class="fa-solid fa-star"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'moderator')" class="bg-purple-800 hover:bg-purple-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Moderator"><i class="fa-solid fa-user-gear"></i></button>`;
                         } else if (user.role === 'admin') {
-                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Komander"><i class="fa-solid fa-star"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Komander"><i class="fa-solid fa-star"></i></button>`;
                             actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
                         } else if (user.role === 'komander') {
-                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Admin"><i class="fa-solid fa-user-shield"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Admin"><i class="fa-solid fa-user-shield"></i></button>`;
                             actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
                         } else if (user.role === 'moderator') {
-                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Admin"><i class="fa-solid fa-user-shield"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Komander"><i class="fa-solid fa-star"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Admin"><i class="fa-solid fa-user-shield"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Komander"><i class="fa-solid fa-star"></i></button>`;
                             actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
                         }
                         
                         if (user.status !== 'banned') {
-                            actionButtons += `<button onclick="updateUserStatus('${user.id}', 'banned')" class="bg-red-900 hover:bg-red-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Ban Akaun"><i class="fa-solid fa-ban"></i></button>`;
+                            actionButtons += `<button onclick="updateUserStatus('${user.id}', 'banned')" class="bg-red-900 hover:bg-red-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Ban"><i class="fa-solid fa-ban"></i></button>`;
                         } else {
-                            actionButtons += `<button onclick="updateUserStatus('${user.id}', 'approved')" class="bg-green-700 hover:bg-green-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Unban Akaun"><i class="fa-solid fa-unlock"></i></button>`;
+                            actionButtons += `<button onclick="updateUserStatus('${user.id}', 'approved')" class="bg-green-700 hover:bg-green-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Unban"><i class="fa-solid fa-unlock"></i></button>`;
                         }
-                        actionButtons += `<button onclick="openEditAdminModal('${user.id}')" class="bg-yellow-800 hover:bg-yellow-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Ubahsuai Profil"><i class="fa-solid fa-pen"></i></button>`;
+                        actionButtons += `<button onclick="openEditAdminModal('${user.id}')" class="bg-yellow-800 hover:bg-yellow-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Kemaskini"><i class="fa-solid fa-pen"></i></button>`;
                     } else if (user.role !== 'superadmin' && user.role !== 'komander') {
-                        actionButtons += `<span class="w-8 h-8 flex items-center justify-center text-tactical-text" title="Akaun Sah"><i class="fa-solid fa-check text-green-500"></i></span>`;
+                        actionButtons += `<span class="w-8 h-8 flex items-center justify-center text-tactical-text"><i class="fa-solid fa-check text-green-500"></i></span>`;
                     }
                 }
                 
                 actionButtons += '</div>';
 
-                // Data disusun menjadi 3 Lajur Kompak
                 userHtml += `
                     <tr class="border-b border-tactical-border/50 hover:bg-tactical-panel/50">
                         <td class="p-3 text-[10px] sm:text-xs font-mono leading-tight whitespace-nowrap align-middle">${dateDisplay}</td>
@@ -1586,10 +1614,10 @@
 
                 let tourActions = '<div class="flex flex-wrap justify-end gap-1.5">';
                 if (tour.status === 'pending') {
-                    tourActions += `<button onclick="updateTourStatus('${tour.id}', 'approved')" class="bg-green-800 hover:bg-green-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Luluskan"><i class="fa-solid fa-check"></i></button>`;
-                    tourActions += `<button onclick="updateTourStatus('${tour.id}', 'rejected')" class="bg-red-800 hover:bg-red-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Tolak"><i class="fa-solid fa-xmark"></i></button>`;
+                    tourActions += `<button onclick="updateTourStatus('${tour.id}', 'approved')" class="bg-green-800 hover:bg-green-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Luluskan"><i class="fa-solid fa-check"></i></button>`;
+                    tourActions += `<button onclick="updateTourStatus('${tour.id}', 'rejected')" class="bg-red-800 hover:bg-red-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Tolak"><i class="fa-solid fa-xmark"></i></button>`;
                 } else {
-                     tourActions += `<button onclick="deleteTour('${tour.id}')" class="bg-gray-800 hover:bg-gray-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Padam"><i class="fa-solid fa-trash"></i></button>`;
+                     tourActions += `<button onclick="deleteTour('${tour.id}')" class="bg-gray-800 hover:bg-gray-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Padam"><i class="fa-solid fa-trash"></i></button>`;
                 }
                 tourActions += '</div>';
 
@@ -1599,7 +1627,7 @@
                         <td class="p-3 text-tactical-green font-bold flex items-center gap-1">${dynamicName} ${verifiedIcon} ${roleBadge}</td>
                         <td class="p-3 text-white">${tourUser ? (tourUser.phone || tour.whatsapp) : tour.whatsapp}</td>
                         <td class="p-3 font-bold ${sColor}">${tour.status.toUpperCase()}</td>
-                        <td class="p-3 text-right">${tourActions}</td>
+                        <td class="p-3 text-right min-w-[100px]">${tourActions}</td>
                     </tr>
                 `;
             });
@@ -1642,7 +1670,6 @@
                 const targetUser = users.find(u => u.id === id);
                 if (!targetUser) return;
 
-                // Definisi Level Pangkat
                 const rankValues = { 'superadmin': 5, 'admin': 4, 'moderator': 3, 'komander': 2, 'user': 1 };
                 const roleNames = { 'superadmin': 'SUPER ADMIN', 'admin': 'ADMIN', 'moderator': 'MODERATOR', 'komander': 'KOMANDER', 'user': 'MEMBER BIASA' };
 
@@ -1653,14 +1680,13 @@
                 await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_users', id), { role: role }); 
                 
                 let notifMsg = "";
-                let notifType = "role"; // Default icon (Shield)
+                let notifType = "role"; 
 
-                // Cek Naik atau Turun Pangkat
                 if (newRank > oldRank) {
                     notifMsg = `Tahniah! Pangkat anda telah dinaik taraf kepada ${roleNameDisplay}.`;
                 } else if (newRank < oldRank) {
                     notifMsg = `Perhatian: Pangkat anda telah diturunkan kepada ${roleNameDisplay} atas arahan Command Center.`;
-                    notifType = "rejected"; // Ikon amaran merah/pangkah
+                    notifType = "rejected"; 
                 } else {
                     notifMsg = `Pangkat anda telah dikemas kini kepada ${roleNameDisplay}.`;
                 }
@@ -1707,13 +1733,12 @@
             try { 
                 await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_tournaments', id), { status: status }); 
                 
-                // Hantar notifikasi kepada pemohon
                 const tour = tournaments.find(t => t.id === id);
                 if (tour && tour.userId) {
                     if (status === 'approved') {
-                        window.sendNotification(tour.userId, `Permohonan Scrim & Tour anda telah DILULUSKAN oleh Command Center.`, "approved", "tournament");
+                        await window.sendNotification(tour.userId, `Permohonan Scrim & Tour anda telah DILULUSKAN oleh Command Center.`, "approved", "tournament");
                     } else if (status === 'rejected') {
-                        window.sendNotification(tour.userId, `Permohonan Scrim & Tour anda telah DITOLAK.`, "rejected", "tournament");
+                        await window.sendNotification(tour.userId, `Permohonan Scrim & Tour anda telah DITOLAK.`, "rejected", "tournament");
                     }
                 }
             } catch(err) { }
@@ -1890,12 +1915,11 @@
                     timestamp: Date.now()
                 });
 
-                // Notifikasi kepada semua Admin/Superadmin/Komander
-                users.forEach(u => {
+                for (const u of users) {
                     if (u.role === 'admin' || u.role === 'superadmin' || u.role === 'komander') {
-                        window.sendNotification(u.id, `${ign} telah memohon untuk menyertai senarai roster Scrim & Tour. Sila sahkan.`, "admin_alert", "admin");
+                        await window.sendNotification(u.id, `⚠️ PERMOHONAN TOURNAMENT: ${ign} telah memohon pendaftaran masuk menjadi member roster Scrim & Tour. Sila sahkan!`, "admin_alert", "admin");
                     }
-                });
+                }
 
                 window.showAlert('Berjaya bergabung! Sila tunggu pengesahan Command Center.', 'success');
             } catch (err) { 
@@ -2041,7 +2065,6 @@
                 });
                 input.value = '';
                 
-                // HANTAR NOTIFIKASI JIKA ADA MENTION (@Nickname) - DIBAIKI
                 for (const u of users) {
                     if (u.id === currentUser.id) continue;
                     const uNick = (u.nickname || u.email.split('@')[0]).toUpperCase();
