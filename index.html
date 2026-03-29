@@ -1403,30 +1403,91 @@
             // 1. Penapis HTML untuk keselamatan
             let formatted = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             
-            // Warna untuk teks tebal bergantung kepada pengirim (AI atau Member)
-            const boldColor = isAI ? 'text-blue-300' : 'text-tactical-green';
-            
             // 2. Blok Kod (Multi-line)
-            formatted = formatted.replace(/```([\s\S]*?)```/g, '<pre class="bg-black/80 p-2 rounded my-1 overflow-x-auto text-xs text-green-400 font-mono border border-tactical-border"><code>$1</code></pre>');
+            formatted = formatted.replace(/```([\s\S]*?)```/g, '<pre class="bg-black/60 p-2 rounded-lg my-2 overflow-x-auto text-xs text-green-400 font-mono border border-white/10"><code>$1</code></pre>');
 
             // 3. Tajuk / Heading (### Tajuk)
-            formatted = formatted.replace(/^###\s+(.*)$/gm, `<strong class="text-base block mt-2 mb-1 ${boldColor}">$1</strong>`);
-            formatted = formatted.replace(/^##\s+(.*)$/gm, `<strong class="text-lg block mt-2 mb-1 ${boldColor}">$1</strong>`);
-            formatted = formatted.replace(/^#\s+(.*)$/gm, `<strong class="text-xl block mt-2 mb-1 ${boldColor}">$1</strong>`);
+            formatted = formatted.replace(/^###\s+(.*)$/gm, `<strong class="text-base block mt-2 mb-1 text-white">$1</strong>`);
+            formatted = formatted.replace(/^##\s+(.*)$/gm, `<strong class="text-lg block mt-2 mb-1 text-white">$1</strong>`);
+            formatted = formatted.replace(/^#\s+(.*)$/gm, `<strong class="text-xl block mt-2 mb-1 text-white">$1</strong>`);
             
             // 4. Titik peluru / Bullet points (* atau -)
-            formatted = formatted.replace(/^[\*-]\s+(.*)$/gm, '<span class="mr-1 text-tactical-green font-bold">•</span> $1');
+            formatted = formatted.replace(/^[\*-]\s+(.*)$/gm, '<span class="mr-2 opacity-70">•</span> $1');
 
             // 5. Tulisan Tebal (Bold) **teks**
-            formatted = formatted.replace(/\*\*([^\*]+)\*\*/g, `<strong class="font-bold ${boldColor} drop-shadow-md">$1</strong>`);
+            formatted = formatted.replace(/\*\*([^\*]+)\*\*/g, `<strong class="font-bold text-white">$1</strong>`);
             
             // 6. Tulisan Condong (Italic) *teks*
             formatted = formatted.replace(/\*([^\*]+)\*/g, '<em class="italic opacity-90">$1</em>');
             
             // 7. Kod sebaris (Inline code) `teks`
-            formatted = formatted.replace(/`([^`]+)`/g, '<code class="bg-black/60 px-1 py-0.5 rounded font-mono text-xs text-yellow-300 border border-tactical-border/50">$1</code>');
+            formatted = formatted.replace(/`([^`]+)`/g, '<code class="bg-black/40 px-1.5 py-0.5 rounded font-mono text-xs text-yellow-200 border border-white/10">$1</code>');
             
             return formatted;
+        }
+
+        function renderChats(chats) {
+            const chatContainer = document.getElementById('chat-messages');
+            if (!chatContainer) return;
+            let html = '';
+            
+            // Hari ini untuk memformat masa
+            const today = new Date().toLocaleDateString('ms-MY');
+
+            chats.forEach(chat => {
+                const dateObj = new Date(chat.timestamp);
+                const chatDate = dateObj.toLocaleDateString('ms-MY');
+                const timeStr = dateObj.toLocaleTimeString('ms-MY', { hour12: false, hour: '2-digit', minute: '2-digit' });
+                const displayTime = chatDate === today ? timeStr : `${chatDate} ${timeStr}`;
+
+                const nick = currentUser && (currentUser.nickname || currentUser.email.split('@')[0]).toUpperCase();
+                const isMe = chat.sender === nick;
+                const isAI = chat.sender === "A.I SYSTEM";
+                
+                // Terjemah mesej dengan fungsi format baru
+                const displayMessage = window.formatChatMessage(chat.message, isAI);
+                
+                if (isMe) {
+                    html += `
+                        <div class="flex justify-end mb-2">
+                            <div class="bg-tactical-greenDark text-white px-4 py-2 rounded-2xl rounded-tr-sm max-w-[85%] relative shadow-md border border-tactical-green/30">
+                                <div class="text-[13.5px] whitespace-pre-wrap leading-relaxed font-sans">${displayMessage}</div>
+                                <div class="text-[9px] text-green-200/70 text-right mt-1 font-mono tracking-tighter">${displayTime} <i class="fa-solid fa-check-double text-[8px] ml-1"></i></div>
+                            </div>
+                        </div>`;
+                } else if (isAI) {
+                    html += `
+                        <div class="flex justify-start mb-2">
+                            <div class="bg-blue-900/40 text-blue-50 px-4 py-2 rounded-2xl rounded-tl-sm max-w-[85%] relative shadow-md border border-blue-800/50 backdrop-blur-sm">
+                                <p class="text-[10px] font-bold text-blue-400 mb-1 tracking-wider"><i class="fa-solid fa-robot"></i> ${chat.sender}</p>
+                                <div class="text-[13.5px] whitespace-pre-wrap leading-relaxed font-sans">${displayMessage}</div>
+                                <div class="text-[9px] text-blue-300/70 text-right mt-1 font-mono tracking-tighter">${displayTime}</div>
+                            </div>
+                        </div>`;
+                } else {
+                    html += `
+                        <div class="flex justify-start mb-2">
+                            <div class="bg-tactical-panel text-gray-200 px-4 py-2 rounded-2xl rounded-tl-sm max-w-[85%] relative shadow-md border border-tactical-border/50">
+                                <p class="text-[10px] font-bold text-tactical-green mb-1 tracking-wider">${chat.sender}</p>
+                                <div class="text-[13.5px] whitespace-pre-wrap leading-relaxed font-sans">${displayMessage}</div>
+                                <div class="text-[9px] text-gray-500 text-right mt-1 font-mono tracking-tighter">${displayTime}</div>
+                            </div>
+                        </div>`;
+                }
+            });
+            
+            // Mesej sistem / Info enkripsi jika tiada chat
+            if (html === '') {
+                html = `
+                    <div class="flex justify-center my-4">
+                        <span class="bg-tactical-panel/80 text-tactical-text text-[10px] px-3 py-1 rounded-full border border-tactical-border font-mono">
+                            <i class="fa-solid fa-lock text-yellow-500 mr-1"></i> Mesej dan panggilan disulitkan secara hujung-ke-hujung.
+                        </span>
+                    </div>`;
+            }
+
+            chatContainer.innerHTML = html;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         // --- FUNGSI AUDIO (TTS) ---
