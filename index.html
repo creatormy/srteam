@@ -1804,13 +1804,10 @@
 
                     let aiResponseText = "Sistem AI sedang offline. Komunikasi terputus.";
                     
-                    // UBAH: Sistem Auto-Fallback untuk mencari model yang disokong oleh Kunci API anda
+                    // UBAH: Sistem Auto-Fallback diringkaskan untuk elak ralat Rate Limit
                     const modelsToTry = [
                         'gemini-1.5-flash',
-                        'gemini-1.5-flash-8b',
-                        'gemini-2.0-flash',
-                        'gemini-1.0-pro',
-                        'gemini-pro' // Ini adalah model asas yang paling pasti akan berjaya
+                        'gemini-pro' // Backup terakhir yang paling dijamin
                     ];
 
                     for (let i = 0; i < modelsToTry.length; i++) {
@@ -1831,9 +1828,16 @@
                             } else {
                                 const errorData = await response.json();
                                 console.warn(`Percubaan model ${modelName} gagal:`, errorData);
+                                
+                                // Tangkap ralat Limit Kuota / Rate Limit (Kod 429)
+                                if (errorData.error?.code === 429 || errorData.error?.status === "RESOURCE_EXHAUSTED") {
+                                    aiResponseText = `⚠️ Sistem Sibuk: Kuota A.I anda telah melepasi had percuma pelayan (Rate Limit). Sila tunggu 1 minit sebelum mencuba lagi.`;
+                                    break; // Keluar dari loop agar tidak memburukkan ralat
+                                }
+
                                 aiResponseText = `⚠️ Ralat Sistem AI: ${errorData.error?.message || 'Permintaan ditolak pelayan'}.`;
                                 
-                                // Jika ralat BUKAN "404 Not Found" (contoh: Kunci API salah), berhenti mencuba
+                                // Jika ralat BUKAN "404 Not Found", berhenti mencuba
                                 if (errorData.error?.code !== 404 && errorData.error?.status !== "NOT_FOUND") {
                                     break; 
                                 }
