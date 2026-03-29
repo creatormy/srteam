@@ -479,7 +479,7 @@
                 <button type="button" onclick="joinTournament()" class="btn-tactical w-full py-4 rounded text-lg transition-transform active:scale-95"><i class="fa-solid fa-hand-fist mr-2"></i> BERGABUNG SEKARANG</button>
             </div>
 
-            <div class="panel-tactical p-4 md:p-8 rounded max-w-2xl mx-auto border-l-4 border-l-green-600 mt-8 w-full overflow-hidden">
+            <div class="panel-tactical p-4 md:p-8 rounded max-w-2xl mx-auto border-l-4 border-l-green-600 mt-8 w-full overflow-hidden box-border">
                 <h3 class="text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-list-check text-tactical-green mr-2"></i> SENARAI ROSTER DISAHKAN</h3>
                 <div class="w-full overflow-x-auto pb-4">
                     <table class="w-full text-left font-mono text-sm border-collapse min-w-[500px]">
@@ -526,31 +526,21 @@
                         <button onclick="switchAdminTab('tab-tours')" id="btn-tab-tours" class="admin-tab-btn px-4 py-2 md:px-6 md:py-3 font-bold text-tactical-text hover:text-white transition uppercase tracking-wider text-xs md:text-sm whitespace-nowrap">Scrim & Tour</button>
                     </div>
 
-                    <!-- Tab Content: Data Member -->
+                    <!-- Tab Content: Data Member (Senarai Dropdown) -->
                     <div id="tab-members" class="admin-tab-content block w-full min-w-0">
-                        <div class="panel-tactical p-3 md:p-6 rounded w-full overflow-hidden box-border">
-                            <h3 class="text-lg md:text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-users text-tactical-green mr-2"></i> Pangkalan Data Member</h3>
-                            <div class="w-full overflow-x-auto pb-4">
-                                <table class="w-full text-left font-mono text-sm border-collapse min-w-max">
-                                    <thead>
-                                        <tr class="bg-tactical-dark border-y border-tactical-border text-tactical-text">
-                                            <th class="p-3 whitespace-nowrap">TARIKH DAFTAR</th>
-                                            <th class="p-3 w-full">ID / NICKNAME</th>
-                                            <!-- Lajur NO. WA, PERANAN, STATUS telah dipadam sepenuhnya di sini -->
-                                            <th class="p-3 text-right whitespace-nowrap">TINDAKAN</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="admin-user-list">
-                                        <!-- Akan diisi oleh JavaScript -->
-                                    </tbody>
-                                </table>
+                        <div class="panel-tactical p-3 md:p-6 rounded w-full box-border">
+                            <h3 class="text-lg md:text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-users text-tactical-green mr-2"></i> Senarai Data Member</h3>
+                            
+                            <!-- Kontena Senarai Member -->
+                            <div id="admin-user-list" class="flex flex-col gap-2 w-full">
+                                <!-- Akan diisi oleh JavaScript -->
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tab Content: Scrim & Tour -->
+                    <!-- Tab Content: Scrim & Tour (Senarai Dropdown) -->
                     <div id="tab-tours" class="admin-tab-content hidden w-full min-w-0">
-                        <div class="panel-tactical p-3 md:p-6 rounded mb-6 border-l-4 border-l-yellow-500 w-full overflow-hidden box-border">
+                        <div class="panel-tactical p-3 md:p-6 rounded mb-6 border-l-4 border-l-yellow-500 w-full box-border">
                             <h3 class="text-lg md:text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-bullhorn text-yellow-500 mr-2"></i> Urus Maklumat Misi</h3>
                             <form onsubmit="submitAnnouncement(event)" class="mb-4 w-full">
                                 <div class="flex flex-col md:flex-row gap-4 mb-4 w-full">
@@ -565,28 +555,17 @@
                                 </div>
                                 <button type="submit" class="btn-tactical py-3 px-4 rounded text-sm w-full md:w-auto"><i class="fa-solid fa-plus mr-2"></i> TAMBAH MAKLUMAT</button>
                             </form>
-                            <div id="admin-announcements-list" class="space-y-3 w-full overflow-hidden">
+                            <div id="admin-announcements-list" class="space-y-3 w-full">
                                 <!-- Akan diisi oleh JavaScript -->
                             </div>
                         </div>
 
-                        <div class="panel-tactical p-3 md:p-6 rounded w-full overflow-hidden box-border">
+                        <div class="panel-tactical p-3 md:p-6 rounded w-full box-border">
                             <h3 class="text-lg md:text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-trophy text-tactical-green mr-2"></i> Pengesahan Scrim & Tour</h3>
-                            <div class="w-full overflow-x-auto pb-4">
-                                <table class="w-full text-left font-mono text-sm border-collapse min-w-max">
-                                    <thead>
-                                        <tr class="bg-tactical-dark border-y border-tactical-border text-tactical-text">
-                                            <th class="p-3 whitespace-nowrap">MASA</th>
-                                            <th class="p-3 w-full">IGN PENGGUNA</th>
-                                            <th class="p-3 whitespace-nowrap">WHATSAPP</th>
-                                            <th class="p-3 whitespace-nowrap">STATUS</th>
-                                            <th class="p-3 text-right whitespace-nowrap">TINDAKAN</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="admin-tour-list">
-                                        <!-- Akan diisi oleh JavaScript -->
-                                    </tbody>
-                                </table>
+                            
+                            <!-- Kontena Senarai Tour -->
+                            <div id="admin-tour-list" class="flex flex-col gap-2 w-full">
+                                <!-- Akan diisi oleh JavaScript -->
                             </div>
                         </div>
                     </div>
@@ -1500,6 +1479,26 @@
             }
         }
 
+        // FUNGSI TOGGLE DROPDOWN TINDAKAN (BARU)
+        window.toggleAdminActions = function(elementId) {
+            const target = document.getElementById(elementId);
+            const icon = document.getElementById('icon-' + elementId);
+            
+            if (target) {
+                if (target.classList.contains('hidden')) {
+                    // Tutup semua yang lain dahulu (pilihan kemas)
+                    document.querySelectorAll('.admin-action-dropdown').forEach(el => el.classList.add('hidden'));
+                    document.querySelectorAll('.dropdown-icon').forEach(ic => { ic.classList.remove('fa-chevron-up'); ic.classList.add('fa-chevron-down'); });
+                    
+                    target.classList.remove('hidden');
+                    if(icon) { icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up'); }
+                } else {
+                    target.classList.add('hidden');
+                    if(icon) { icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down'); }
+                }
+            }
+        }
+
         // --- FUNGSI ADMIN ---
         window.renderAdminPanel = function() {
             const userList = document.getElementById('admin-user-list');
@@ -1523,89 +1522,100 @@
                 let dateDisplay = '-';
                 if (user.createdAt) {
                     const d = new Date(user.createdAt);
-                    const days = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
-                    const dayName = days[d.getDay()];
-                    const dateStr = d.toLocaleDateString('ms-MY');
-                    const timeStr = d.toLocaleTimeString('ms-MY', {hour: '2-digit', minute:'2-digit'});
-                    dateDisplay = `<span class="text-tactical-green font-bold">${dayName}</span><br>${dateStr}<br><span class="text-xs text-tactical-text mt-1 block"><i class="fa-regular fa-clock"></i> ${timeStr}</span>`;
+                    dateDisplay = d.toLocaleDateString('ms-MY', { day: '2-digit', month: 'short', year: 'numeric' });
                 }
 
-                const avatarImgList = user.photoURL ? `<img src="${user.photoURL}" class="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover inline-block border border-tactical-green/50 shrink-0 cursor-pointer hover:opacity-80 transition" onclick="navigateTo('profile', '${user.email}')" title="Lihat Profil">` : `<div onclick="navigateTo('profile', '${user.email}')" class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-tactical-panel border border-tactical-border text-[10px] md:text-xs flex items-center justify-center shrink-0 cursor-pointer hover:bg-tactical-green hover:text-black transition" title="Lihat Profil"><i class="fa-solid fa-user"></i></div>`;
+                const avatarImgList = user.photoURL ? `<img src="${user.photoURL}" class="w-8 h-8 rounded-full object-cover inline-block border border-tactical-green/50 shrink-0">` : `<div class="w-8 h-8 rounded-full bg-tactical-panel border border-tactical-border text-xs flex items-center justify-center shrink-0 text-tactical-text"><i class="fa-solid fa-user"></i></div>`;
                 const verifiedIconList = getVerifiedBadge(user);
+                const statusColor = user.status === 'pending' ? 'text-yellow-500' : (user.status === 'banned' ? 'text-red-500' : 'text-green-500');
 
-                // DIBAIKI: Buang "w-max ml-auto", rapatkan ke kiri (justify-start) gap-1
-                let actionButtons = '<div class="flex flex-wrap justify-start gap-1">';
+                // Susun Butang Ikon 
+                let actionButtons = '<div class="flex flex-wrap justify-start gap-2 pt-2">';
+                // Tambah Butang Profil
+                actionButtons += `<button onclick="navigateTo('profile', '${user.email}')" class="bg-tactical-dark hover:bg-tactical-panel border border-tactical-border w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Lihat Profil Penuh"><i class="fa-solid fa-id-badge text-tactical-green"></i></button>`;
                 
                 if (user.status === 'pending') {
-                    actionButtons += `<button onclick="updateUserStatus('${user.id}', 'approved')" class="bg-green-800 hover:bg-green-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Lulus"><i class="fa-solid fa-check"></i></button>`;
-                    actionButtons += `<button onclick="deleteUser('${user.id}')" class="bg-red-800 hover:bg-red-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Tolak"><i class="fa-solid fa-xmark"></i></button>`;
+                    actionButtons += `<button onclick="updateUserStatus('${user.id}', 'approved')" class="bg-green-800 hover:bg-green-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Lulus"><i class="fa-solid fa-check"></i></button>`;
+                    actionButtons += `<button onclick="deleteUser('${user.id}')" class="bg-red-800 hover:bg-red-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Tolak"><i class="fa-solid fa-xmark"></i></button>`;
                 } else {
                     if (isSuperAdmin || currentUser.role === 'komander') {
                         if (user.role === 'user') {
                             const verifyBtnIcon = user.verified ? '<i class="fa-solid fa-circle-xmark"></i>' : '<i class="fa-solid fa-circle-check"></i>';
                             const verifyBtnColor = user.verified ? 'bg-gray-700 hover:bg-gray-600 text-gray-400' : 'bg-blue-600 hover:bg-blue-500 text-white';
                             const verifyTitle = user.verified ? 'Buang Blue Tick' : 'Beri Blue Tick';
-                            actionButtons += `<button onclick="toggleVerifyStatus('${user.id}', ${!!user.verified})" class="${verifyBtnColor} w-7 h-7 rounded flex items-center justify-center transition shadow-md" title="${verifyTitle}">${verifyBtnIcon}</button>`;
+                            actionButtons += `<button onclick="toggleVerifyStatus('${user.id}', ${!!user.verified})" class="${verifyBtnColor} w-8 h-8 rounded flex items-center justify-center transition shadow-md" title="${verifyTitle}">${verifyBtnIcon}</button>`;
                         }
                     }
 
                     if (isSuperAdmin) {
                         if (user.role === 'user') {
-                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Admin"><i class="fa-solid fa-user-shield"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Komander"><i class="fa-solid fa-star"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'moderator')" class="bg-purple-800 hover:bg-purple-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Moderator"><i class="fa-solid fa-user-gear"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Admin"><i class="fa-solid fa-user-shield"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Komander"><i class="fa-solid fa-star"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'moderator')" class="bg-purple-800 hover:bg-purple-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Moderator"><i class="fa-solid fa-user-gear"></i></button>`;
                         } else if (user.role === 'admin') {
-                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Komander"><i class="fa-solid fa-star"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Komander"><i class="fa-solid fa-star"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
                         } else if (user.role === 'komander') {
-                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Admin"><i class="fa-solid fa-user-shield"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Admin"><i class="fa-solid fa-user-shield"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
                         } else if (user.role === 'moderator') {
-                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Admin"><i class="fa-solid fa-user-shield"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Jadikan Komander"><i class="fa-solid fa-star"></i></button>`;
-                            actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'admin')" class="bg-blue-800 hover:bg-blue-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Admin"><i class="fa-solid fa-user-shield"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'komander')" class="bg-yellow-700 hover:bg-yellow-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Jadi Komander"><i class="fa-solid fa-star"></i></button>`;
+                            actionButtons += `<button onclick="setRole('${user.id}', 'user')" class="bg-gray-700 hover:bg-gray-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Buang Pangkat"><i class="fa-solid fa-user-minus"></i></button>`;
                         }
                         
                         if (user.status !== 'banned') {
-                            actionButtons += `<button onclick="updateUserStatus('${user.id}', 'banned')" class="bg-red-900 hover:bg-red-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Ban Akaun"><i class="fa-solid fa-ban"></i></button>`;
+                            actionButtons += `<button onclick="updateUserStatus('${user.id}', 'banned')" class="bg-red-900 hover:bg-red-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Ban"><i class="fa-solid fa-ban"></i></button>`;
                         } else {
-                            actionButtons += `<button onclick="updateUserStatus('${user.id}', 'approved')" class="bg-green-700 hover:bg-green-500 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Unban Akaun"><i class="fa-solid fa-unlock"></i></button>`;
+                            actionButtons += `<button onclick="updateUserStatus('${user.id}', 'approved')" class="bg-green-700 hover:bg-green-500 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Unban"><i class="fa-solid fa-unlock"></i></button>`;
                         }
-                        actionButtons += `<button onclick="openEditAdminModal('${user.id}')" class="bg-yellow-800 hover:bg-yellow-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Ubahsuai Profil"><i class="fa-solid fa-pen"></i></button>`;
-                    } else if (user.role !== 'superadmin' && user.role !== 'komander') {
-                        actionButtons += `<span class="w-7 h-7 flex items-center justify-center text-tactical-text"><i class="fa-solid fa-check text-green-500"></i></span>`;
+                        actionButtons += `<button onclick="openEditAdminModal('${user.id}')" class="bg-yellow-800 hover:bg-yellow-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Kemaskini"><i class="fa-solid fa-pen"></i></button>`;
                     }
                 }
-                
                 actionButtons += '</div>';
 
+                // BENTUK KAD DROPDOWN 
                 userHtml += `
-                    <tr class="border-b border-tactical-border/50 hover:bg-tactical-panel/50">
-                        <td class="p-2 md:p-3 text-[9px] md:text-xs font-mono leading-tight whitespace-nowrap align-middle">${dateDisplay}</td>
-                        <td class="p-2 md:p-3 text-white align-middle">
-                            <div class="flex items-center gap-2">
+                    <div class="bg-tactical-dark border border-tactical-border/50 rounded flex flex-col w-full">
+                        <!-- Baris Klik -->
+                        <div class="p-3 md:p-4 flex items-center justify-between cursor-pointer hover:bg-tactical-panel transition w-full" onclick="toggleAdminActions('action-user-${user.id}')">
+                            <div class="flex items-center gap-3 w-full min-w-0">
                                 ${avatarImgList}
-                                <div class="flex flex-col min-w-0">
+                                <div class="flex flex-col min-w-0 flex-grow">
                                     <span class="flex items-center gap-1 flex-wrap">
-                                        <a onclick="navigateTo('profile', '${user.email}')" class="cursor-pointer hover:text-tactical-green hover:underline transition font-bold text-[11px] md:text-sm break-words">
-                                            ${user.nickname || user.email}
-                                        </a>
-                                        ${verifiedIconList}
+                                        <span class="font-bold text-[13px] md:text-sm text-white truncate w-full">${user.nickname || user.email}</span>
                                     </span>
-                                    ${roleBadge ? `<div class="mt-0.5">${roleBadge}</div>` : `<div class="mt-0.5"><span class="text-[8px] text-gray-500 font-mono"><i class="fa-solid fa-user"></i> MEMBER</span></div>`}
+                                    <div class="mt-0.5 flex flex-wrap items-center gap-1">
+                                        ${verifiedIconList}
+                                        ${roleBadge ? roleBadge : `<span class="text-[8px] text-gray-500 font-mono"><i class="fa-solid fa-user"></i> MEMBER</span>`}
+                                    </div>
                                 </div>
                             </div>
-                        </td>
-                        <td class="p-2 md:p-3 text-left align-middle">${actionButtons}</td>
-                    </tr>
+                            <div class="flex flex-col items-end shrink-0 ml-2">
+                                <span class="text-[10px] text-tactical-text font-mono">${dateDisplay}</span>
+                                <i id="icon-action-user-${user.id}" class="dropdown-icon fa-solid fa-chevron-down text-tactical-green mt-2 text-xs"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Laci Tindakan Tersembunyi -->
+                        <div id="action-user-${user.id}" class="admin-action-dropdown hidden bg-[#0b0b0b] p-3 border-t border-tactical-border/30 w-full">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-[10px] text-tactical-text font-mono uppercase">Panel Kawalan Ahli</span>
+                                <span class="font-bold text-[10px] ${statusColor}">${user.status.toUpperCase()}</span>
+                            </div>
+                            ${actionButtons}
+                        </div>
+                    </div>
                 `;
             });
-            if (userList) userList.innerHTML = userHtml === '' ? `<tr><td colspan="3" class="p-4 text-center text-tactical-text">Tiada rekod member.</td></tr>` : userHtml;
+            
+            if (userList) userList.innerHTML = userHtml === '' ? `<div class="p-4 text-center text-tactical-text text-sm font-mono border border-tactical-border rounded bg-tactical-dark">Tiada rekod member.</div>` : userHtml;
 
+            // --- BAHAGIAN SCRIM & TOUR ---
             let tourHtml = '';
             tournaments.forEach((tour) => {
                 if (tour.status === 'pending') pendingTourCount++;
-                const timeDate = new Date(tour.timestamp).toLocaleString('ms-MY', { dateStyle: 'short', timeStyle: 'short' });
+                const timeDate = new Date(tour.timestamp).toLocaleDateString('ms-MY', { day: '2-digit', month: 'short', year: 'numeric' });
                 const sColor = tour.status === 'pending' ? 'text-yellow-500' : (tour.status === 'approved' ? 'text-green-500' : 'text-red-500');
                 
                 const tourUser = users.find(u => (tour.userId && u.id === tour.userId) || u.email === tour.pemohon);
@@ -1613,29 +1623,41 @@
                 const verifiedIcon = getVerifiedBadge(tourUser);
                 const roleBadge = window.getSmallRoleBadge(tourUser);
 
-                // DIBAIKI: Buang "w-max ml-auto", rapatkan ke kiri (justify-start) gap-1
-                let tourActions = '<div class="flex flex-wrap justify-start gap-1">';
+                let tourActions = '<div class="flex flex-wrap justify-start gap-2 pt-2">';
                 if (tour.status === 'pending') {
-                    tourActions += `<button onclick="updateTourStatus('${tour.id}', 'approved')" class="bg-green-800 hover:bg-green-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Luluskan"><i class="fa-solid fa-check"></i></button>`;
-                    tourActions += `<button onclick="updateTourStatus('${tour.id}', 'rejected')" class="bg-red-800 hover:bg-red-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Tolak"><i class="fa-solid fa-xmark"></i></button>`;
+                    tourActions += `<button onclick="updateTourStatus('${tour.id}', 'approved')" class="bg-green-800 hover:bg-green-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Luluskan"><i class="fa-solid fa-check"></i></button>`;
+                    tourActions += `<button onclick="updateTourStatus('${tour.id}', 'rejected')" class="bg-red-800 hover:bg-red-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Tolak"><i class="fa-solid fa-xmark"></i></button>`;
                 } else {
-                     tourActions += `<button onclick="deleteTour('${tour.id}')" class="bg-gray-800 hover:bg-gray-600 w-7 h-7 rounded text-white flex items-center justify-center transition shadow-md" title="Padam"><i class="fa-solid fa-trash"></i></button>`;
+                     tourActions += `<button onclick="deleteTour('${tour.id}')" class="bg-gray-800 hover:bg-gray-600 w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Padam"><i class="fa-solid fa-trash"></i></button>`;
                 }
                 tourActions += '</div>';
 
+                // BENTUK KAD DROPDOWN (SCRIM & TOUR)
                 tourHtml += `
-                    <tr class="border-b border-tactical-border/50 hover:bg-tactical-panel/50">
-                        <td class="p-2 md:p-3 text-white whitespace-nowrap align-middle text-[9px] md:text-xs">${timeDate}</td>
-                        <td class="p-2 md:p-3 text-tactical-green font-bold align-middle">
-                            <div class="flex items-center gap-1 flex-wrap text-[11px] md:text-sm">${dynamicName} ${verifiedIcon} ${roleBadge}</div>
-                        </td>
-                        <td class="p-2 md:p-3 text-white whitespace-nowrap align-middle text-[10px] md:text-xs">${tourUser ? (tourUser.phone || tour.whatsapp) : tour.whatsapp}</td>
-                        <td class="p-2 md:p-3 font-bold ${sColor} whitespace-nowrap align-middle text-[10px] md:text-xs">${tour.status.toUpperCase()}</td>
-                        <td class="p-2 md:p-3 text-left align-middle">${tourActions}</td>
-                    </tr>
+                    <div class="bg-tactical-dark border border-tactical-border/50 rounded flex flex-col w-full">
+                        <div class="p-3 md:p-4 flex items-center justify-between cursor-pointer hover:bg-tactical-panel transition w-full" onclick="toggleAdminActions('action-tour-${tour.id}')">
+                            <div class="flex flex-col min-w-0 w-full pr-2">
+                                <span class="flex items-center gap-1 flex-wrap">
+                                    <span class="font-bold text-[13px] md:text-sm text-tactical-green truncate">${dynamicName}</span>
+                                    ${verifiedIcon} ${roleBadge}
+                                </span>
+                                <span class="text-[10px] text-white mt-1.5 font-mono"><i class="fa-brands fa-whatsapp text-green-500 mr-1"></i>${tourUser ? (tourUser.phone || tour.whatsapp) : tour.whatsapp}</span>
+                            </div>
+                            <div class="flex flex-col items-end shrink-0">
+                                <span class="font-bold text-[10px] mb-1 ${sColor}">${tour.status.toUpperCase()}</span>
+                                <span class="text-[10px] text-tactical-text font-mono">${timeDate} <i id="icon-action-tour-${tour.id}" class="dropdown-icon fa-solid fa-chevron-down text-tactical-green ml-1"></i></span>
+                            </div>
+                        </div>
+                        
+                        <div id="action-tour-${tour.id}" class="admin-action-dropdown hidden bg-[#0b0b0b] p-3 border-t border-tactical-border/30 w-full">
+                            <div class="text-[10px] text-tactical-text mb-1 font-mono uppercase border-b border-tactical-border/50 pb-1">Tindakan Roster Misi</div>
+                            ${tourActions}
+                        </div>
+                    </div>
                 `;
             });
-            if (tourList) tourList.innerHTML = tourHtml === '' ? `<tr><td colspan="5" class="p-4 text-center text-tactical-text">Tiada rekod pendaftaran.</td></tr>` : tourHtml;
+            
+            if (tourList) tourList.innerHTML = tourHtml === '' ? `<div class="p-4 text-center text-tactical-text text-sm font-mono border border-tactical-border rounded bg-tactical-dark">Tiada pendaftaran misi.</div>` : tourHtml;
 
             const statPending = document.getElementById('stat-pending');
             if(statPending) statPending.textContent = pendingUserCount;
