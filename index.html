@@ -136,13 +136,13 @@
         </div>
     </header>
 
+    <!-- Notifikasi Terapung (Fixed Toast) -->
+    <div id="alert-box" class="fixed top-24 right-4 z-[9999] hidden p-4 border-l-4 font-mono text-sm max-w-[90vw] md:max-w-md shadow-2xl rounded backdrop-blur-md transition-all duration-300 transform" role="alert">
+        <p id="alert-message" class="flex items-center text-white font-bold tracking-wide"></p>
+    </div>
+
     <!-- Kandungan Utama -->
     <main class="flex-grow container mx-auto px-4 py-8 relative z-10">
-        
-        <!-- Notifikasi -->
-        <div id="alert-box" class="hidden mb-6 p-4 border-l-4 font-mono text-sm" role="alert">
-            <p id="alert-message"></p>
-        </div>
 
         <!-- 1. HALAMAN UTAMA (Home) -->
         <section id="view-home" class="view-section">
@@ -979,7 +979,7 @@
             isLoginMode = !isLoginMode;
             document.getElementById('auth-title').textContent = isLoginMode ? 'PENGESAHAN IDENTITI' : 'PENDAFTARAN REKRUT';
             document.getElementById('auth-subtitle').textContent = isLoginMode ? 'Sila log masuk untuk mengakses sistem' : 'Daftar butiran untuk kelulusan pentadbir';
-            document.getElementById('auth-submit-btn').textContent = isLoginMode ? 'LOG MASUK' : 'MOHON PENDAFTARAN';
+            document.getElementById('auth-submit-btn').innerHTML = isLoginMode ? 'LOG MASUK' : 'MOHON PENDAFTARAN';
             
             const phoneGroup = document.getElementById('phone-group');
             const regPhone = document.getElementById('reg-phone');
@@ -1004,55 +1004,41 @@
 
         window.handleAuth = async function(e) {
             e.preventDefault();
+            const btnSubmit = document.getElementById('auth-submit-btn');
+            const originalBtnText = btnSubmit.innerHTML;
+            
+            // Tukar butang ke mod Loading
+            btnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> MEMPROSES...';
+            btnSubmit.disabled = true;
+            btnSubmit.classList.add('opacity-70', 'cursor-not-allowed');
+
             const emailOrPhone = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const rememberMe = document.getElementById('remember-me') ? document.getElementById('remember-me').checked : false;
 
-            if (isLoginMode) {
-                // Bypass / Setup untuk Super Admin BangYan
-                if (emailOrPhone === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-                    let saUser = users.find(u => u.email === ADMIN_CREDENTIALS.email);
-                    
-                    if (!saUser && firebaseUser) {
-                        try {
-                            const docRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_users'), {
-                                email: ADMIN_CREDENTIALS.email,
-                                password: ADMIN_CREDENTIALS.password,
-                                status: 'approved',
-                                role: 'superadmin',
-                                nickname: 'BangYan',
-                                phone: '',
-                                createdAt: Date.now()
-                            });
-                            saUser = { id: docRef.id, email: ADMIN_CREDENTIALS.email, role: 'superadmin', status: 'approved', nickname: 'BangYan', phone: '' };
-                        } catch(err) { console.error("Gagal cipta admin:", err); }
-                    }
-
-                    currentUser = saUser || { id: 'superadmin_id', email: ADMIN_CREDENTIALS.email, role: 'superadmin', status: 'approved', nickname: 'BangYan', phone: '' };
-                    
-                    if (rememberMe) {
-                        localStorage.setItem('srteam_session', JSON.stringify(currentUser));
-                    } else {
-                        sessionStorage.setItem('srteam_session', JSON.stringify(currentUser));
-                    }
-
-                    window.updateNavigation();
-                    window.navigateTo('home');
-                    window.showAlert(`Akses Kapten (Super Admin) Diberikan.`, 'success');
-                    return;
-                }
-
-                // Pengguna biasa - semak email ATAU nombor telefon
-                const user = users.find(u => (u.email === emailOrPhone || u.phone === emailOrPhone) && u.password === password);
-                if (user) {
-                    if (user.status === 'pending') {
-                        window.showAlert('Akses ditolak. Akaun sedang menunggu pengesahan Command Center.', 'warning');
-                    } else if (user.status === 'banned') {
-                        window.showAlert('AKSES DISEKAT: Akaun anda telah digantung oleh Komander.', 'error');
-                    } else {
-                        currentUser = user;
+            try {
+                if (isLoginMode) {
+                    // Bypass / Setup untuk Super Admin BangYan
+                    if (emailOrPhone === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+                        let saUser = users.find(u => u.email === ADMIN_CREDENTIALS.email);
                         
-                        // Simpan Sesi Berdasarkan Pilihan
+                        if (!saUser && firebaseUser) {
+                            try {
+                                const docRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_users'), {
+                                    email: ADMIN_CREDENTIALS.email,
+                                    password: ADMIN_CREDENTIALS.password,
+                                    status: 'approved',
+                                    role: 'superadmin',
+                                    nickname: 'BangYan',
+                                    phone: '',
+                                    createdAt: Date.now()
+                                });
+                                saUser = { id: docRef.id, email: ADMIN_CREDENTIALS.email, role: 'superadmin', status: 'approved', nickname: 'BangYan', phone: '' };
+                            } catch(err) { console.error("Gagal cipta admin:", err); }
+                        }
+
+                        currentUser = saUser || { id: 'superadmin_id', email: ADMIN_CREDENTIALS.email, role: 'superadmin', status: 'approved', nickname: 'BangYan', phone: '' };
+                        
                         if (rememberMe) {
                             localStorage.setItem('srteam_session', JSON.stringify(currentUser));
                         } else {
@@ -1061,21 +1047,42 @@
 
                         window.updateNavigation();
                         window.navigateTo('home');
-                        window.showAlert(`Selamat kembali ke pangkalan.`, 'success');
+                        window.showAlert(`Akses Kapten (Super Admin) Diberikan.`, 'success');
+                    } else {
+                        // Pengguna biasa
+                        const user = users.find(u => (u.email === emailOrPhone || u.phone === emailOrPhone) && u.password === password);
+                        if (user) {
+                            if (user.status === 'pending') {
+                                window.showAlert('Akses ditolak. Akaun sedang menunggu pengesahan Command Center.', 'warning');
+                            } else if (user.status === 'banned') {
+                                window.showAlert('AKSES DISEKAT: Akaun anda telah digantung oleh Komander.', 'error');
+                            } else {
+                                currentUser = user;
+                                if (rememberMe) {
+                                    localStorage.setItem('srteam_session', JSON.stringify(currentUser));
+                                } else {
+                                    sessionStorage.setItem('srteam_session', JSON.stringify(currentUser));
+                                }
+                                window.updateNavigation();
+                                window.navigateTo('home');
+                                window.showAlert(`Selamat kembali ke pangkalan.`, 'success');
+                            }
+                        } else {
+                            window.showAlert('Kredensial tidak sah atau belum mendaftar. (Pastikan Pangkalan Data Sedia)', 'error');
+                        }
                     }
                 } else {
-                    window.showAlert('Kredensial tidak sah atau belum mendaftar.', 'error');
-                }
-            } else {
-                const regPhoneValue = document.getElementById('reg-phone').value.trim();
-                
-                if (users.some(u => u.email === emailOrPhone || (u.phone && u.phone === regPhoneValue)) || emailOrPhone === ADMIN_CREDENTIALS.email) {
-                    window.showAlert('Emel atau Nombor ini telah digunakan di dalam pangkalan data.', 'error');
-                    return;
-                }
-                if (!firebaseUser) return window.showAlert('Sistem awan belum sedia.', 'warning');
+                    const regPhoneValue = document.getElementById('reg-phone').value.trim();
+                    
+                    if (users.some(u => u.email === emailOrPhone || (u.phone && u.phone === regPhoneValue)) || emailOrPhone === ADMIN_CREDENTIALS.email) {
+                        window.showAlert('Emel atau Nombor ini telah digunakan di dalam pangkalan data.', 'error');
+                        throw new Error('Duplicate');
+                    }
+                    if (!firebaseUser) {
+                        window.showAlert('Sistem awan belum sedia. Sila semak sambungan Firebase anda.', 'warning');
+                        throw new Error('No Firebase');
+                    }
 
-                try {
                     await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_users'), {
                         email: emailOrPhone, 
                         phone: regPhoneValue,
@@ -1084,12 +1091,17 @@
                         role: 'user', 
                         createdAt: Date.now()
                     });
-                    window.showAlert('Pendaftaran menunggu pengesahan admin, sila tunggu sehingga di approve, baru boleh login.', 'success');
+                    window.showAlert('Pendaftaran menunggu pengesahan admin, sila tunggu sehingga di approve.', 'success');
                     window.toggleAuthMode();
                     document.getElementById('auth-form').reset();
-                } catch (error) {
-                    window.showAlert('Pendaftaran gagal dihantar.', 'error');
                 }
+            } catch (error) {
+                console.error("Auth Error:", error);
+            } finally {
+                // Kembalikan butang ke keadaan asal walau apa pun yang terjadi
+                btnSubmit.innerHTML = originalBtnText;
+                btnSubmit.disabled = false;
+                btnSubmit.classList.remove('opacity-70', 'cursor-not-allowed');
             }
         }
 
@@ -1707,22 +1719,42 @@
         window.showAlert = function(message, type = 'info') {
             const alertBox = document.getElementById('alert-box');
             const alertMsg = document.getElementById('alert-message');
-            alertBox.classList.remove('hidden', 'bg-red-900/20', 'border-red-500', 'text-red-500', 'bg-green-900/20', 'border-green-500', 'text-green-500', 'bg-yellow-900/20', 'border-yellow-500', 'text-yellow-500');
             
+            // Reset kelas
+            alertBox.className = 'fixed top-24 right-4 z-[9999] p-4 border-l-4 font-mono text-sm max-w-[90vw] md:max-w-md shadow-2xl rounded backdrop-blur-md transition-all duration-300 transform translate-x-full';
+            
+            // Konfigurasi visual berdasarkan jenis ralat
             if (type === 'error') {
-                alertBox.classList.add('bg-red-900/20', 'border-red-500', 'text-red-500');
-                alertMsg.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-2"></i> ERROR: ${message}`;
+                alertBox.classList.add('bg-red-900/80', 'border-red-500');
+                alertMsg.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400 text-lg mr-3"></i> <span>${message}</span>`;
             } else if (type === 'success') {
-                alertBox.classList.add('bg-green-900/20', 'border-green-500', 'text-green-500');
-                alertMsg.innerHTML = `<i class="fa-solid fa-circle-check mr-2"></i> BERJAYA: ${message}`;
+                alertBox.classList.add('bg-green-900/80', 'border-green-500');
+                alertMsg.innerHTML = `<i class="fa-solid fa-circle-check text-green-400 text-lg mr-3"></i> <span>${message}</span>`;
             } else if (type === 'warning') {
-                alertBox.classList.add('bg-yellow-900/20', 'border-yellow-500', 'text-yellow-500');
-                alertMsg.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-2"></i> PERHATIAN: ${message}`;
+                alertBox.classList.add('bg-yellow-900/80', 'border-yellow-500');
+                alertMsg.innerHTML = `<i class="fa-solid fa-circle-exclamation text-yellow-400 text-lg mr-3"></i> <span>${message}</span>`;
             }
-            setTimeout(window.hideAlert, 5000);
+            
+            // Tunjuk (Slide in)
+            alertBox.classList.remove('hidden');
+            setTimeout(() => {
+                alertBox.classList.remove('translate-x-full');
+            }, 10);
+
+            // Sembunyi secara automatik
+            if (window.alertTimeout) clearTimeout(window.alertTimeout);
+            window.alertTimeout = setTimeout(() => {
+                window.hideAlert();
+            }, 5000);
         }
 
-        window.hideAlert = function() { document.getElementById('alert-box').classList.add('hidden'); }
+        window.hideAlert = function() { 
+            const alertBox = document.getElementById('alert-box');
+            if(alertBox) {
+                alertBox.classList.add('translate-x-full');
+                setTimeout(() => { alertBox.classList.add('hidden'); }, 300);
+            }
+        }
 
         window.onload = init;
     </script>
