@@ -617,14 +617,37 @@
     <!-- Logik Sistem Pangkalan Data Awan (Firebase) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        let firebaseConfig;
+        let dbAppId = 'srteam-production'; // Direktori pangkalan data anda
+
+        // Deteksi secara dinamik: Adakah ia berjalan dalam persekitaran preview (sandbox) atau hosting luaran anda
+        if (typeof __firebase_config !== 'undefined') {
+            // Gunakan konfigurasi sandbox automatik jika berada di dalam ruang pratinjau Canvas ini
+            firebaseConfig = JSON.parse(__firebase_config);
+            dbAppId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        } else {
+            // Konfigurasi Pangkalan Data Firebase Rasmi SRTEAM (Milik Anda) apabila anda host ke Vercel/Netlify
+            firebaseConfig = {
+                apiKey: "AIzaSyA8mB9EqPPGd6ZgkBKH0SKujSlQV1GGlys",
+                authDomain: "srteam-e4bb2.firebaseapp.com",
+                projectId: "srteam-e4bb2",
+                storageBucket: "srteam-e4bb2.firebasestorage.app",
+                messagingSenderId: "1016219789288",
+                appId: "1:1016219789288:web:c59f77e5628f8cd61fa65d",
+                measurementId: "G-2LMBQFTYH2"
+            };
+        }
+        
         const app = initializeApp(firebaseConfig);
+        let analytics;
+        try { analytics = getAnalytics(app); } catch(e) { console.log("Analitik ditunda"); }
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const appId = dbAppId; 
         let firebaseUser = null;
 
         const ADMIN_CREDENTIALS = { email: 'bangyanasli', password: 'abgyan92', role: 'superadmin' };
@@ -649,6 +672,7 @@
             window.updateNavigation();
             
             try {
+                // Gunakan token kustom untuk sandbox, dan Anonymous untuk hosting awam
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
@@ -662,7 +686,8 @@
                     }
                 });
             } catch (error) {
-                window.showAlert("Gagal menyambung ke pangkalan data utama.", "error");
+                console.error("Firebase Error:", error);
+                window.showAlert("Gagal menyambung ke pangkalan data. Sila pastikan Authentication (Anonymous) telah diaktifkan di Firebase Console anda.", "error");
             }
 
             window.navigateTo('home');
