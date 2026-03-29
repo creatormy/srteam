@@ -140,6 +140,21 @@
         <p id="alert-message" class="flex items-center text-white font-bold tracking-wide"></p>
     </div>
 
+    <!-- Modal Info Blue Tick (Baharu) -->
+    <div id="verified-info-modal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="panel-tactical p-6 rounded border border-blue-500 w-full max-w-md shadow-[0_0_30px_rgba(59,130,246,0.3)] text-center relative">
+            <button onclick="toggleVerifiedInfo()" class="absolute top-3 right-4 text-tactical-text hover:text-white transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            <i class="fa-solid fa-circle-check text-blue-500 text-6xl mb-4 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"></i>
+            <h3 class="text-2xl font-bold text-white mb-2 uppercase tracking-widest">Akaun Disahkan</h3>
+            <div class="text-tactical-text font-mono text-sm leading-relaxed mb-6 text-left p-4 bg-tactical-dark rounded border border-tactical-border">
+                Lencana <b class="text-blue-400">Blue Tick</b> menandakan bahawa pemilik profil ini adalah anggota yang telah diiktiraf secara rasmi oleh Command Center SRTEAM.<br><br>
+                <i class="fa-solid fa-shield text-blue-500 mr-1"></i> <b class="text-white">Pangkat Khas:</b> Pengasas, Admin, dan Komander menerima lencana ini secara automatik.<br><br>
+                <i class="fa-solid fa-medal text-yellow-500 mr-1"></i> <b class="text-white">Anggota Biasa:</b> Anda juga boleh dianugerahkan lencana ini secara manual melalui penilaian kemahiran dan sumbangan kepada klan!
+            </div>
+            <button onclick="toggleVerifiedInfo()" class="btn-tactical w-full py-3 rounded tracking-widest">FAHAM, KOMANDAN!</button>
+        </div>
+    </div>
+
     <!-- Kandungan Utama -->
     <main class="flex-grow container mx-auto px-4 py-8 relative z-10">
 
@@ -677,6 +692,22 @@
         let currentUser = JSON.parse(localStorage.getItem('srteam_session')) || JSON.parse(sessionStorage.getItem('srteam_session')) || null;
         let isLoginMode = true;
 
+        // Fungsi Helper untuk Blue Tick
+        window.toggleVerifiedInfo = function() {
+            const modal = document.getElementById('verified-info-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        };
+
+        function getVerifiedBadge(user) {
+            if (!user) return '';
+            const isVerified = (user.role === 'superadmin' || user.role === 'admin' || user.role === 'komander' || user.verified);
+            return isVerified ? `<i class="fa-solid fa-circle-check text-blue-500 ml-1 drop-shadow-[0_0_5px_rgba(59,130,246,0.6)] cursor-pointer hover:scale-110 transition" onclick="event.stopPropagation(); toggleVerifiedInfo()" title="Klik untuk info pengesahan"></i>` : '';
+        }
+
         const navLinks = [
             { id: 'profile', label: 'PROFIL', icon: 'fa-user-astronaut', reqAuth: true },
             { id: 'clan', label: 'KLAN INFO', icon: 'fa-network-wired', reqAuth: true },
@@ -917,8 +948,11 @@
                 }
 
                 const verifiedBadge = document.getElementById('profile-verified-badge');
-                if (displayUser.verified) {
+                const isVerifiedAuto = (displayUser.role === 'superadmin' || displayUser.role === 'admin' || displayUser.role === 'komander' || displayUser.verified);
+                if (isVerifiedAuto) {
                     verifiedBadge.classList.remove('hidden');
+                    verifiedBadge.setAttribute('onclick', 'toggleVerifiedInfo()');
+                    verifiedBadge.classList.add('cursor-pointer', 'hover:scale-110', 'transition');
                 } else {
                     verifiedBadge.classList.add('hidden');
                 }
@@ -1037,6 +1071,15 @@
             const newStory = document.getElementById('edit-story').value.trim();
             
             try {
+                // BUG FIX: Semak duplikasi ID/Nickname (Halang curi/tiru ID orang lain)
+                const isDuplicate = users.some(u => u.id !== currentUser.id && ((u.email.toLowerCase() === newEmail.toLowerCase()) || (newNick && u.nickname && u.nickname.toLowerCase() === newNick.toLowerCase())));
+                if (isDuplicate) {
+                    window.showAlert('Ralat: Emel atau Nickname ini telah pun digunakan oleh ahli lain!', 'error');
+                    btnSave.innerHTML = origText;
+                    btnSave.disabled = false;
+                    return;
+                }
+
                 const userDoc = doc(db, 'artifacts', appId, 'public', 'data', 'srteam_users', currentUser.id);
                 const updates = { email: newEmail, nickname: newNick, phone: newPhone, bio: newBio, story: newStory };
                 if (newPass) updates.password = newPass; 
@@ -1381,8 +1424,8 @@
                 }
 
                 // Setup Display User di Table (Avatar + Verified Tick)
-                const avatarImgList = user.photoURL ? `<img src="${user.photoURL}" class="w-6 h-6 rounded-full object-cover inline-block mr-2 border border-tactical-green/50 shrink-0">` : `<div class="w-6 h-6 rounded-full bg-tactical-panel border border-tactical-border text-[8px] flex items-center justify-center mr-2 shrink-0"><i class="fa-solid fa-user"></i></div>`;
-                const verifiedIconList = user.verified ? `<i class="fa-solid fa-circle-check text-blue-500 ml-1 drop-shadow-md" title="Disahkan"></i>` : '';
+                const avatarImgList = user.photoURL ? `<img src="${user.photoURL}" class="w-6 h-6 rounded-full object-cover inline-block mr-2 border border-tactical-green/50 shrink-0 cursor-pointer hover:opacity-80 transition" onclick="navigateTo('profile', '${user.email}')" title="Lihat Profil">` : `<div onclick="navigateTo('profile', '${user.email}')" class="w-6 h-6 rounded-full bg-tactical-panel border border-tactical-border text-[8px] flex items-center justify-center mr-2 shrink-0 cursor-pointer hover:bg-tactical-green hover:text-black transition" title="Lihat Profil"><i class="fa-solid fa-user"></i></div>`;
+                const verifiedIconList = getVerifiedBadge(user);
 
                 let actionButtons = '';
                 if (user.status === 'pending') {
@@ -1390,10 +1433,12 @@
                     actionButtons += `<button onclick="deleteUser('${user.id}')" class="bg-red-800 hover:bg-red-600 px-3 py-1 rounded text-xs text-white ml-1">TOLAK</button>`;
                 } else {
                     if (isSuperAdmin || currentUser.role === 'komander') {
-                        // Butang Blue Tick (Khusus Admin Atasan)
-                        const verifyBtnText = user.verified ? '<i class="fa-solid fa-xmark"></i> BUANG TICK' : '<i class="fa-solid fa-check"></i> BERI TICK';
-                        const verifyBtnColor = user.verified ? 'bg-gray-700 hover:bg-gray-600' : 'bg-blue-600 hover:bg-blue-500';
-                        actionButtons += `<button onclick="toggleVerifyStatus('${user.id}', ${!!user.verified})" class="${verifyBtnColor} px-2 py-1 rounded text-[10px] text-white ml-1 mt-1 mb-1 font-bold">${verifyBtnText}</button>`;
+                        // Butang Blue Tick (Khusus untuk anggota biasa sahaja)
+                        if (user.role === 'user') {
+                            const verifyBtnText = user.verified ? '<i class="fa-solid fa-xmark"></i> BUANG TICK' : '<i class="fa-solid fa-check"></i> BERI TICK';
+                            const verifyBtnColor = user.verified ? 'bg-gray-700 hover:bg-gray-600' : 'bg-blue-600 hover:bg-blue-500';
+                            actionButtons += `<button onclick="toggleVerifyStatus('${user.id}', ${!!user.verified})" class="${verifyBtnColor} px-2 py-1 rounded text-[10px] text-white ml-1 mt-1 mb-1 font-bold">${verifyBtnText}</button>`;
+                        }
                     }
 
                     if (isSuperAdmin) {
@@ -1422,7 +1467,13 @@
                 userHtml += `
                     <tr class="border-b border-tactical-border/50 hover:bg-tactical-panel/50">
                         <td class="p-3 text-xs font-mono leading-tight">${dateDisplay}</td>
-                        <td class="p-3 text-white flex items-center py-5 min-w-[200px]">${avatarImgList} ${user.nickname || user.email} ${verifiedIconList}</td>
+                        <td class="p-3 text-white flex items-center py-5 min-w-[200px]">
+                            ${avatarImgList}
+                            <a onclick="navigateTo('profile', '${user.email}')" class="cursor-pointer hover:text-tactical-green hover:underline transition flex items-center gap-1">
+                                ${user.nickname || user.email}
+                            </a>
+                            ${verifiedIconList}
+                        </td>
                         <td class="p-3 text-tactical-green">${user.phone || '-'}</td>
                         <td class="p-3">${roleBadge}</td>
                         <td class="p-3 font-bold ${statusColor}">${user.status.toUpperCase()}</td>
@@ -1515,11 +1566,21 @@
         window.saveAdminEditProfile = async function(e) {
             e.preventDefault();
             const id = document.getElementById('admin-edit-id').value;
+            const newEmail = document.getElementById('admin-edit-email').value.trim();
+            const newNick = document.getElementById('admin-edit-nickname').value.trim();
+            
+            // BUG FIX: Semak Duplikasi
+            const isDuplicate = users.some(u => u.id !== id && ((u.email.toLowerCase() === newEmail.toLowerCase()) || (newNick && u.nickname && u.nickname.toLowerCase() === newNick.toLowerCase())));
+            if (isDuplicate) {
+                window.showAlert('Ralat: Emel atau Nickname ini sedang digunakan oleh ahli lain!', 'error');
+                return;
+            }
+
             try {
                 await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_users', id), {
-                    email: document.getElementById('admin-edit-email').value,
+                    email: newEmail,
                     password: document.getElementById('admin-edit-password').value,
-                    nickname: document.getElementById('admin-edit-nickname').value
+                    nickname: newNick
                 });
                 window.showAlert('Profil member berjaya dimodifikasi.', 'success');
                 window.closeAdminEditModal();
@@ -1551,14 +1612,14 @@
                 
                 // Avatar dan Blue Tick untuk Roster Tournament
                 const avatarImg = (tourUser && tourUser.photoURL) ? `<img src="${tourUser.photoURL}" class="w-6 h-6 rounded-full object-cover inline-block mr-2 border border-tactical-green/50 shrink-0">` : `<div class="w-6 h-6 rounded-full bg-tactical-panel border border-tactical-border text-[8px] inline-flex items-center justify-center mr-2 shrink-0"><i class="fa-solid fa-user-astronaut"></i></div>`;
-                const verifiedIcon = (tourUser && tourUser.verified) ? `<i class="fa-solid fa-circle-check text-blue-500 ml-1 drop-shadow-md" title="Disahkan"></i>` : '';
+                const verifiedIcon = getVerifiedBadge(tourUser);
 
                 html += `
                     <tr class="border-b border-tactical-border/50 hover:bg-tactical-panel/50">
                         <td class="p-3 text-tactical-text">${timeDate}</td>
                         <td class="p-3 font-bold">
-                            <a onclick="navigateTo('profile', '${tour.pemohon}')" class="cursor-pointer text-tactical-green hover:text-white transition flex items-center w-full">
-                                ${avatarImg} <span class="truncate">${tour.ign}</span> ${verifiedIcon}
+                            <a onclick="navigateTo('profile', '${tour.pemohon}')" class="cursor-pointer text-tactical-green hover:text-white transition flex items-center w-full gap-1">
+                                ${avatarImg} <span class="truncate hover:underline">${tour.ign}</span> ${verifiedIcon}
                             </a>
                         </td>
                         <td class="p-3 text-green-500 font-bold text-xs"><i class="fa-solid fa-check"></i> DISAHKAN</td>
@@ -1710,19 +1771,24 @@
                 const timeStr = dateObj.toLocaleTimeString('ms-MY', { hour12: false, hour: '2-digit', minute: '2-digit' });
                 const displayTime = chatDate === today ? timeStr : `${chatDate} ${timeStr}`;
 
-                const nick = currentUser && (currentUser.nickname || currentUser.email.split('@')[0]).toUpperCase();
-                const isMe = chat.sender === nick;
-                
-                // Cari pengguna di dalam pangkalan data untuk dapatkan Avatar dan Blue Tick
-                const chatUser = users.find(u => (u.nickname || u.email.split('@')[0]).toUpperCase() === chat.sender);
+                // Logik Dinamik Auto-Update Nama Sender
+                let chatUser = null;
+                if (chat.senderEmail) {
+                    chatUser = users.find(u => u.email === chat.senderEmail);
+                } else {
+                    chatUser = users.find(u => (u.nickname || u.email.split('@')[0]).toUpperCase() === chat.sender);
+                }
+
+                const currentName = chatUser ? (chatUser.nickname || chatUser.email.split('@')[0]).toUpperCase() : chat.sender;
+                const myNick = currentUser ? (currentUser.nickname || currentUser.email.split('@')[0]).toUpperCase() : '';
+                const isMe = (currentName === myNick) || (chat.senderEmail && currentUser && chat.senderEmail === currentUser.email);
                 
                 const avatarImg = (chatUser && chatUser.photoURL) 
-                    ? `<img src="${chatUser.photoURL}" class="w-5 h-5 rounded-full object-cover inline-block border border-tactical-border/50 shrink-0">` 
-                    : `<div class="w-5 h-5 rounded-full bg-tactical-dark inline-flex items-center justify-center border border-tactical-border/50 text-[8px] text-tactical-green shrink-0"><i class="fa-solid fa-user"></i></div>`;
+                    ? `<img src="${chatUser.photoURL}" class="w-5 h-5 rounded-full object-cover inline-block border border-tactical-border/50 shrink-0 cursor-pointer hover:opacity-80 transition" onclick="navigateTo('profile', '${chatUser.email}')" title="Lihat Profil">` 
+                    : `<div onclick="${chatUser ? `MapsTo('profile', '${chatUser.email}')` : ''}" class="w-5 h-5 rounded-full bg-tactical-dark inline-flex items-center justify-center border border-tactical-border/50 text-[8px] text-tactical-green shrink-0 ${chatUser ? 'cursor-pointer hover:bg-tactical-green hover:text-black transition' : ''}" title="Lihat Profil"><i class="fa-solid fa-user"></i></div>`;
                 
-                const verifiedIcon = (chatUser && chatUser.verified) 
-                    ? `<i class="fa-solid fa-circle-check text-blue-500 drop-shadow-md" title="Disahkan"></i>` 
-                    : '';
+                const verifiedIcon = getVerifiedBadge(chatUser);
+                const clickableNameTag = chatUser ? `<a onclick="navigateTo('profile', '${chatUser.email}')" class="cursor-pointer hover:underline">${currentName}</a>` : currentName;
 
                 const displayMessage = window.formatChatMessage(chat.message, false);
                 
@@ -1730,7 +1796,7 @@
                     html += `
                         <div class="self-end max-w-[85%] flex flex-col items-end mb-2">
                             <div class="flex items-center justify-end gap-1.5 mb-1 px-1">
-                                <span class="text-[10px] font-bold text-tactical-green tracking-wider">${chat.sender}</span>
+                                <span class="text-[10px] font-bold text-tactical-green tracking-wider">${clickableNameTag}</span>
                                 ${verifiedIcon}
                                 <div class="ml-1">${avatarImg}</div>
                             </div>
@@ -1757,7 +1823,7 @@
                         <div class="self-start max-w-[85%] flex flex-col items-start mb-2">
                             <div class="flex items-center justify-start gap-1.5 mb-1 px-1">
                                 <div class="mr-1">${avatarImg}</div>
-                                <span class="text-[10px] font-bold text-tactical-text tracking-wider">${chat.sender}</span>
+                                <span class="text-[10px] font-bold text-tactical-text tracking-wider">${clickableNameTag}</span>
                                 ${verifiedIcon}
                             </div>
                             <div class="bg-tactical-panel text-gray-200 px-4 py-2 rounded-2xl rounded-tl-sm shadow-md border border-tactical-border/50 text-left">
@@ -1795,7 +1861,8 @@
 
             try {
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_chats'), {
-                    sender: senderName,
+                    sender: senderName, // Fallback legacy
+                    senderEmail: currentUser.email, // Rekod pengenalan emel yang baharu
                     message: message,
                     timestamp: serverTimestamp()
                 });
