@@ -151,6 +151,19 @@
                                 <button onclick="clearAllNotifications()" class="text-[10px] text-red-500 hover:text-white transition bg-red-900/20 px-2 py-1 rounded border border-red-900/50 hover:bg-red-600">Bersihkan</button>
                             </div>
                         </div>
+
+                        <!-- PENGUMUMAN GLOBAL (SENTIASA TERATAS) -->
+                        <div id="global-notif-container" class="hidden relative z-10 p-3 bg-blue-900/40 border-b border-blue-500/50 shadow-md">
+                            <div class="flex items-start gap-3">
+                                <div class="mt-0.5"><i class="fa-solid fa-satellite-dish animate-pulse text-blue-400"></i></div>
+                                <div class="flex-grow">
+                                    <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">INFO PEMBAHARUAN SISTEM</p>
+                                    <p id="global-notif-text" class="text-xs text-white leading-relaxed whitespace-pre-wrap font-mono"></p>
+                                </div>
+                                <div class="shrink-0"><i class="fa-solid fa-thumbtack text-blue-500 text-xs transform rotate-45" title="Sentiasa Teratas"></i></div>
+                            </div>
+                        </div>
+
                         <div id="notif-list" class="flex-grow overflow-y-auto p-2 space-y-1 relative z-10 bg-transparent">
                             <!-- Akan diisi oleh JavaScript -->
                         </div>
@@ -519,11 +532,18 @@
             <!-- Panel Khas Superadmin: Info Pembaharuan Global -->
             <div id="superadmin-announcement-control" class="hidden panel-tactical p-4 md:p-6 rounded mb-6 border-l-4 border-l-blue-500 w-full box-border bg-gradient-to-r from-blue-900/20 to-transparent">
                 <h3 class="text-lg md:text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-satellite-dish text-blue-500 mr-2"></i> SIARAN SISTEM GLOBAL (SUPER ADMIN)</h3>
-                <p class="text-tactical-text text-xs font-mono mb-4">Taip pengumuman dan tekan PANCARKAN. Sistem akan menghantar notifikasi secara langsung ke dalam laci notifikasi semua ahli.</p>
-                <form onsubmit="broadcastGlobalAnnouncement(event)" class="flex flex-col gap-4 w-full">
+                <p class="text-tactical-text text-xs font-mono mb-4">Taip pengumuman, aktifkan siaran dan tekan PIN MAKLUMAT. Ia akan sentiasa berada di bahagian atas laci notifikasi semua ahli.</p>
+                <form onsubmit="saveGlobalAnnouncement(event)" class="flex flex-col gap-4 w-full">
+                    <div class="flex items-center gap-3 mb-2">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="global-announce-toggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                            <span class="ml-3 text-xs font-bold text-tactical-text font-mono uppercase">Aktifkan Siaran (ON/OFF)</span>
+                        </label>
+                    </div>
                     <div class="flex flex-col md:flex-row gap-4 w-full">
-                        <textarea id="global-announce-input" class="input-tactical flex-grow p-3 rounded box-border text-sm min-h-[80px]" required placeholder="Contoh:&#10;1. Versi 2.0 Kini Tersedia!&#10;2. Sila kemas kini profil anda."></textarea>
-                        <button type="submit" class="bg-blue-800 hover:bg-blue-600 border border-blue-500 text-white font-bold py-3 px-6 rounded text-sm transition shadow-[0_0_15px_rgba(59,130,246,0.3)] shrink-0 h-fit md:h-auto"><i class="fa-solid fa-paper-plane mr-2"></i> PANCARKAN</button>
+                        <textarea id="global-announce-input" class="input-tactical flex-grow p-3 rounded box-border text-sm min-h-[80px]" placeholder="Contoh:&#10;1. Versi 2.0 Kini Tersedia!&#10;2. Sila kemas kini profil anda."></textarea>
+                        <button type="submit" class="bg-blue-800 hover:bg-blue-600 border border-blue-500 text-white font-bold py-3 px-6 rounded text-sm transition shadow-[0_0_15px_rgba(59,130,246,0.3)] shrink-0 h-fit md:h-auto"><i class="fa-solid fa-thumbtack mr-2"></i> PIN MAKLUMAT</button>
                     </div>
                 </form>
             </div>
@@ -690,6 +710,7 @@
         let chatsData = []; 
         let notifications = []; 
         let notifUnsubscribe = null; 
+        let globalAnnouncementData = { isActive: false, message: '' };
         
         const defaultClanInfo = {
             identity: {
@@ -868,6 +889,7 @@
                     window.renderAdminPanel();
                 }
                 window.renderApprovedTournaments();
+                if(typeof window.renderGlobalAnnouncement === 'function') window.renderGlobalAnnouncement(); 
                 if (typeof renderChats === 'function' && chatsData.length > 0) {
                     renderChats(chatsData);
                 }
@@ -922,6 +944,18 @@
                 if (viewClan && !viewClan.classList.contains('hidden')) {
                     window.renderClanInfo();
                 }
+            });
+
+            // TAMBAHAN: Pemantauan Siaran Global
+            const globalAnnounceRef = doc(db, 'artifacts', appId, 'public', 'data', 'srteam_settings', 'global_announcement');
+            onSnapshot(globalAnnounceRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    globalAnnouncementData = docSnap.data();
+                } else {
+                    globalAnnouncementData = { isActive: false, message: '' };
+                }
+                if(typeof window.renderGlobalAnnouncement === 'function') window.renderGlobalAnnouncement();
+                window.renderNotifications();
             });
         }
 
@@ -1529,12 +1563,39 @@
         }
 
         // --- FUNGSI SIARAN GLOBAL (WHAT'S NEW) ---
-        window.broadcastGlobalAnnouncement = async function(e) {
+        window.renderGlobalAnnouncement = function() {
+            const globalNotifContainer = document.getElementById('global-notif-container');
+            const globalNotifText = document.getElementById('global-notif-text');
+            
+            if (globalNotifContainer && globalNotifText) {
+                if (globalAnnouncementData && globalAnnouncementData.isActive && globalAnnouncementData.message.trim() !== '') {
+                    globalNotifText.textContent = globalAnnouncementData.message;
+                    globalNotifContainer.classList.remove('hidden');
+                } else {
+                    globalNotifContainer.classList.add('hidden');
+                }
+            }
+
+            const adminControl = document.getElementById('superadmin-announcement-control');
+            if (adminControl) {
+                if (currentUser && currentUser.role === 'superadmin') {
+                    adminControl.classList.remove('hidden');
+                    const toggle = document.getElementById('global-announce-toggle');
+                    const input = document.getElementById('global-announce-input');
+                    if(toggle) toggle.checked = globalAnnouncementData.isActive || false;
+                    if(input) input.value = globalAnnouncementData.message || '';
+                } else {
+                    adminControl.classList.add('hidden');
+                }
+            }
+        }
+
+        window.saveGlobalAnnouncement = async function(e) {
             e.preventDefault();
             if (!currentUser || currentUser.role !== 'superadmin') return;
 
+            const isActive = document.getElementById('global-announce-toggle').checked;
             const message = document.getElementById('global-announce-input').value.trim();
-            if (!message) return;
 
             const btn = e.target.querySelector('button[type="submit"]');
             const origText = btn.innerHTML;
@@ -1542,23 +1603,17 @@
             btn.disabled = true;
 
             try {
-                // Hantar notifikasi ke SEMUA ahli (users array) serentak
-                const promises = users.map(user => {
-                    return window.sendNotification(
-                        user.id, 
-                        `INFO PEMBAHARUAN SISTEM:\n\n${message}`, 
-                        "admin_alert", 
-                        ""
-                    );
-                });
+                const infoRef = doc(db, 'artifacts', appId, 'public', 'data', 'srteam_settings', 'global_announcement');
+                await setDoc(infoRef, {
+                    isActive: isActive,
+                    message: message,
+                    updatedAt: Date.now()
+                }, { merge: true });
                 
-                await Promise.all(promises);
-                
-                window.showAlert(`Siaran sistem global berjaya dipancarkan kepada ${users.length} ahli!`, 'success');
-                document.getElementById('global-announce-input').value = '';
+                window.showAlert('Info pembaharuan berjaya di-pin pada semua laci notifikasi ahli!', 'success');
             } catch (error) {
                 console.error(error);
-                window.showAlert('Gagal memancarkan siaran.', 'error');
+                window.showAlert('Gagal mengemas kini siaran.', 'error');
             } finally {
                 btn.innerHTML = origText;
                 btn.disabled = false;
@@ -2276,7 +2331,7 @@
                 if(notifBellIcon) {
                     notifBellIcon.classList.remove('animate-pulse');
                     // Kekalkan warna hijau jika ada info pembaharuan aktif
-                    if (globalAnnouncementData && globalAnnouncementData.isActive && globalAnnouncementData.message.trim() !== '') {
+                    if (typeof globalAnnouncementData !== 'undefined' && globalAnnouncementData.isActive && globalAnnouncementData.message.trim() !== '') {
                         notifBellIcon.classList.add('text-tactical-green');
                     } else {
                         notifBellIcon.classList.remove('text-tactical-green');
