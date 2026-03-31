@@ -1567,6 +1567,12 @@
                 if (globalAnnouncementData.isActive && globalAnnouncementData.message.trim() !== '') {
                     globalNotifText.textContent = globalAnnouncementData.message;
                     globalNotifContainer.classList.remove('hidden');
+                    
+                    // Aktifkan warna hijau pada loceng jika ada pengumuman (walaupun tiada notifikasi biasa)
+                    const notifBellIcon = document.getElementById('notif-bell-icon');
+                    if(notifBellIcon && document.getElementById('notif-badge').classList.contains('hidden')) {
+                        notifBellIcon.classList.add('text-tactical-green');
+                    }
                 } else {
                     globalNotifContainer.classList.add('hidden');
                 }
