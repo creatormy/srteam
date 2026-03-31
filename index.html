@@ -126,7 +126,7 @@
                 <img src="https://www.dropbox.com/scl/fi/j8jj1avnr3u6rmeamc5qv/sr-transparant.png?rlkey=djgp0h6yta69ywk8uokpyw1ea&st=67hdsl29&raw=1" alt="Logo SRTEAM" class="h-10 lg:h-12 w-auto drop-shadow-[0_0_10px_rgba(74,222,128,0.6)] hover:scale-105 transition-transform duration-300">
             </div>
             
-            <!-- Bahagian Menu & Notifikasi (Dibaiki: overflow-hidden dibuang) -->
+            <!-- Bahagian Menu & Notifikasi -->
             <div class="flex flex-row items-center justify-end gap-2 lg:gap-4 flex-grow min-w-0">
                 <nav class="flex flex-row flex-nowrap items-center justify-end gap-3 lg:gap-6 overflow-x-auto no-scrollbar" id="main-nav">
                     <!-- Akan diisi oleh JavaScript -->
@@ -159,6 +159,14 @@
             </div>
         </div>
     </header>
+
+    <!-- Banner Info Pembaharuan (What's New) -->
+    <div id="global-announcement-banner" class="hidden w-full bg-blue-900/90 border-b border-blue-500 text-blue-50 py-2 px-4 shadow-[0_0_15px_rgba(59,130,246,0.3)] z-40 relative backdrop-blur-sm transition-all duration-300">
+        <div class="container mx-auto flex items-center justify-center gap-3 text-[10px] md:text-xs font-mono">
+            <i class="fa-solid fa-satellite-dish animate-pulse text-blue-400 text-sm shrink-0"></i>
+            <span id="global-announcement-text" class="font-bold tracking-wide leading-tight text-center">INFO PEMBAHARUAN: Tiada info.</span>
+        </div>
+    </div>
 
     <!-- Notifikasi Terapung (Fixed Toast) -->
     <div id="alert-box" class="fixed top-24 right-4 z-[9999] hidden p-4 border-l-4 font-mono text-sm max-w-[90vw] md:max-w-md shadow-2xl rounded backdrop-blur-md transition-all duration-300 transform" role="alert">
@@ -516,6 +524,24 @@
         <section id="view-admin" class="view-section hidden w-full overflow-hidden box-border">
             <h2 class="text-3xl font-bold text-white mb-6 border-b border-red-800 pb-2 uppercase"><i class="fa-solid fa-user-shield text-red-500 mr-2"></i> COMMAND CENTER</h2>
             
+            <!-- Panel Khas Superadmin: Info Pembaharuan Global -->
+            <div id="superadmin-announcement-control" class="hidden panel-tactical p-4 md:p-6 rounded mb-6 border-l-4 border-l-blue-500 w-full box-border bg-gradient-to-r from-blue-900/20 to-transparent">
+                <h3 class="text-lg md:text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-satellite-dish text-blue-500 mr-2"></i> SIARAN SISTEM GLOBAL (SUPER ADMIN)</h3>
+                <form onsubmit="saveGlobalAnnouncement(event)" class="flex flex-col gap-4 w-full">
+                    <div class="flex items-center gap-3 mb-2">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="global-announce-toggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                            <span class="ml-3 text-xs font-bold text-tactical-text font-mono uppercase">Aktifkan Siaran (ON/OFF)</span>
+                        </label>
+                    </div>
+                    <div class="flex flex-col md:flex-row gap-4 w-full">
+                        <input type="text" id="global-announce-input" class="input-tactical flex-grow p-3 rounded box-border text-sm" placeholder="Contoh: Versi 2.0 Kini Tersedia! Sila kemas kini profil anda.">
+                        <button type="submit" class="bg-blue-800 hover:bg-blue-600 border border-blue-500 text-white font-bold py-3 px-6 rounded text-sm transition shadow-[0_0_15px_rgba(59,130,246,0.3)] shrink-0"><i class="fa-solid fa-tower-broadcast mr-2"></i> PANCARKAN</button>
+                    </div>
+                </form>
+            </div>
+
             <div class="flex flex-col lg:grid lg:grid-cols-4 gap-6 w-full min-w-0">
                 <!-- Statistik Admin -->
                 <div class="lg:col-span-1 space-y-4 w-full min-w-0">
@@ -676,8 +702,9 @@
         let tournaments = [];
         let announcements = []; 
         let chatsData = []; 
-        let notifications = []; // Tambahan Notifikasi
-        let notifUnsubscribe = null; // Tambahan Notifikasi
+        let notifications = []; 
+        let notifUnsubscribe = null; 
+        let globalAnnouncementData = { isActive: false, message: '' }; // TAMBAHAN: Variabel Siaran Global
         
         const defaultClanInfo = {
             identity: {
@@ -856,6 +883,7 @@
                     window.renderAdminPanel();
                 }
                 window.renderApprovedTournaments();
+                window.renderGlobalAnnouncement(); // Kemas kini kawalan admin jika status berubah
                 if (typeof renderChats === 'function' && chatsData.length > 0) {
                     renderChats(chatsData);
                 }
@@ -910,6 +938,17 @@
                 if (viewClan && !viewClan.classList.contains('hidden')) {
                     window.renderClanInfo();
                 }
+            });
+
+            // TAMBAHAN: Pemantauan Siaran Global
+            const globalAnnounceRef = doc(db, 'artifacts', appId, 'public', 'data', 'srteam_settings', 'global_announcement');
+            onSnapshot(globalAnnounceRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    globalAnnouncementData = docSnap.data();
+                } else {
+                    globalAnnouncementData = { isActive: false, message: '' };
+                }
+                window.renderGlobalAnnouncement();
             });
         }
 
@@ -1516,14 +1555,71 @@
             }
         }
 
-        // FUNGSI TOGGLE DROPDOWN TINDAKAN (BARU)
+        // --- FUNGSI SIARAN GLOBAL (WHAT'S NEW) ---
+        window.renderGlobalAnnouncement = function() {
+            const banner = document.getElementById('global-announcement-banner');
+            const text = document.getElementById('global-announcement-text');
+            
+            // Paparkan Spanduk di Atas (Untuk Semua Orang)
+            if (banner && text) {
+                if (globalAnnouncementData.isActive && globalAnnouncementData.message.trim() !== '') {
+                    text.textContent = `INFO PEMBAHARUAN: ${globalAnnouncementData.message}`;
+                    banner.classList.remove('hidden');
+                } else {
+                    banner.classList.add('hidden');
+                }
+            }
+
+            // Paparkan Kawalan Edit (Hanya Untuk Superadmin)
+            const adminControl = document.getElementById('superadmin-announcement-control');
+            if (adminControl) {
+                if (currentUser && currentUser.role === 'superadmin') {
+                    adminControl.classList.remove('hidden');
+                    document.getElementById('global-announce-toggle').checked = globalAnnouncementData.isActive || false;
+                    document.getElementById('global-announce-input').value = globalAnnouncementData.message || '';
+                } else {
+                    adminControl.classList.add('hidden');
+                }
+            }
+        }
+
+        window.saveGlobalAnnouncement = async function(e) {
+            e.preventDefault();
+            if (!currentUser || currentUser.role !== 'superadmin') return;
+
+            const isActive = document.getElementById('global-announce-toggle').checked;
+            const message = document.getElementById('global-announce-input').value.trim();
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            const origText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> MEMPROSES...';
+            btn.disabled = true;
+
+            try {
+                const infoRef = doc(db, 'artifacts', appId, 'public', 'data', 'srteam_settings', 'global_announcement');
+                await setDoc(infoRef, {
+                    isActive: isActive,
+                    message: message,
+                    updatedAt: Date.now()
+                }, { merge: true });
+                
+                window.showAlert('Siaran sistem global berjaya dipancarkan ke seluruh pangkalan!', 'success');
+            } catch (error) {
+                console.error(error);
+                window.showAlert('Gagal mengemas kini siaran.', 'error');
+            } finally {
+                btn.innerHTML = origText;
+                btn.disabled = false;
+            }
+        }
+
+        // FUNGSI TOGGLE DROPDOWN TINDAKAN
         window.toggleAdminActions = function(elementId) {
             const target = document.getElementById(elementId);
             const icon = document.getElementById('icon-' + elementId);
             
             if (target) {
                 if (target.classList.contains('hidden')) {
-                    // Tutup semua yang lain dahulu (pilihan kemas)
                     document.querySelectorAll('.admin-action-dropdown').forEach(el => el.classList.add('hidden'));
                     document.querySelectorAll('.dropdown-icon').forEach(ic => { ic.classList.remove('fa-chevron-up'); ic.classList.add('fa-chevron-down'); });
                     
@@ -1566,9 +1662,7 @@
                 const verifiedIconList = getVerifiedBadge(user);
                 const statusColor = user.status === 'pending' ? 'text-yellow-500' : (user.status === 'banned' ? 'text-red-500' : 'text-green-500');
 
-                // Susun Butang Ikon 
                 let actionButtons = '<div class="flex flex-wrap justify-start gap-2 pt-2">';
-                // Tambah Butang Profil
                 actionButtons += `<button onclick="navigateTo('profile', '${user.email}')" class="bg-tactical-dark hover:bg-tactical-panel border border-tactical-border w-8 h-8 rounded text-white flex items-center justify-center transition shadow-md" title="Lihat Profil Penuh"><i class="fa-solid fa-id-badge text-tactical-green"></i></button>`;
                 
                 if (user.status === 'pending') {
@@ -1611,10 +1705,8 @@
                 }
                 actionButtons += '</div>';
 
-                // BENTUK KAD DROPDOWN 
                 userHtml += `
                     <div class="bg-tactical-dark border border-tactical-border/50 rounded flex flex-col w-full">
-                        <!-- Baris Klik -->
                         <div class="p-3 md:p-4 flex items-center justify-between cursor-pointer hover:bg-tactical-panel transition w-full" onclick="toggleAdminActions('action-user-${user.id}')">
                             <div class="flex items-center gap-3 w-full min-w-0">
                                 ${avatarImgList}
@@ -1634,7 +1726,6 @@
                             </div>
                         </div>
                         
-                        <!-- Laci Tindakan Tersembunyi -->
                         <div id="action-user-${user.id}" class="admin-action-dropdown hidden bg-[#0b0b0b] p-3 border-t border-tactical-border/30 w-full">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-[10px] text-tactical-text font-mono uppercase">Panel Kawalan Ahli</span>
@@ -1648,7 +1739,6 @@
             
             if (userList) userList.innerHTML = userHtml === '' ? `<div class="p-4 text-center text-tactical-text text-sm font-mono border border-tactical-border rounded bg-tactical-dark">Tiada rekod member.</div>` : userHtml;
 
-            // --- BAHAGIAN SCRIM & TOUR ---
             let tourHtml = '';
             tournaments.forEach((tour) => {
                 if (tour.status === 'pending') pendingTourCount++;
@@ -1669,7 +1759,6 @@
                 }
                 tourActions += '</div>';
 
-                // BENTUK KAD DROPDOWN (SCRIM & TOUR)
                 tourHtml += `
                     <div class="bg-tactical-dark border border-tactical-border/50 rounded flex flex-col w-full">
                         <div class="p-3 md:p-4 flex items-center justify-between cursor-pointer hover:bg-tactical-panel transition w-full" onclick="toggleAdminActions('action-tour-${tour.id}')">
