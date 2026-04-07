@@ -1416,6 +1416,10 @@
                 
                 const profileNickname = document.getElementById('profile-nickname');
                 if (profileNickname) profileNickname.textContent = displayUser.nickname || displayUser.username || displayUser.email.split('@')[0];
+                
+                // FIX: Menambah semula 'let roleText' yang hilang sebelum ini
+                let roleText = 'MEMBER';
+                if (displayUser.role === 'admin') roleText = 'ADMIN / PEGAWAI';
                 if (displayUser.role === 'komander') roleText = 'KAPTEN KLAN (KOMANDER)';
                 if (displayUser.role === 'moderator') roleText = 'PENGAWAS (MODERATOR)';
                 if (displayUser.role === 'superadmin') roleText = 'PENGASAS (SUPER ADMIN)';
