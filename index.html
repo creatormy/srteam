@@ -285,6 +285,43 @@
 
         </section>
 
+        <!-- 8. HALAMAN STATUS & KOMEN -->
+        <section id="view-status" class="view-section hidden max-w-2xl mx-auto w-full">
+            <div class="mb-4 flex items-center">
+                <button onclick="navigateTo('home')" class="text-tactical-text hover:text-white transition flex items-center gap-2 bg-tactical-dark px-4 py-2 rounded border border-tactical-border hover:border-tactical-green font-bold text-xs tracking-wider"><i class="fa-solid fa-arrow-left"></i> KEMBALI KE RADAR</button>
+            </div>
+            
+            <!-- Kad Tunggal Integrasi Status & Komen -->
+            <div class="panel-tactical rounded shadow-[0_4px_20px_rgba(0,0,0,0.6)] overflow-hidden flex flex-col">
+                
+                <!-- Bahagian Atas: Paparan Status -->
+                <div id="single-status-container" class="p-4 md:p-6 border-b border-tactical-border/50">
+                    <!-- Status akan diisi di sini -->
+                </div>
+                
+                <!-- Bahagian Tengah: Senarai Komen -->
+                <div class="bg-[#0e1310] flex flex-col">
+                    <div id="comments-list" class="p-4 md:p-6 space-y-4">
+                        <!-- Akan diisi oleh JavaScript -->
+                    </div>
+                    
+                    <!-- Bahagian Bawah: Borang Komen (Melekat/Sticky) -->
+                    <div class="p-3 md:p-4 bg-tactical-dark border-t border-tactical-border sticky bottom-0">
+                        <form onsubmit="submitComment(event)" class="flex items-end gap-3">
+                            <div id="comment-user-avatar" class="w-9 h-9 rounded-full bg-tactical-panel border border-tactical-green/50 flex items-center justify-center shrink-0 overflow-hidden bg-cover bg-center mb-1">
+                                <i class="fa-solid fa-user text-tactical-green text-xs"></i>
+                            </div>
+                            <div class="flex-grow relative">
+                                <textarea id="comment-input-text" rows="1" class="w-full bg-[#111] border border-tactical-border/70 text-white py-2.5 pl-4 pr-12 rounded-2xl text-sm md:text-base focus:border-tactical-green focus:outline-none transition resize-none custom-scrollbar min-h-[40px] max-h-[120px]" required placeholder="Tulis komen..." autocomplete="off" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
+                                <button type="submit" id="btn-post-comment" class="absolute right-1.5 bottom-1.5 bg-tactical-greenDark hover:bg-tactical-green text-white hover:text-black w-8 h-8 rounded-full flex items-center justify-center transition shadow-md"><i class="fa-solid fa-paper-plane text-xs ml-[-2px]"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
         <!-- 2. HALAMAN LOG MASUK / DAFTAR -->
         <section id="view-login" class="view-section hidden">
             <div class="max-w-md mx-auto panel-tactical p-8 rounded mt-10">
@@ -776,6 +813,8 @@
         let globalAnnouncementData = { isActive: false, message: '' };
         let currentAdminMemberPage = 1; 
         let statusFeed = [];
+        let allComments = [];
+        let currentStatusId = null;
         
         const defaultClanInfo = {
             identity: {
@@ -866,7 +905,7 @@
             const target = parts[1] ? decodeURIComponent(parts[1]) : null;
 
             const link = navLinks.find(l => l.id === vId);
-            const reqAuth = link ? link.reqAuth : (vId === 'admin' || vId === 'profile');
+            const reqAuth = link ? link.reqAuth : (vId === 'admin' || vId === 'profile' || vId === 'status');
 
             if (reqAuth && (!currentUser || currentUser.status !== 'approved')) {
                 window.navigateTo('login', null, false);
@@ -1006,6 +1045,32 @@
                     if (typeof window.renderStatusFeed === 'function') window.renderStatusFeed();
                     if (currentStatusId && typeof window.renderSingleStatus === 'function') window.renderSingleStatus(currentStatusId);
                 }
+            });
+
+            // Pemantauan Komen (Flat Collection)
+            const commentsCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'srteam_status_comments');
+            onSnapshot(commentsCollectionRef, (snapshot) => {
+                allComments = [];
+                snapshot.forEach(doc => allComments.push({ id: doc.id, ...doc.data() }));
+                
+                // Jika sedang buka halaman status individu
+                if (currentStatusId && document.getElementById('view-status') && !document.getElementById('view-status').classList.contains('hidden')) {
+                    const statusComments = allComments.filter(c => c.statusId === currentStatusId);
+                    statusComments.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                    if (typeof window.renderCommentsList === 'function') window.renderCommentsList(statusComments);
+                    
+                    const countSpan = document.getElementById('status-comment-count');
+                    if (countSpan) countSpan.textContent = `${statusComments.length} Komen`;
+                }
+                
+                // Kemas kini jumlah komen di home feed
+                if (currentUser && currentUser.status === 'approved') {
+                    if (document.getElementById('view-home') && !document.getElementById('view-home').classList.contains('hidden')) {
+                        if (typeof window.renderStatusFeed === 'function') window.renderStatusFeed();
+                    }
+                }
+            }, (error) => {
+                console.error("Gagal mendapatkan senarai komen:", error);
             });
 
             const chatRef = collection(db, 'artifacts', appId, 'public', 'data', 'srteam_chats');
@@ -1181,6 +1246,22 @@
             const targetViewElement = document.getElementById(`view-${viewId}`);
             if (targetViewElement) {
                 targetViewElement.classList.remove('hidden');
+            }
+
+            if (viewId === 'status' && targetEmail) {
+                currentStatusId = targetEmail;
+                if (typeof window.renderSingleStatus === 'function') window.renderSingleStatus(currentStatusId);
+                
+                const avatar = document.getElementById('comment-user-avatar');
+                if (avatar && currentUser) {
+                    if (currentUser.photoURL) {
+                        avatar.style.backgroundImage = `url(${currentUser.photoURL})`;
+                        avatar.innerHTML = '';
+                    } else {
+                        avatar.style.backgroundImage = 'none';
+                        avatar.innerHTML = '<i class="fa-solid fa-user text-tactical-green text-xs"></i>';
+                    }
+                }
             }
 
             if (viewId === 'profile' && currentUser) {
@@ -2775,6 +2856,8 @@
                 const isLiked = status.likes && currentUser && status.likes.includes(currentUser.id);
                 const likeIcon = isLiked ? '<i class="fa-solid fa-heart"></i>' : '<i class="fa-regular fa-heart"></i>';
                 const likeColor = isLiked ? 'text-red-500 hover:text-red-400' : 'text-tactical-text hover:text-white';
+                
+                const commentCount = allComments.filter(c => c.statusId === status.id).length;
 
                 html += `
                     <div class="panel-tactical p-4 md:p-5 rounded shadow-[0_2px_10px_rgba(0,0,0,0.4)]">
@@ -2799,7 +2882,7 @@
                                 ${likeIcon} <span class="font-mono">${status.likes ? status.likes.length : 0} Suka</span>
                             </button>
                             <button onclick="navigateTo('status', '${status.id}')" class="text-tactical-text hover:text-white transition text-xs md:text-sm font-bold flex items-center gap-1.5 active:scale-95">
-                                <i class="fa-regular fa-comment"></i> <span class="font-mono">Komen</span>
+                                <i class="fa-regular fa-comment"></i> <span class="font-mono">${commentCount} Komen</span>
                             </button>
                         </div>
                     </div>
@@ -2923,19 +3006,13 @@
                 </div>
             `;
 
-            // Fetch Comments
-            if (commentsUnsubscribe) commentsUnsubscribe();
-            const commentsRef = collection(db, 'artifacts', appId, 'public', 'data', 'srteam_statuses', statusId, 'comments');
-            commentsUnsubscribe = onSnapshot(commentsRef, (snap) => {
-                let comments = [];
-                snap.forEach(doc => comments.push({ id: doc.id, ...doc.data() }));
-                comments.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)); 
-                window.renderCommentsList(comments);
-                
-                // Kemaskini jumlah komen pada UI
-                const countSpan = document.getElementById('status-comment-count');
-                if (countSpan) countSpan.textContent = `${comments.length} Komen`;
-            });
+            // Paparkan komen yang telah ditarik dari flat collection
+            const statusComments = allComments.filter(c => c.statusId === statusId);
+            statusComments.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+            window.renderCommentsList(statusComments);
+            
+            const countSpan = document.getElementById('status-comment-count');
+            if (countSpan) countSpan.textContent = `${statusComments.length} Komen`;
         }
 
         window.renderCommentsList = function(comments) {
@@ -3010,7 +3087,9 @@
             btn.disabled = true;
 
             try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_statuses', currentStatusId, 'comments'), {
+                // Simpan komen ke pangkalan data utama agar tidak dilanggar oleh Firewall Firebase
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_status_comments'), {
+                    statusId: currentStatusId,
                     userId: currentUser.id,
                     author: currentUser.nickname || currentUser.email.split('@')[0],
                     text: text,
@@ -3040,7 +3119,7 @@
         window.deleteComment = async function(commentId) {
             if(!confirm('Padam komen ini?')) return;
             try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_statuses', currentStatusId, 'comments', commentId));
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_status_comments', commentId));
             } catch(e) {
                 window.showAlert('Gagal memadam komen.', 'error');
             }
