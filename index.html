@@ -1345,7 +1345,18 @@
 
                 const profileEditForm = document.getElementById('profile-edit-form');
                 if (profileEditForm) profileEditForm.classList.add('hidden'); 
+                
+                // TAMBAHAN: Jejak ID dan muatkan status profil
+                currentProfileUserId = displayUser.id;
+                if (typeof window.renderProfileStatusFeed === 'function') {
+                    window.renderProfileStatusFeed(currentProfileUserId);
+                }
             }
+            
+            if (viewId !== 'profile') {
+                currentProfileUserId = null;
+            }
+
             if (viewId === 'admin') {
                 window.renderAdminPanel();
                 window.renderAdminAnnouncements();
