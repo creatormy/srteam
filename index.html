@@ -1378,12 +1378,12 @@
             }
         });
 
-        // TUKARKAN NAMA KEPADA LINK BIRU/HIJAU BERDASARKAN DATABASE
-        window.formatMentions = function(text) {
-            if (!text) return '';
-            let formatted = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        // FUNGSI MEMPROSES MENTION SEBELUM DISIMPAN (TUKAR NAMA KE ID UNIK)
+        window.processMentionsBeforeSave = function(rawText) {
+            let processedText = rawText;
+            let mentionedIds = [];
             
-            // Isih nama paling panjang dulu supaya regex tak tersilap ganti @Abu jika nama sebenar ialah @AbuBakar
+            // Urutkan dari nama paling panjang supaya regex tidak tersilap potong nama (cth @Abu dan @AbuBakar)
             const sortedUsers = [...users].sort((a, b) => {
                 const nameA = a.nickname || a.username || a.email.split('@')[0];
                 const nameB = b.nickname || b.username || b.email.split('@')[0];
@@ -1394,9 +1394,53 @@
                 const uName = u.nickname || u.username || u.email.split('@')[0];
                 if (uName) {
                     const safeName = uName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    const regex = new RegExp(`@${safeName}(?!\\w)`, 'gi'); // Cegah percampuran nama
-                    formatted = formatted.replace(regex, `<span class="text-tactical-green font-bold cursor-pointer hover:underline drop-shadow-md" onclick="navigateTo('profile', '${u.email}')">$&</span>`);
+                    const regex = new RegExp(`(^|[^\\w])@${safeName}(?!\\w)`, 'gi');
+                    
+                    if (regex.test(processedText)) {
+                        if (!mentionedIds.includes(u.id)) {
+                            mentionedIds.push(u.id);
+                        }
+                        // Ganti nama literal dengan tag rahsia @@[userId]@@
+                        processedText = processedText.replace(regex, `$1@@[${u.id}]@@`);
+                    }
                 }
+            });
+            return { processedText, mentionedIds };
+        };
+
+        // TUKARKAN MENTION KEPADA LINK BIRU/HIJAU (KALIS PERUBAHAN NAMA)
+        window.formatMentions = function(text) {
+            if (!text) return '';
+            let formatted = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            
+            // 1. Format lama (Fallback): @Username literal untuk status lama yang didaftar tanpa ID
+            const sortedUsers = [...users].sort((a, b) => {
+                const nameA = a.nickname || a.username || a.email.split('@')[0];
+                const nameB = b.nickname || b.username || b.email.split('@')[0];
+                return nameB.length - nameA.length;
+            });
+
+            sortedUsers.forEach(u => {
+                const uName = u.nickname || u.username || u.email.split('@')[0];
+                if (uName) {
+                    const safeName = uName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(`(^|[^\\w])@${safeName}(?!\\w)`, 'gi'); 
+                    formatted = formatted.replace(regex, (match, p1) => {
+                        const linkTarget = u.username || u.email;
+                        return `${p1}<span class="text-tactical-green font-bold cursor-pointer hover:underline drop-shadow-md" onclick="navigateTo('profile', '${linkTarget}')">@${uName}</span>`;
+                    });
+                }
+            });
+
+            // 2. Format baharu: @@[userId]@@ (Menterjemah ID unik menjadi nama semasa / Auto Detect)
+            formatted = formatted.replace(/@@\[(.*?)\]@@/g, (match, userId) => {
+                const u = users.find(x => x.id === userId);
+                if (u) {
+                    const currentName = u.nickname || u.username || u.email.split('@')[0];
+                    const linkTarget = u.username || u.email; 
+                    return `<span class="text-tactical-green font-bold cursor-pointer hover:underline drop-shadow-md" onclick="navigateTo('profile', '${linkTarget}')">@${currentName}</span>`;
+                }
+                return `<span class="text-tactical-green font-bold">@Unknown</span>`;
             });
             
             return formatted.replace(/\n/g, '<br>');
@@ -3020,11 +3064,14 @@
                     photoURL = await compressImage(imageInput.files[0], 1080, 1080, 0.85);
                 }
 
+                // EKSTRAK MENTION DAN TUKAR KE ID UNIK
+                const { processedText, mentionedIds } = window.processMentionsBeforeSave(text);
+
                 // SIMPAN STATUS KE DATABASE
                 const newStatusRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_statuses'), {
                     userId: currentUser.id,
                     author: currentUser.nickname || currentUser.email.split('@')[0],
-                    text: text,
+                    text: processedText,
                     image: photoURL,
                     likes: [],
                     timestamp: serverTimestamp()
@@ -3034,16 +3081,13 @@
                 window.removeStatusImagePreview();
                 window.showAlert('Status anda berjaya dipancarkan!', 'success');
 
-                // JANA NOTIFIKASI KEPADA PENGGUNA YANG DI-MENTION
-                const senderName = currentUser.nickname || currentUser.email.split('@')[0];
-                for (const u of users) {
-                    if (u.id === currentUser.id) continue;
-                    const targetName = (u.nickname || u.username || u.email.split('@')[0]).toLowerCase();
-                    
-                    if (text.toLowerCase().includes(`@${targetName}`)) {
-                        await window.sendNotification(u.id, `${senderName} telah menge-tag anda di dalam status terbaharu beliau.`, "mention", `status?id=${newStatusRef.id}`);
+                // JANA NOTIFIKASI KEPADA PENGGUNA YANG DI-MENTION (MENGGUNAKAN ID)
+                const senderName = currentUser.nickname || currentUser.username || currentUser.email.split('@')[0];
+                mentionedIds.forEach(async (targetId) => {
+                    if (targetId !== currentUser.id) {
+                        await window.sendNotification(targetId, `${senderName} telah menge-tag anda di dalam status terbaharu beliau.`, "mention", `status?id=${newStatusRef.id}`);
                     }
-                }
+                });
 
             } catch (err) {
                 console.error(err);
@@ -3417,7 +3461,8 @@
                     deleteBtn = `<button onclick="deleteComment('${c.id}')" class="text-tactical-text hover:text-red-500 transition text-[10px] ml-2" title="Padam Komen"><i class="fa-solid fa-xmark"></i></button>`;
                 }
 
-                let textHtml = c.text ? c.text.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, '<br>') : '';
+                // GUNA FUNGSI FORMAT MENTION PADA KOMEN JUGA
+                let textHtml = window.formatMentions(c.text);
 
                 html += `
                     <div class="flex gap-2.5 items-start group">
@@ -3460,27 +3505,39 @@
             btn.disabled = true;
 
             try {
+                // EKSTRAK MENTION DARI KOMEN
+                const { processedText, mentionedIds } = window.processMentionsBeforeSave(text);
+
                 // Simpan komen ke pangkalan data utama agar tidak dilanggar oleh Firewall Firebase
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_status_comments'), {
                     statusId: currentStatusId,
                     userId: currentUser.id,
                     author: currentUser.nickname || currentUser.email.split('@')[0],
-                    text: text,
+                    text: processedText,
                     timestamp: Date.now()
                 });
                 
                 input.value = '';
                 
-                // Notify status author
+                // Notify status author (Jika author tak di-mention, notify balas komen biasa)
                 const status = statusFeed.find(s => s.id === currentStatusId);
-                if (status && status.userId !== currentUser.id) {
+                if (status && status.userId !== currentUser.id && !mentionedIds.includes(status.userId)) {
                     await window.sendNotification(
                         status.userId, 
-                        `${currentUser.nickname || currentUser.email.split('@')[0]} telah membalas komen pada status anda.`, 
+                        `${currentUser.nickname || currentUser.username || currentUser.email.split('@')[0]} telah membalas komen pada status anda.`, 
                         "mention", 
                         `status?id=${currentStatusId}`
                     );
                 }
+
+                // Notify member lain yang di-mention di dalam komen
+                const senderName = currentUser.nickname || currentUser.username || currentUser.email.split('@')[0];
+                mentionedIds.forEach(async (targetId) => {
+                    if (targetId !== currentUser.id) {
+                        await window.sendNotification(targetId, `${senderName} telah menge-tag anda di dalam komen.`, "mention", `status?id=${currentStatusId}`);
+                    }
+                });
+
             } catch(err) {
                 window.showAlert('Gagal menghantar komen.', 'error');
             } finally {
