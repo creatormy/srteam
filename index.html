@@ -394,22 +394,6 @@
                         <h4 class="text-xs text-tactical-green font-mono mb-1"><i class="fa-solid fa-book-open"></i> BIO (KEPAKARAN TAKTIKAL)</h4>
                         <p class="text-white text-sm whitespace-pre-wrap" id="profile-bio">Tiada bio ditetapkan.</p>
                     </div>
-
-                    <div class="mb-6 bg-tactical-dark p-4 rounded border border-tactical-border">
-                        <h4 class="text-xs text-tactical-green font-mono mb-1"><i class="fa-solid fa-clock-rotate-left"></i> STORY TERKINI</h4>
-                        <p class="text-white text-sm italic" id="profile-story">"Tiada laporan terkini."</p>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-tactical-dark p-3 rounded border border-tactical-border">
-                            <span class="text-xs text-tactical-text font-mono block mb-1">STATUS AKSES</span>
-                            <span class="text-white font-bold text-green-500">DILULUSKAN</span>
-                        </div>
-                        <div class="bg-tactical-dark p-3 rounded border border-tactical-border">
-                            <span class="text-xs text-tactical-text font-mono block mb-1">KLAN UTAMA</span>
-                            <span class="text-white font-bold">SRTEAM ESPORT</span>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -450,10 +434,6 @@
                         <div class="mb-4">
                             <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">BIO (PENGENALAN DIRI)</label>
                             <textarea class="input-tactical w-full p-3 rounded" id="edit-bio" rows="2" placeholder="Ceritakan sikit tentang anda..."></textarea>
-                        </div>
-                        <div class="mb-6">
-                            <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">STORY (STATUS HARI INI)</label>
-                            <input class="input-tactical w-full p-3 rounded" id="edit-story" type="text" placeholder="Apa status pemikiran anda hari ini?">
                         </div>
                         <div class="flex gap-2 pt-2 border-t border-tactical-border/50">
                             <button type="submit" id="btn-save-profile" class="btn-tactical py-3 px-6 rounded flex-grow"><i class="fa-solid fa-floppy-disk mr-2"></i> SIMPAN PERUBAHAN</button>
@@ -1354,9 +1334,6 @@
                 const profileBio = document.getElementById('profile-bio');
                 if (profileBio) profileBio.textContent = displayUser.bio || 'Tiada bio ditetapkan.';
                 
-                const profileStory = document.getElementById('profile-story');
-                if (profileStory) profileStory.textContent = displayUser.story ? `"${displayUser.story}"` : '"Tiada laporan terkini."';
-                
                 const btnEdit = document.getElementById('btn-edit-profile');
                 if (btnEdit) {
                     btnEdit.style.display = isOwnProfile ? 'block' : 'none';
@@ -1402,7 +1379,6 @@
                 document.getElementById('edit-nickname').value = currentUser.nickname || '';
                 document.getElementById('edit-phone').value = currentUser.phone || '';
                 document.getElementById('edit-bio').value = currentUser.bio || '';
-                document.getElementById('edit-story').value = currentUser.story || '';
                 document.getElementById('edit-password').value = ''; 
                 document.getElementById('edit-photo').value = ''; 
             } else {
@@ -1461,7 +1437,6 @@
             const newNick = document.getElementById('edit-nickname').value.trim();
             const newPhone = document.getElementById('edit-phone').value.trim();
             const newBio = document.getElementById('edit-bio').value.trim();
-            const newStory = document.getElementById('edit-story').value.trim();
             
             try {
                 // Halang Penipuan ID
@@ -1474,7 +1449,7 @@
                 }
 
                 const userDoc = doc(db, 'artifacts', appId, 'public', 'data', 'srteam_users', currentUser.id);
-                const updates = { email: newEmail, nickname: newNick, phone: newPhone, bio: newBio, story: newStory };
+                const updates = { email: newEmail, nickname: newNick, phone: newPhone, bio: newBio };
                 if (newPass) updates.password = newPass; 
                 
                 const photoInput = document.getElementById('edit-photo');
