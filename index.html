@@ -332,14 +332,36 @@
                 </div>
 
                 <form id="auth-form" onsubmit="handleAuth(event)">
-                    <div class="mb-4">
-                        <label class="block text-tactical-text text-xs font-bold mb-2 font-mono" id="label-email" for="email">ALAMAT EMEL / ID / NO. WHATSAPP</label>
-                        <input class="input-tactical w-full p-3 rounded" id="email" type="text" required placeholder="member@srteam.com / 60123456789">
+                    <!-- BAHAGIAN LOG MASUK SAHAJA -->
+                    <div class="mb-4" id="login-group">
+                        <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">USERNAME / ID / EMEL / NO. WA</label>
+                        <input class="input-tactical w-full p-3 rounded" id="login-id" type="text" placeholder="Masukkan ID / Emel / No. WA anda">
                     </div>
-                    <div id="phone-group" class="mb-4 hidden">
-                        <label class="block text-tactical-text text-xs font-bold mb-2 font-mono" for="reg-phone">NOMBOR WHATSAPP (Mesti Sah)</label>
-                        <input class="input-tactical w-full p-3 rounded" id="reg-phone" type="text" placeholder="Contoh: 60123456789">
+
+                    <!-- BAHAGIAN DAFTAR BAHARU SAHAJA -->
+                    <div id="register-group" class="hidden">
+                        <div class="mb-4">
+                            <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">USERNAME / ID (Pilihan)</label>
+                            <input class="input-tactical w-full p-3 rounded" id="reg-username" type="text" placeholder="Biar kosong untuk ID rawak">
+                            <p class="text-[10px] text-tactical-text mt-1 font-mono">ID untuk log masuk. Sistem akan menjana ID angka rawak jika dibiarkan kosong.</p>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">ALAMAT EMEL (Mesti Sah)</label>
+                            <input class="input-tactical w-full p-3 rounded" id="reg-email" type="email" placeholder="member@srteam.com">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">NO. WHATSAPP</label>
+                                <input class="input-tactical w-full p-3 rounded" id="reg-phone" type="text" placeholder="60123456789">
+                            </div>
+                            <div>
+                                <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">TARIKH LAHIR</label>
+                                <input class="input-tactical w-full p-3 rounded" id="reg-dob" type="date">
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- DIKONGSI BERSAMA (KATA LALUAN) -->
                     <div class="mb-4">
                         <label class="block text-tactical-text text-xs font-bold mb-2 font-mono" for="password">KATA LALUAN</label>
                         <input class="input-tactical w-full p-3 rounded" id="password" type="password" required placeholder="••••••••">
@@ -431,17 +453,23 @@
                         <div id="tab-edit-akaun" class="profile-tab-content block">
                             <div class="grid md:grid-cols-2 gap-4 mb-4">
                                 <div>
-                                    <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">USERNAME / EMEL PENGGUNA</label>
-                                    <input class="input-tactical w-full p-3 rounded" id="edit-email" type="text" required>
+                                    <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">USERNAME / ID LOG MASUK</label>
+                                    <input class="input-tactical w-full p-3 rounded text-gray-400" id="edit-username" type="text" readonly title="Sila hubungi admin untuk menukar ID.">
                                 </div>
+                                <div>
+                                    <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">ALAMAT EMEL PENGGUNA</label>
+                                    <input class="input-tactical w-full p-3 rounded" id="edit-email" type="email" required>
+                                </div>
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">NICKNAME (IGN)</label>
                                     <input class="input-tactical w-full p-3 rounded" id="edit-nickname" type="text" placeholder="Cth: SR Killer">
                                 </div>
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">TUKAR KATA LALUAN</label>
-                                <input class="input-tactical w-full p-3 rounded" id="edit-password" type="text" placeholder="(Biar kosong jika tak mahu tukar)">
+                                <div>
+                                    <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">TUKAR KATA LALUAN</label>
+                                    <input class="input-tactical w-full p-3 rounded" id="edit-password" type="text" placeholder="(Biar kosong jika tak mahu tukar)">
+                                </div>
                             </div>
                         </div>
 
@@ -732,12 +760,18 @@
                     <form onsubmit="saveAdminEditProfile(event)">
                         <input type="hidden" id="admin-edit-id">
                         <div class="mb-4">
-                            <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">USERNAME / EMEL PENGGUNA</label>
-                            <input class="input-tactical w-full p-3 rounded" id="admin-edit-email" type="text" required>
+                            <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">USERNAME / ID LOG MASUK</label>
+                            <input class="input-tactical w-full p-3 rounded" id="admin-edit-username" type="text" required>
                         </div>
-                        <div class="mb-4">
-                            <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">KATA LALUAN</label>
-                            <input class="input-tactical w-full p-3 rounded" id="admin-edit-password" type="text" required>
+                        <div class="grid md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">ALAMAT EMEL</label>
+                                <input class="input-tactical w-full p-3 rounded" id="admin-edit-email" type="email" required>
+                            </div>
+                            <div>
+                                <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">KATA LALUAN</label>
+                                <input class="input-tactical w-full p-3 rounded" id="admin-edit-password" type="text" required>
+                            </div>
                         </div>
                         <div class="mb-6">
                             <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">NICKNAME IN-GAME</label>
@@ -1372,20 +1406,20 @@
 
             if (viewId === 'profile' && currentUser) {
                 let displayUser = currentUser;
-                const isOwnProfile = !targetEmail || targetEmail === currentUser.email;
+                const isOwnProfile = !targetEmail || targetEmail === currentUser.email || targetEmail === currentUser.username;
 
                 if (!isOwnProfile) {
-                    displayUser = users.find(u => u.email === targetEmail) || currentUser;
+                    displayUser = users.find(u => u.email === targetEmail || u.username === targetEmail) || currentUser;
                 }
 
                 const profileEmailDisplay = document.getElementById('profile-email-display');
-                if (profileEmailDisplay) profileEmailDisplay.textContent = `ID: ${displayUser.email}`;
+                if (profileEmailDisplay) {
+                    const idText = displayUser.username || displayUser.email;
+                    profileEmailDisplay.innerHTML = `<span class="text-blue-400">ID: ${idText}</span> <span class="mx-2 opacity-50">|</span> <span class="text-gray-400">EMEL: ${displayUser.email}</span>`;
+                }
                 
                 const profileNickname = document.getElementById('profile-nickname');
-                if (profileNickname) profileNickname.textContent = displayUser.nickname || displayUser.email.split('@')[0];
-                
-                let roleText = 'MEMBER';
-                if (displayUser.role === 'admin') roleText = 'ADMIN / PEGAWAI';
+                if (profileNickname) profileNickname.textContent = displayUser.nickname || displayUser.username || displayUser.email.split('@')[0];
                 if (displayUser.role === 'komander') roleText = 'KAPTEN KLAN (KOMANDER)';
                 if (displayUser.role === 'moderator') roleText = 'PENGAWAS (MODERATOR)';
                 if (displayUser.role === 'superadmin') roleText = 'PENGASAS (SUPER ADMIN)';
@@ -1496,6 +1530,7 @@
             if (form.classList.contains('hidden')) {
                 form.classList.remove('hidden');
                 document.getElementById('edit-email').value = currentUser.email || '';
+                document.getElementById('edit-username').value = currentUser.username || currentUser.email || '';
                 document.getElementById('edit-nickname').value = currentUser.nickname || '';
                 document.getElementById('edit-phone').value = currentUser.phone || '';
                 document.getElementById('edit-bio').value = currentUser.bio || '';
@@ -1579,8 +1614,8 @@
             const newLocation = document.getElementById('edit-location').value.trim();
             
             try {
-                // Halang Penipuan ID
-                const isDuplicate = users.some(u => u.id !== currentUser.id && ((u.email.toLowerCase() === newEmail.toLowerCase()) || (newNick && u.nickname && u.nickname.toLowerCase() === newNick.toLowerCase())));
+                // Halang Penipuan ID & Emel
+                const isDuplicate = users.some(u => u.id !== currentUser.id && ((u.email && u.email.toLowerCase() === newEmail.toLowerCase()) || (newNick && u.nickname && u.nickname.toLowerCase() === newNick.toLowerCase())));
                 if (isDuplicate) {
                     window.showAlert('Ralat: Emel atau Nickname ini telah pun digunakan oleh ahli lain!', 'error');
                     btnSave.innerHTML = origText;
@@ -1651,22 +1686,36 @@
             document.getElementById('auth-subtitle').textContent = isLoginMode ? 'Sila log masuk untuk mengakses sistem' : 'Mohon pendaftaran untuk menjadi member rasmi';
             document.getElementById('auth-submit-btn').innerHTML = isLoginMode ? 'LOG MASUK' : 'MOHON PENDAFTARAN';
             
-            const phoneGroup = document.getElementById('phone-group');
-            const regPhone = document.getElementById('reg-phone');
-            const labelEmail = document.getElementById('label-email');
+            const loginGroup = document.getElementById('login-group');
+            const registerGroup = document.getElementById('register-group');
             const rememberGroup = document.getElementById('remember-group');
 
+            const loginIdInput = document.getElementById('login-id');
+            const regEmailInput = document.getElementById('reg-email');
+            const regPhoneInput = document.getElementById('reg-phone');
+            const regDobInput = document.getElementById('reg-dob');
+
             if (isLoginMode) {
-                phoneGroup.classList.add('hidden');
+                loginGroup.classList.remove('hidden');
+                registerGroup.classList.add('hidden');
                 rememberGroup.classList.remove('hidden');
-                regPhone.removeAttribute('required');
-                labelEmail.textContent = 'ALAMAT EMEL / ID / NO. WHATSAPP';
+                
+                loginIdInput.setAttribute('required', 'required');
+                regEmailInput.removeAttribute('required');
+                regPhoneInput.removeAttribute('required');
+                regDobInput.removeAttribute('required');
+                
                 document.getElementById('auth-switch-text').innerHTML = 'Belum mempunyai akses? <a onclick="toggleAuthMode()" class="cursor-pointer text-tactical-green hover:underline font-bold">Mohon Pendaftaran</a>';
             } else {
-                phoneGroup.classList.remove('hidden');
+                loginGroup.classList.add('hidden');
+                registerGroup.classList.remove('hidden');
                 rememberGroup.classList.add('hidden');
-                regPhone.setAttribute('required', 'required');
-                labelEmail.textContent = 'ALAMAT EMEL / ID';
+                
+                loginIdInput.removeAttribute('required');
+                regEmailInput.setAttribute('required', 'required');
+                regPhoneInput.setAttribute('required', 'required');
+                regDobInput.setAttribute('required', 'required');
+                
                 document.getElementById('auth-switch-text').innerHTML = 'Sudah mempunyai akses? <a onclick="toggleAuthMode()" class="cursor-pointer text-tactical-green hover:underline font-bold">Log Masuk Sini</a>';
             }
             
@@ -1682,13 +1731,14 @@
             btnSubmit.disabled = true;
             btnSubmit.classList.add('opacity-70', 'cursor-not-allowed');
 
-            const emailOrPhone = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const rememberMe = document.getElementById('remember-me') ? document.getElementById('remember-me').checked : false;
 
             try {
                 if (isLoginMode) {
-                    const user = users.find(u => (u.email === emailOrPhone || u.phone === emailOrPhone) && u.password === password);
+                    const loginIdVal = document.getElementById('login-id').value.trim();
+                    const user = users.find(u => (u.username === loginIdVal || u.email === loginIdVal || u.phone === loginIdVal) && u.password === password);
+                    
                     if (user) {
                         if (user.status === 'pending') {
                             window.showAlert('Akses ditolak. Akaun sedang menunggu pengesahan Command Center.', 'warning');
@@ -1710,35 +1760,55 @@
                         window.showAlert('Kredensial tidak sah atau belum mendaftar. (Pastikan Pangkalan Data Sedia)', 'error');
                     }
                 } else {
-                    const regPhoneValue = document.getElementById('reg-phone').value.trim();
+                    let regUsername = document.getElementById('reg-username').value.trim();
+                    const regEmail = document.getElementById('reg-email').value.trim();
+                    const regPhone = document.getElementById('reg-phone').value.trim();
+                    const regDob = document.getElementById('reg-dob').value;
                     
-                    if (users.some(u => u.email === emailOrPhone || (u.phone && u.phone === regPhoneValue))) {
+                    // JANA ID ANGKA RAWAK (8 DIGIT) JIKA KOSONG
+                    if (!regUsername) {
+                        let isUnique = false;
+                        while (!isUnique) {
+                            regUsername = Math.floor(10000000 + Math.random() * 90000000).toString();
+                            isUnique = !users.some(u => u.username === regUsername);
+                        }
+                    } else {
+                        if (users.some(u => u.username && u.username.toLowerCase() === regUsername.toLowerCase())) {
+                            window.showAlert('Username / ID ini telah pun wujud. Sila pilih ID lain.', 'error');
+                            throw new Error('Duplicate');
+                        }
+                    }
+                    
+                    if (users.some(u => u.email === regEmail || u.phone === regPhone)) {
                         window.showAlert('Emel atau Nombor ini telah digunakan di dalam pangkalan data.', 'error');
                         throw new Error('Duplicate');
                     }
+                    
                     if (!firebaseUser) {
                         window.showAlert('Sistem awan belum sedia. Sila semak sambungan Firebase anda.', 'warning');
                         throw new Error('No Firebase');
                     }
 
                     const newUserRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_users'), {
-                        email: emailOrPhone, 
-                        phone: regPhoneValue,
+                        username: regUsername,
+                        email: regEmail, 
+                        phone: regPhone,
+                        dob: regDob,
                         password: password, 
                         status: 'pending', 
                         role: 'user', 
                         createdAt: Date.now()
                     });
                     
-                    await window.sendNotification(newUserRef.id, "Selamat datang di SRTEAM Official Web! Pendaftaran anda sedang diproses oleh Command Center.", "welcome", "profile");
+                    await window.sendNotification(newUserRef.id, `Selamat datang di SRTEAM Official Web! Pendaftaran anda dengan ID: ${regUsername} sedang diproses.`, "welcome", "profile");
 
                     for (const u of users) {
                         if (u.role === 'admin' || u.role === 'superadmin' || u.role === 'komander') {
-                            await window.sendNotification(u.id, `⚠️ PERMOHONAN MEMBER BARU: ID (${emailOrPhone}) telah menghantar permohonan pendaftaran masuk. Sila sahkan!`, "admin_alert", "admin");
+                            await window.sendNotification(u.id, `⚠️ PERMOHONAN MEMBER BARU: Rekrut dengan ID (${regUsername}) telah memohon pendaftaran. Sila sahkan!`, "admin_alert", "admin");
                         }
                     }
 
-                    window.showAlert('Pendaftaran berjaya! Sila tunggu pengesahan Command Center sebelum log masuk.', 'success');
+                    window.showAlert(`Pendaftaran berjaya! ID anda ialah: ${regUsername}. Sila tunggu kelulusan Admin.`, 'success');
                     window.toggleAuthMode(true); 
                     document.getElementById('auth-form').reset();
                 }
@@ -2319,6 +2389,7 @@
             const u = users.find(x => x.id === id);
             if(!u) return;
             document.getElementById('admin-edit-id').value = id;
+            document.getElementById('admin-edit-username').value = u.username || '';
             document.getElementById('admin-edit-email').value = u.email || '';
             document.getElementById('admin-edit-password').value = u.password || '';
             document.getElementById('admin-edit-nickname').value = u.nickname || '';
@@ -2329,17 +2400,23 @@
         window.saveAdminEditProfile = async function(e) {
             e.preventDefault();
             const id = document.getElementById('admin-edit-id').value;
+            const newUsername = document.getElementById('admin-edit-username').value.trim();
             const newEmail = document.getElementById('admin-edit-email').value.trim();
             const newNick = document.getElementById('admin-edit-nickname').value.trim();
             
-            const isDuplicate = users.some(u => u.id !== id && ((u.email.toLowerCase() === newEmail.toLowerCase()) || (newNick && u.nickname && u.nickname.toLowerCase() === newNick.toLowerCase())));
+            const isDuplicate = users.some(u => u.id !== id && (
+                (u.username && u.username.toLowerCase() === newUsername.toLowerCase()) ||
+                (u.email && u.email.toLowerCase() === newEmail.toLowerCase()) || 
+                (newNick && u.nickname && u.nickname.toLowerCase() === newNick.toLowerCase())
+            ));
             if (isDuplicate) {
-                window.showAlert('Ralat: Emel atau Nickname ini sedang digunakan oleh ahli lain!', 'error');
+                window.showAlert('Ralat: ID, Emel atau Nickname ini sedang digunakan oleh ahli lain!', 'error');
                 return;
             }
 
             try {
                 await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_users', id), {
+                    username: newUsername,
                     email: newEmail,
                     password: document.getElementById('admin-edit-password').value,
                     nickname: newNick
