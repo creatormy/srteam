@@ -1004,6 +1004,7 @@
                 });
                 if (currentUser && currentUser.status === 'approved') {
                     if (typeof window.renderStatusFeed === 'function') window.renderStatusFeed();
+                    if (currentStatusId && typeof window.renderSingleStatus === 'function') window.renderSingleStatus(currentStatusId);
                 }
             });
 
