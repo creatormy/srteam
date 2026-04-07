@@ -2085,6 +2085,22 @@
             let html = '';
             const approvedTours = tournaments.filter(t => t.status === 'approved');
 
+            // SISTEM ISIHAN KHAS: Letak ahli berpangkat KOMANDER paling atas
+            approvedTours.sort((a, b) => {
+                const userA = users.find(u => (a.userId && u.id === a.userId) || u.email === a.pemohon);
+                const userB = users.find(u => (b.userId && u.id === b.userId) || u.email === b.pemohon);
+                
+                const isKomanderA = userA && userA.role === 'komander' ? 1 : 0;
+                const isKomanderB = userB && userB.role === 'komander' ? 1 : 0;
+                
+                // Jika salah seorang adalah komander, utamakan yang komander (1 tolak 0)
+                if (isKomanderA !== isKomanderB) {
+                    return isKomanderB - isKomanderA;
+                }
+                // Jika kedua-duanya sama, kekalkan urutan masa daftar asal
+                return a.timestamp - b.timestamp; 
+            });
+
             approvedTours.forEach(tour => {
                 const timeDate = new Date(tour.timestamp).toLocaleDateString('ms-MY');
                 const tourUser = users.find(u => (tour.userId && u.id === tour.userId) || u.email === tour.pemohon);
