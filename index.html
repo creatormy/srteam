@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SRTEAM ESPORT | Official Web</title>
+    <title>SRTEAM ESPORT | Delta Force Tactical</title>
     <!-- Tailwind CSS untuk Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome untuk Ikon -->
@@ -193,6 +193,20 @@
         </div>
     </div>
 
+    <!-- Modal Info Official SR -->
+    <div id="official-info-modal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="panel-tactical p-6 rounded border border-tactical-green w-full max-w-md shadow-[0_0_30px_rgba(74,222,128,0.3)] text-center relative">
+            <button onclick="toggleOfficialInfo()" class="absolute top-3 right-4 text-tactical-text hover:text-white transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            <img src="https://www.dropbox.com/scl/fi/j8jj1avnr3u6rmeamc5qv/sr-transparant.png?rlkey=djgp0h6yta69ywk8uokpyw1ea&st=67hdsl29&raw=1" class="h-20 mx-auto mb-4 drop-shadow-[0_0_15px_rgba(74,222,128,0.6)]">
+            <h3 class="text-2xl font-bold text-white mb-2 uppercase tracking-widest text-tactical-green glitch-text">OFFICIAL SR</h3>
+            <div class="text-tactical-text font-mono text-sm leading-relaxed mb-6 text-left p-4 bg-tactical-dark rounded border border-tactical-border">
+                Lencana <b class="text-tactical-green">OFFICIAL SR</b> menandakan bahawa pemain ini adalah ahli skuad utama (Roster Utama) yang sah untuk mewakili klan di arena kompetitif.<br><br>
+                <i class="fa-solid fa-triangle-exclamation text-yellow-500 mr-1"></i> Hanya ahli bersatus OFFICIAL SR yang diizinkan untuk mengakses dan mendaftar di Pangkalan SCRIM & TOUR.
+            </div>
+            <button onclick="toggleOfficialInfo()" class="btn-tactical w-full py-3 rounded tracking-widest">FAHAM, KOMANDAN!</button>
+        </div>
+    </div>
+
     <!-- Modal Pemapar Imej Profil -->
     <div id="image-viewer-modal" class="hidden fixed inset-0 bg-black/95 z-[200] flex flex-col items-center justify-center p-4 backdrop-blur-md transition-opacity">
         <div class="w-full max-w-3xl flex justify-end mb-4">
@@ -275,7 +289,7 @@
 
         <!-- 3. HALAMAN PROFIL -->
         <section id="view-profile" class="view-section hidden">
-            <h2 class="text-3xl font-bold text-white mb-6 border-b border-tactical-border pb-2 uppercase"><i class="fa-solid fa-user-astronaut text-tactical-green mr-2"></i>PROFILE MEMBER</h2>
+            <h2 class="text-3xl font-bold text-white mb-6 border-b border-tactical-border pb-2 uppercase"><i class="fa-solid fa-user-astronaut text-tactical-green mr-2"></i> DOSIER MEMBER</h2>
             
             <div id="profile-display" class="panel-tactical p-8 rounded flex flex-col md:flex-row gap-8 items-center md:items-start relative">
                 <button id="btn-edit-profile" onclick="toggleEditProfile()" class="absolute top-4 right-4 text-tactical-text hover:text-white transition text-xs border border-tactical-border px-3 py-1 rounded bg-tactical-dark hover:bg-tactical-green hover:text-black z-10"><i class="fa-solid fa-pen-to-square"></i> KEMASKINI</button>
@@ -285,9 +299,10 @@
                 </div>
                 
                 <div class="flex-grow w-full">
-                    <h3 class="text-3xl font-bold text-white flex items-center gap-2">
+                    <h3 class="text-3xl font-bold text-white flex items-center gap-2 flex-wrap">
                         <span id="profile-nickname">NICKNAME</span>
-                        <i id="profile-verified-badge" class="fa-solid fa-circle-check text-blue-500 text-xl hidden drop-shadow-md" title="Akaun Disahkan Secara Rasmi"></i>
+                        <i id="profile-verified-badge" class="fa-solid fa-circle-check text-blue-500 text-xl hidden drop-shadow-md cursor-pointer hover:scale-110 transition" title="Akaun Disahkan Secara Rasmi" onclick="toggleVerifiedInfo()"></i>
+                        <img id="profile-official-badge" src="https://www.dropbox.com/scl/fi/j8jj1avnr3u6rmeamc5qv/sr-transparant.png?rlkey=djgp0h6yta69ywk8uokpyw1ea&st=67hdsl29&raw=1" class="w-7 h-7 hidden drop-shadow-[0_0_8px_rgba(74,222,128,0.6)] cursor-pointer hover:scale-110 transition" onclick="toggleOfficialInfo()" title="Akaun OFFICIAL SR">
                     </h3>
                     <p class="text-tactical-text font-mono text-sm mb-1" id="profile-email-display">ID: member@srteam.com</p>
                     <p class="text-tactical-green font-mono mb-2" id="profile-role">PERANAN: ANGGOTA</p>
@@ -740,6 +755,15 @@
             }
         };
 
+        window.toggleOfficialInfo = function() {
+            const modal = document.getElementById('official-info-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        };
+
         window.openImageViewer = function(url, name) {
             const modal = document.getElementById('image-viewer-modal');
             const img = document.getElementById('viewer-image');
@@ -757,10 +781,16 @@
             if(modal) modal.classList.add('hidden');
         };
 
-        function getVerifiedBadge(user) {
+        window.getVerifiedBadge = function(user) {
             if (!user) return '';
             const isVerified = (user.role === 'superadmin' || user.role === 'admin' || user.role === 'komander' || user.role === 'moderator' || user.verified);
-            return isVerified ? `<i class="fa-solid fa-circle-check text-blue-500 ml-1 drop-shadow-[0_0_5px_rgba(59,130,246,0.6)]" title="Akaun Disahkan"></i>` : '';
+            return isVerified ? `<i class="fa-solid fa-circle-check text-blue-500 ml-1 drop-shadow-[0_0_5px_rgba(59,130,246,0.6)] cursor-pointer hover:scale-110 transition" onclick="toggleVerifiedInfo()" title="Akaun Disahkan"></i>` : '';
+        }
+
+        window.getOfficialBadge = function(user) {
+            if (!user) return '';
+            const isOfficial = (user.role === 'superadmin' || user.role === 'admin' || user.role === 'komander' || user.officialSr);
+            return isOfficial ? `<img src="https://www.dropbox.com/scl/fi/j8jj1avnr3u6rmeamc5qv/sr-transparant.png?rlkey=djgp0h6yta69ywk8uokpyw1ea&st=67hdsl29&raw=1" class="w-4 h-4 ml-1 drop-shadow-[0_0_5px_rgba(74,222,128,0.6)] cursor-pointer hover:scale-110 transition inline-block" onclick="toggleOfficialInfo()" title="Akaun OFFICIAL SR">` : '';
         }
 
         window.getSmallRoleBadge = function(user) {
@@ -801,6 +831,18 @@
                     setTimeout(() => {
                         window.navigateTo('home');
                     }, 5000);
+                    return;
+                }
+            }
+
+            // GATEKEEPER KHAS: HALAMAN SCRIM & TOUR HANYA UNTUK OFFICIAL SR
+            if (vId === 'tournament') {
+                const isOfficial = currentUser && (currentUser.role === 'admin' || currentUser.role === 'superadmin' || currentUser.role === 'komander' || currentUser.officialSr);
+                if (!isOfficial) {
+                    window.showAlert('⚠️ AKSES DITOLAK: Halaman SCRIM & TOUR khusus untuk member bersatus OFFICIAL SR. Sila hubungi Admin.', 'error');
+                    window.navigateTo('home', null, false);
+                    if (updateHash) window.history.pushState(null, '', '#home');
+                    else window.location.hash = 'home';
                     return;
                 }
             }
@@ -889,7 +931,7 @@
                     window.renderAdminPanel();
                 }
                 window.renderApprovedTournaments();
-                if(typeof window.renderGlobalAnnouncement === 'function') window.renderGlobalAnnouncement(); 
+                if(typeof window.renderGlobalAnnouncement === 'function') window.renderGlobalAnnouncement();
                 if (typeof renderChats === 'function' && chatsData.length > 0) {
                     renderChats(chatsData);
                 }
@@ -946,7 +988,7 @@
                 }
             });
 
-            // TAMBAHAN: Pemantauan Siaran Global
+            // Pemantauan Siaran Global
             const globalAnnounceRef = doc(db, 'artifacts', appId, 'public', 'data', 'srteam_settings', 'global_announcement');
             onSnapshot(globalAnnounceRef, (docSnap) => {
                 if (docSnap.exists()) {
@@ -955,7 +997,7 @@
                     globalAnnouncementData = { isActive: false, message: '' };
                 }
                 if(typeof window.renderGlobalAnnouncement === 'function') window.renderGlobalAnnouncement();
-                window.renderNotifications();
+                if(typeof window.renderNotifications === 'function') window.renderNotifications();
             });
         }
 
@@ -967,6 +1009,12 @@
             
             navLinks.forEach(link => {
                 if (link.reqAuth && (!currentUser || currentUser.status !== 'approved')) return;
+
+                // GATEKEEPER: Hilangkan menu SCRIM & TOUR bagi member bukan Official SR
+                if (link.id === 'tournament') {
+                    const isOfficial = currentUser && (currentUser.role === 'admin' || currentUser.role === 'superadmin' || currentUser.role === 'komander' || currentUser.officialSr);
+                    if (!isOfficial) return; 
+                }
 
                 navHtml += `
                     <a href="javascript:void(0)" onclick="navigateTo('${link.id}')" class="text-tactical-text hover:text-tactical-green font-bold text-[10px] md:text-sm tracking-wider uppercase transition flex flex-row items-center gap-1.5 md:gap-2 flex-shrink-0 py-1 px-1 md:px-0">
@@ -1111,10 +1159,16 @@
                 const isVerifiedAuto = (displayUser.role === 'superadmin' || displayUser.role === 'admin' || displayUser.role === 'komander' || displayUser.role === 'moderator' || displayUser.verified);
                 if (isVerifiedAuto) {
                     verifiedBadge.classList.remove('hidden');
-                    verifiedBadge.setAttribute('onclick', 'toggleVerifiedInfo()');
-                    verifiedBadge.classList.add('cursor-pointer', 'hover:scale-110', 'transition');
                 } else {
                     verifiedBadge.classList.add('hidden');
+                }
+
+                const officialBadge = document.getElementById('profile-official-badge');
+                const isOfficialAuto = (displayUser.role === 'superadmin' || displayUser.role === 'admin' || displayUser.role === 'komander' || displayUser.officialSr);
+                if (isOfficialAuto) {
+                    officialBadge.classList.remove('hidden');
+                } else {
+                    officialBadge.classList.add('hidden');
                 }
 
                 const profileWaLink = document.getElementById('profile-wa-link');
@@ -1562,7 +1616,7 @@
             }
         }
 
-        // --- FUNGSI SIARAN GLOBAL (WHAT'S NEW) ---
+        // --- FUNGSI SIARAN GLOBAL (WHAT'S NEW / PINNED MESSAGE) ---
         window.renderGlobalAnnouncement = function() {
             const globalNotifContainer = document.getElementById('global-notif-container');
             const globalNotifText = document.getElementById('global-notif-text');
@@ -1676,7 +1730,8 @@
                 }
 
                 const avatarImgList = user.photoURL ? `<img src="${user.photoURL}" class="w-8 h-8 rounded-full object-cover inline-block border border-tactical-green/50 shrink-0">` : `<div class="w-8 h-8 rounded-full bg-tactical-panel border border-tactical-border text-xs flex items-center justify-center shrink-0 text-tactical-text"><i class="fa-solid fa-user"></i></div>`;
-                const verifiedIconList = getVerifiedBadge(user);
+                const verifiedIconList = window.getVerifiedBadge(user);
+                const officialIconList = window.getOfficialBadge(user);
                 const statusColor = user.status === 'pending' ? 'text-yellow-500' : (user.status === 'banned' ? 'text-red-500' : 'text-green-500');
 
                 let actionButtons = '<div class="flex flex-wrap justify-start gap-2 pt-2">';
@@ -1692,6 +1747,16 @@
                             const verifyBtnColor = user.verified ? 'bg-gray-700 hover:bg-gray-600 text-gray-400' : 'bg-blue-600 hover:bg-blue-500 text-white';
                             const verifyTitle = user.verified ? 'Buang Blue Tick' : 'Beri Blue Tick';
                             actionButtons += `<button onclick="toggleVerifyStatus('${user.id}', ${!!user.verified})" class="${verifyBtnColor} w-8 h-8 rounded flex items-center justify-center transition shadow-md" title="${verifyTitle}">${verifyBtnIcon}</button>`;
+                        }
+                    }
+
+                    // TMB: Lencana Official SR Manual untuk User & Moderator
+                    if (isSuperAdmin || currentUser.role === 'komander' || currentUser.role === 'admin') {
+                        if (user.role === 'user' || user.role === 'moderator') {
+                            const offBtnIcon = user.officialSr ? '<img src="https://www.dropbox.com/scl/fi/j8jj1avnr3u6rmeamc5qv/sr-transparant.png?rlkey=djgp0h6yta69ywk8uokpyw1ea&st=67hdsl29&raw=1" class="w-4 h-4 grayscale opacity-50">' : '<img src="https://www.dropbox.com/scl/fi/j8jj1avnr3u6rmeamc5qv/sr-transparant.png?rlkey=djgp0h6yta69ywk8uokpyw1ea&st=67hdsl29&raw=1" class="w-4 h-4">';
+                            const offBtnColor = user.officialSr ? 'bg-gray-700 hover:bg-gray-600 text-gray-400' : 'bg-tactical-greenDark hover:bg-tactical-green text-white';
+                            const offTitle = user.officialSr ? 'Buang OFFICIAL SR' : 'Beri OFFICIAL SR';
+                            actionButtons += `<button onclick="toggleOfficialStatus('${user.id}', ${!!user.officialSr})" class="${offBtnColor} w-8 h-8 rounded flex items-center justify-center transition shadow-md" title="${offTitle}">${offBtnIcon}</button>`;
                         }
                     }
 
@@ -1733,6 +1798,7 @@
                                     </span>
                                     <div class="mt-0.5 flex flex-wrap items-center gap-1">
                                         ${verifiedIconList}
+                                        ${officialIconList}
                                         ${roleBadge ? roleBadge : `<span class="text-[8px] text-gray-500 font-mono"><i class="fa-solid fa-user"></i> MEMBER</span>`}
                                     </div>
                                 </div>
@@ -1764,7 +1830,8 @@
                 
                 const tourUser = users.find(u => (tour.userId && u.id === tour.userId) || u.email === tour.pemohon);
                 const dynamicName = tourUser ? (tourUser.nickname || tourUser.email.split('@')[0]).toUpperCase() : tour.ign;
-                const verifiedIcon = getVerifiedBadge(tourUser);
+                const verifiedIcon = window.getVerifiedBadge(tourUser);
+                const officialIcon = window.getOfficialBadge(tourUser);
                 const roleBadge = window.getSmallRoleBadge(tourUser);
 
                 let tourActions = '<div class="flex flex-wrap justify-start gap-2 pt-2">';
@@ -1782,7 +1849,7 @@
                             <div class="flex flex-col min-w-0 w-full pr-2">
                                 <span class="flex items-center gap-1 flex-wrap">
                                     <span class="font-bold text-[13px] md:text-sm text-tactical-green truncate">${dynamicName}</span>
-                                    ${verifiedIcon} ${roleBadge}
+                                    ${verifiedIcon} ${officialIcon} ${roleBadge}
                                 </span>
                                 <span class="text-[10px] text-white mt-1.5 font-mono"><i class="fa-brands fa-whatsapp text-green-500 mr-1"></i>${tourUser ? (tourUser.phone || tour.whatsapp) : tour.whatsapp}</span>
                             </div>
@@ -1826,6 +1893,14 @@
                 const newStatus = !currentStatus;
                 await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_users', id), { verified: newStatus });
                 window.showAlert(newStatus ? 'Blue Tick Rasmi telah diberikan!' : 'Blue Tick Rasmi ditarik balik.', 'success');
+            } catch (err) { }
+        }
+
+        window.toggleOfficialStatus = async function(id, currentStatus) {
+            try {
+                const newStatus = !currentStatus;
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'srteam_users', id), { officialSr: newStatus });
+                window.showAlert(newStatus ? 'Lencana OFFICIAL SR telah diberikan!' : 'Lencana OFFICIAL SR ditarik balik.', 'success');
             } catch (err) { }
         }
 
@@ -2018,7 +2093,8 @@
                 const avatarImg = (tourUser && tourUser.photoURL) 
                     ? `<img src="${tourUser.photoURL}" class="w-6 h-6 rounded-full object-cover inline-block mr-2 border border-tactical-green/50 shrink-0 cursor-pointer hover:opacity-80 transition" onclick="navigateTo('profile', '${tourUser.email}')">` 
                     : `<div onclick="${tourUser ? `MapsTo('profile', '${tourUser.email}')` : ''}" class="w-6 h-6 rounded-full bg-tactical-panel border border-tactical-border text-[8px] inline-flex items-center justify-center mr-2 shrink-0 ${tourUser ? 'cursor-pointer hover:bg-tactical-green hover:text-black transition' : ''}"><i class="fa-solid fa-user-astronaut"></i></div>`;
-                const verifiedIcon = getVerifiedBadge(tourUser);
+                const verifiedIcon = window.getVerifiedBadge(tourUser);
+                const officialIcon = window.getOfficialBadge(tourUser);
                 const roleBadge = window.getSmallRoleBadge(tourUser);
 
                 html += `
@@ -2026,7 +2102,7 @@
                         <td class="p-3 text-tactical-text">${timeDate}</td>
                         <td class="p-3 font-bold">
                             <a onclick="navigateTo('profile', '${tour.pemohon}')" class="cursor-pointer text-tactical-green hover:text-white transition flex items-center w-full gap-1">
-                                ${avatarImg} <span class="truncate hover:underline">${dynamicName}</span> ${verifiedIcon} ${roleBadge}
+                                ${avatarImg} <span class="truncate hover:underline">${dynamicName}</span> ${verifiedIcon} ${officialIcon} ${roleBadge}
                             </a>
                         </td>
                         <td class="p-3 text-green-500 font-bold text-xs"><i class="fa-solid fa-check"></i> DISAHKAN</td>
@@ -2150,7 +2226,8 @@
                     ? `<img src="${chatUser.photoURL}" class="w-5 h-5 rounded-full object-cover inline-block border border-tactical-border/50 shrink-0 cursor-pointer hover:opacity-80 transition" onclick="navigateTo('profile', '${chatUser.email}')" title="Lihat Profil">` 
                     : `<div onclick="${chatUser ? `MapsTo('profile', '${chatUser.email}')` : ''}" class="w-5 h-5 rounded-full bg-tactical-dark inline-flex items-center justify-center border border-tactical-border/50 text-[8px] text-tactical-green shrink-0 ${chatUser ? 'cursor-pointer hover:bg-tactical-green hover:text-black transition' : ''}" title="Lihat Profil"><i class="fa-solid fa-user"></i></div>`;
                 
-                const verifiedIcon = getVerifiedBadge(chatUser);
+                const verifiedIcon = window.getVerifiedBadge(chatUser);
+                const officialIcon = window.getOfficialBadge(chatUser);
                 const roleBadge = window.getSmallRoleBadge(chatUser);
                 const clickableNameTag = chatUser ? `<a onclick="navigateTo('profile', '${chatUser.email}')" class="cursor-pointer hover:underline">${currentName}</a>` : currentName;
                 const deleteBtnHtml = isAuthorizedToDelete ? `<i class="fa-solid fa-trash text-red-500/70 hover:text-red-500 cursor-pointer ml-2 hover:scale-110 transition" onclick="deleteChat('${chat.id}')" title="Padam Chat Ini"></i>` : '';
@@ -2162,7 +2239,7 @@
                         <div class="self-end max-w-[85%] flex flex-col items-end mb-2">
                             <div class="flex items-center justify-end gap-1.5 mb-1 px-1">
                                 <span class="text-[10px] font-bold text-tactical-green tracking-wider">${clickableNameTag}</span>
-                                ${verifiedIcon} ${roleBadge}
+                                ${verifiedIcon} ${officialIcon} ${roleBadge}
                                 <div class="ml-1">${avatarImg}</div>
                             </div>
                             <div class="bg-tactical-greenDark text-white px-4 py-2 rounded-2xl rounded-tr-sm shadow-md border border-tactical-green/30 text-left">
@@ -2189,7 +2266,7 @@
                             <div class="flex items-center justify-start gap-1.5 mb-1 px-1">
                                 <div class="mr-1">${avatarImg}</div>
                                 <span class="text-[10px] font-bold text-tactical-text tracking-wider">${clickableNameTag}</span>
-                                ${verifiedIcon} ${roleBadge}
+                                ${verifiedIcon} ${officialIcon} ${roleBadge}
                             </div>
                             <div class="bg-tactical-panel text-gray-200 px-4 py-2 rounded-2xl rounded-tl-sm shadow-md border border-tactical-border/50 text-left">
                                 <div class="text-[13.5px] whitespace-pre-wrap leading-relaxed font-sans break-words">${displayMessage}</div>
