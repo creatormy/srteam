@@ -823,6 +823,10 @@
         let currentStatusId = null;
         let currentProfileUserId = null; 
         
+        // HAD PAPARAN STATUS FEED
+        let statusDisplayLimit = 10;
+        let profileStatusDisplayLimit = 10;
+        
         const defaultClanInfo = {
             identity: {
                 name: "SPECTRAL RANGERS TEAM", tag: "[SR]", year: "2019", founder: "BangYan", status: "AKTIF (2026)",
@@ -1340,6 +1344,14 @@
             const targetViewElement = document.getElementById(`view-${viewId}`);
             if (targetViewElement) {
                 targetViewElement.classList.remove('hidden');
+            }
+
+            // RESET HAD PAPARAN KETIKA BERTUKAR HALAMAN
+            if (viewId === 'home') {
+                statusDisplayLimit = 10;
+            }
+            if (viewId === 'profile') {
+                profileStatusDisplayLimit = 10;
             }
 
             if (viewId === 'status' && targetEmail) {
@@ -2819,7 +2831,10 @@
             }
 
             let html = '';
-            statusFeed.forEach(status => {
+            // POTONG ARRAY KEPADA JUMLAH HAD PAPARAN (10 SEBAGAI PERMULAAN)
+            const visibleStatuses = statusFeed.slice(0, statusDisplayLimit);
+
+            visibleStatuses.forEach(status => {
                 const authorUser = users.find(u => u.id === status.userId) || { email: status.author + '@unknown' };
                 const authorName = authorUser.nickname || (authorUser.email ? authorUser.email.split('@')[0] : status.author);
                 
@@ -2888,7 +2903,21 @@
                 `;
             });
 
+            // BUTANG "MUAT LAGI" JIKA STATUS LEBIH DARI HAD SEMASA
+            if (statusFeed.length > statusDisplayLimit) {
+                html += `
+                    <div class="text-center mt-6 pt-2">
+                        <button onclick="loadMoreStatuses()" class="bg-tactical-dark border border-tactical-border text-tactical-green hover:bg-tactical-green hover:text-black transition px-6 py-3 rounded-full font-bold text-xs tracking-widest uppercase shadow-[0_0_10px_rgba(74,222,128,0.2)]"><i class="fa-solid fa-chevron-down mr-2"></i> PAPARKAN LEBIH BANYAK</button>
+                    </div>
+                `;
+            }
+
             container.innerHTML = html;
+        }
+
+        window.loadMoreStatuses = function() {
+            statusDisplayLimit += 10;
+            window.renderStatusFeed();
         }
 
         // --- FUNGSI PAPARAN STATUS DI PROFIL INDIVIDU ---
@@ -2908,7 +2937,10 @@
 
             let html = '<h3 class="text-xl font-bold text-white mb-4 border-b border-tactical-border pb-2"><i class="fa-solid fa-satellite-dish text-tactical-green mr-2"></i> REKOD KOMUNIKASI</h3><div class="space-y-5">';
             
-            userStatuses.forEach(status => {
+            // POTONG ARRAY KEPADA JUMLAH HAD PAPARAN PROFIL
+            const visibleStatuses = userStatuses.slice(0, profileStatusDisplayLimit);
+
+            visibleStatuses.forEach(status => {
                 const authorUser = users.find(u => u.id === status.userId) || { email: status.author + '@unknown' };
                 const authorName = authorUser.nickname || (authorUser.email ? authorUser.email.split('@')[0] : status.author);
                 
@@ -2977,7 +3009,24 @@
                 `;
             });
             html += '</div>';
+
+            // BUTANG "MUAT LAGI" JIKA STATUS LEBIH DARI HAD SEMASA
+            if (userStatuses.length > profileStatusDisplayLimit) {
+                html += `
+                    <div class="text-center mt-6 pt-2">
+                        <button onclick="loadMoreProfileStatuses()" class="bg-tactical-dark border border-tactical-border text-tactical-green hover:bg-tactical-green hover:text-black transition px-6 py-3 rounded-full font-bold text-xs tracking-widest uppercase shadow-[0_0_10px_rgba(74,222,128,0.2)]"><i class="fa-solid fa-chevron-down mr-2"></i> PAPARKAN LEBIH BANYAK</button>
+                    </div>
+                `;
+            }
+
             container.innerHTML = html;
+        }
+
+        window.loadMoreProfileStatuses = function() {
+            profileStatusDisplayLimit += 10;
+            if (currentProfileUserId) {
+                window.renderProfileStatusFeed(currentProfileUserId);
+            }
         }
 
         window.deleteStatus = async function(id) {
