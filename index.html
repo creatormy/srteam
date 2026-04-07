@@ -1539,6 +1539,8 @@
                 if (newPass) updates.password = newPass; 
                 
                 const photoInput = document.getElementById('edit-photo');
+                let statusImgBase64 = null; // Pembolehubah khas untuk auto-update status
+
                 if (photoInput && photoInput.files && photoInput.files[0]) {
                     const file = photoInput.files[0];
                     if(file.size > 2097152) {
@@ -1551,6 +1553,9 @@
                         // Profil guna resolusi 500x500 untuk kualiti tajam tetapi ringan
                         const base64Img = await compressImage(file, 500, 500, 0.85);
                         updates.photoURL = base64Img;
+
+                        // Hasilkan gambar resolusi tinggi 1080x1080 khas untuk auto-post ke Status Feed
+                        statusImgBase64 = await compressImage(file, 1080, 1080, 0.85);
                     } catch (err) {
                         console.error("Gagal kompres gambar", err);
                         window.showAlert('Gagal memproses gambar profil.', 'error');
@@ -1558,6 +1563,23 @@
                 }
 
                 await updateDoc(userDoc, updates);
+
+                // AUTO-POST KE STATUS JIKA ADA GAMBAR PROFIL BARU
+                if (statusImgBase64) {
+                    try {
+                        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_statuses'), {
+                            userId: currentUser.id,
+                            author: newNick || currentUser.nickname || currentUser.email.split('@')[0],
+                            text: "Telah mengemas kini gambar profil rasmi yang baharu. 📸",
+                            image: statusImgBase64,
+                            likes: [],
+                            timestamp: serverTimestamp()
+                        });
+                    } catch (err) {
+                        console.error("Gagal muat naik auto-status", err);
+                    }
+                }
+
                 window.showAlert('Profil berjaya dikemas kini.', 'success');
                 window.toggleEditProfile();
             } catch (err) {
