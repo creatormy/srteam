@@ -1036,7 +1036,9 @@
                 });
 
                 if (currentUser) {
-                    const myData = users.find(u => u.email === currentUser.email);
+                    // FIX: Gunakan currentUser.id untuk jejak profil, BUKAN currentUser.email. 
+                    // Ini memastikan auto-refresh tidak terputus jika user menukar emel.
+                    const myData = users.find(u => u.id === currentUser.id);
                     if (myData) {
                         if(myData.status === 'banned') {
                             window.handleLogout();
