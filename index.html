@@ -1710,8 +1710,15 @@
             let pendingUserCount = 0; let activeUserCount = 0; let pendingTourCount = 0;
             const isSuperAdmin = currentUser && currentUser.role === 'superadmin';
 
+            // SISTEM ISIHAN KHAS: Letak ahli yang 'pending' paling atas
+            const sortedUsers = [...users].sort((a, b) => {
+                if (a.status === 'pending' && b.status !== 'pending') return -1;
+                if (a.status !== 'pending' && b.status === 'pending') return 1;
+                return (b.createdAt || 0) - (a.createdAt || 0); // Yang terbaru di atas jika status sama
+            });
+
             let userHtml = '';
-            users.forEach((user) => {
+            sortedUsers.forEach((user) => {
                 if (user.id === currentUser.id) return; 
                 if (user.role === 'superadmin' && !isSuperAdmin) return; 
 
@@ -1823,6 +1830,23 @@
             });
             
             if (userList) userList.innerHTML = userHtml === '' ? `<div class="p-4 text-center text-tactical-text text-sm font-mono border border-tactical-border rounded bg-tactical-dark">Tiada rekod member.</div>` : userHtml;
+
+            // Render Kawalan Paginasi UI
+            const paginationContainer = document.getElementById('admin-user-pagination');
+            const pageInfo = document.getElementById('admin-page-info');
+            const btnPrev = document.getElementById('btn-prev-page');
+            const btnNext = document.getElementById('btn-next-page');
+
+            if (paginationContainer) {
+                if (filteredUsers.length > itemsPerPage) {
+                    paginationContainer.classList.remove('hidden');
+                    if (pageInfo) pageInfo.textContent = `Halaman ${currentAdminMemberPage} dari ${totalPages}`;
+                    if (btnPrev) btnPrev.disabled = currentAdminMemberPage === 1;
+                    if (btnNext) btnNext.disabled = currentAdminMemberPage === totalPages;
+                } else {
+                    paginationContainer.classList.add('hidden');
+                }
+            }
 
             let tourHtml = '';
             tournaments.forEach((tour) => {
