@@ -354,6 +354,10 @@
                             <p class="text-[10px] text-tactical-text mt-1 font-mono">ID untuk log masuk. Sistem akan menjana ID angka rawak jika dibiarkan kosong.</p>
                         </div>
                         <div class="mb-4">
+                            <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">NICKNAME / IGN (Mesti Diisi)</label>
+                            <input class="input-tactical w-full p-3 rounded" id="reg-nickname" type="text" placeholder="Cth: SR Killer">
+                        </div>
+                        <div class="mb-4">
                             <label class="block text-tactical-text text-xs font-bold mb-2 font-mono">ALAMAT EMEL (Mesti Sah)</label>
                             <input class="input-tactical w-full p-3 rounded" id="reg-email" type="email" placeholder="member@srteam.com">
                         </div>
@@ -1894,6 +1898,7 @@
             const regEmailInput = document.getElementById('reg-email');
             const regPhoneInput = document.getElementById('reg-phone');
             const regDobInput = document.getElementById('reg-dob');
+            const regNicknameInput = document.getElementById('reg-nickname');
 
             if (isLoginMode) {
                 loginGroup.classList.remove('hidden');
@@ -1904,6 +1909,7 @@
                 regEmailInput.removeAttribute('required');
                 regPhoneInput.removeAttribute('required');
                 regDobInput.removeAttribute('required');
+                regNicknameInput.removeAttribute('required');
                 
                 document.getElementById('auth-switch-text').innerHTML = 'Belum mempunyai akses? <a onclick="toggleAuthMode()" class="cursor-pointer text-tactical-green hover:underline font-bold">Mohon Pendaftaran</a>';
             } else {
@@ -1915,6 +1921,7 @@
                 regEmailInput.setAttribute('required', 'required');
                 regPhoneInput.setAttribute('required', 'required');
                 regDobInput.setAttribute('required', 'required');
+                regNicknameInput.setAttribute('required', 'required');
                 
                 document.getElementById('auth-switch-text').innerHTML = 'Sudah mempunyai akses? <a onclick="toggleAuthMode()" class="cursor-pointer text-tactical-green hover:underline font-bold">Log Masuk Sini</a>';
             }
@@ -1964,6 +1971,7 @@
                     const regEmail = document.getElementById('reg-email').value.trim();
                     const regPhone = document.getElementById('reg-phone').value.trim();
                     const regDob = document.getElementById('reg-dob').value;
+                    const regNickname = document.getElementById('reg-nickname').value.trim();
                     
                     // JANA ID ANGKA RAWAK (8 DIGIT) JIKA KOSONG
                     if (!regUsername) {
@@ -1983,6 +1991,11 @@
                         window.showAlert('Emel atau Nombor ini telah digunakan di dalam pangkalan data.', 'error');
                         throw new Error('Duplicate');
                     }
+
+                    if (users.some(u => u.nickname && u.nickname.toLowerCase() === regNickname.toLowerCase())) {
+                        window.showAlert('Nickname ini telah pun didaftarkan oleh ahli lain.', 'error');
+                        throw new Error('Duplicate');
+                    }
                     
                     if (!firebaseUser) {
                         window.showAlert('Sistem awan belum sedia. Sila semak sambungan Firebase anda.', 'warning');
@@ -1991,6 +2004,7 @@
 
                     const newUserRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'srteam_users'), {
                         username: regUsername,
+                        nickname: regNickname,
                         email: regEmail, 
                         phone: regPhone,
                         dob: regDob,
@@ -2004,7 +2018,7 @@
 
                     for (const u of users) {
                         if (u.role === 'admin' || u.role === 'superadmin' || u.role === 'komander') {
-                            await window.sendNotification(u.id, `ℹ️ MEMBER BARU: Rekrut dengan ID (${regUsername}) telah mendaftar masuk ke pangkalan.`, "admin_alert", "admin");
+                            await window.sendNotification(u.id, `ℹ️ MEMBER BARU: Rekrut ${regNickname} (ID: ${regUsername}) telah mendaftar masuk ke pangkalan.`, "admin_alert", "admin");
                         }
                     }
 
